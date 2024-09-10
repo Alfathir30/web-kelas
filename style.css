@@ -346,6 +346,5 @@ a.navbar-brand {
 }
 
 .form {
-  height: 0;
-  overflow: hidden;
+  visibility: hidden;
 }
