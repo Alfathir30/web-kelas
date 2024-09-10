@@ -130,7 +130,7 @@ toggle.addEventListener('click', function() {
 function Alert() {
   Swal.fire(
     '',
-    'Gatau Tanya Hendri',
+    'Hari Senin Update',
     'question'
   )
 }
