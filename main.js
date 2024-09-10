@@ -1,13 +1,13 @@
 const date = new Date();
 const hours = date.getHours();
 if (hours >= 1 && hours < 12) {
-  document.getElementById("good").innerHTML = "Good Morning";
+  document.getElementById("selamat").innerHTML = "Selamat Pagi";
 }
 if (hours >= 12  && hours < 18) {
-  document.getElementById("good").innerHTML = "Good Afternoon";
+  document.getElementById("selamat").innerHTML = "Selamat Siang";
 }
 if (hours >= 18 && hours < 24) {
-  document.getElementById("good").innerHTML = "Good evening";
+  document.getElementById("selamat").innerHTML = "Selamat Malam";
 }
 
 const toggle = document.getElementById('toggleDark');
