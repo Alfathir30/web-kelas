@@ -344,3 +344,7 @@ a.navbar-brand {
   }
 
 }
+
+.form {
+  display: none;
+}
