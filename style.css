@@ -180,7 +180,9 @@ a.navbar-brand {
   border-radius: 20px;
 }
 
-.mapel {
+.mapel,
+.kamis
+.selasa {
   margin-left: -11px;
   margin-right: 20px;
   background-color: ghostwhite;
