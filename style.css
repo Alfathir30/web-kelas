@@ -344,3 +344,20 @@ a.navbar-brand {
   }
 
 }
+
+/* Style untuk teks copyright */
+footer {
+    background-color: #333; /* Warna latar belakang */
+    color: white; /* Warna teks */
+    text-align: center; /* Posisikan teks di tengah */
+    padding: 10px 0; /* Ruang di atas dan bawah teks */
+    position: fixed; /* Tetap di bagian bawah halaman */
+    bottom: 0;
+    width: 100%; /* Lebar penuh halaman */
+    font-family: Arial, sans-serif; /* Font yang digunakan */
+}
+
+.copyright-text {
+    margin: 0;
+    font-size: 14px; /* Ukuran font */
+}
