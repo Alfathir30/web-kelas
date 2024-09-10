@@ -307,7 +307,7 @@ a.navbar-brand {
 
 .menfess {
   background: linear-gradient(-45deg, #F4C183, #F4B446);
-  display: none;
+  visibility: hidden;
 }
 
 #quote {
@@ -343,8 +343,4 @@ a.navbar-brand {
     width: 50rem;
   }
 
-}
-
-.form {
-  visibility: hidden;
 }
