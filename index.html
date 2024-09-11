@@ -311,6 +311,27 @@
     <footer>
         <p class="copyright-text">© 2024 Marvel. All rights reserved.</p>
     </footer>
+    <!----AI---->
+    <div class="ai" id="ai">
+      <input type="text" id="question" placeholder="Ask me anything..." />
+<button onclick="askAI()">Ask</button>
+<div id="response"></div>
+
+<script>
+  function askAI() {
+    var question = document.getElementById('question').value;
+    fetch('/ask', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ question: question })
+    })
+    .then(response => response.json())
+    .then(data => {
+      document.getElementById('response').innerText = data.answer;
+    });
+  }
+</script>
+    </div>
     <!---menfess--->
     <div class="menfess" id="menfess">
       <i class="fa-solid fa-quote-left" id="quote"></i>
