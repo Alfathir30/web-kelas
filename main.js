@@ -127,46 +127,10 @@ toggle.addEventListener('click', function() {
   }
 });
 
-function Alert(subject) {
-  switch(subject) {
-    case 'tkjd':
-      Swal.fire({
-        title: 'Tugas TKJ',
-        text: 'Selesaikan bab 3 teknik komputer jaringan sebelum Jumat!',
-        icon: 'info',
-        confirmButtonText: 'Ok'
-      });
-      break;
-    case 'Indonesia':
-      Swal.fire({
-        title: 'Tugas Bahasa Indonesia',
-        text: 'Buat esai 500 kata tentang kebudayaan lokal!',
-        icon: 'info',
-        confirmButtonText: 'Ok'
-      });
-      break;
-    case 'mtk':
-      Swal.fire({
-        title: 'Tugas Matematika',
-        text: 'Selesaikan soal halaman 50 hingga 55!',
-        icon: 'warning',
-        confirmButtonText: 'Ok'
-      });
-      break;
-    case 'sejarah':
-      Swal.fire({
-        title: 'Tugas Sejarah',
-        text: 'Pelajari kembali bab Perang Dunia II dan buat rangkuman!',
-        icon: 'info',
-        confirmButtonText: 'Ok'
-      });
-      break;
-    default:
-      Swal.fire({
-        title: 'Tugas tidak ditemukan',
-        text: 'Silahkan pilih tugas yang valid.',
-        icon: 'error',
-        confirmButtonText: 'Ok'
-      });
-  }
+function Alert('mtk') {
+  Swal.fire(
+    '',
+    'Hari Senin Update',
+    'question'
+  )
 }
