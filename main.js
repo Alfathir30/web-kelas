@@ -1,15 +1,15 @@
+// Script untuk menampilkan ucapan berdasarkan waktu
 const date = new Date();
 const hours = date.getHours();
 if (hours >= 1 && hours < 12) {
   document.getElementById("selamat").innerHTML = "Selamat Pagi";
-}
-if (hours >= 12  && hours < 18) {
+} else if (hours >= 12 && hours < 18) {
   document.getElementById("selamat").innerHTML = "Selamat Siang";
-}
-if (hours >= 18 && hours < 24) {
+} else if (hours >= 18 && hours < 24) {
   document.getElementById("selamat").innerHTML = "Selamat Malam";
 }
 
+// Script untuk toggle mode terang/gelap
 const toggle = document.getElementById('toggleDark');
 const body = document.querySelector('body');
 const menfess = document.getElementById('menfess');
@@ -38,12 +38,11 @@ const navbar_bottom = document.getElementById('navbar_bottom');
 const bwh_wlc = document.getElementById('bwh_wlc');
 const good = document.getElementById('good');
 
-
-
 toggle.addEventListener('click', function() {
   this.classList.toggle('bi-brightness-high-fill');
   if (this.classList.toggle('bi-moon')) {
-    body.style.backgroundImage = "linear-gradient(#FF8008,#FFFDE9 )";
+    // Mode terang
+    body.style.backgroundImage = "linear-gradient(#FF8008,#FFFDE9)";
     body.style.color = 'white';
     body.style.transition = '2s';
     document.getElementById('tarik').style.opacity = '97%';
@@ -81,9 +80,8 @@ toggle.addEventListener('click', function() {
     bwh_wlc.style.opacity = '97%';
     good.style.opacity = '98%';
     document.getElementById('navbar_top').style.opacity = '95%';
-
-
   } else {
+    // Mode gelap
     body.style.backgroundImage = "linear-gradient(black, purple)";
     body.style.color = 'white';
     body.style.transition = '2s';
@@ -127,6 +125,7 @@ toggle.addEventListener('click', function() {
   }
 });
 
+// Function untuk alert
 function Alert() {
   Swal.fire(
     '',
