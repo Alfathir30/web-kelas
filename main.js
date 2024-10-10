@@ -132,7 +132,7 @@ function Alert(subject) {
     case 'tkjd':
       Swal.fire({
         title: 'Tugas TKJ',
-        text: 'Selesaikan bab 3 teknik komputer jaringan sebelum Jumat!',
+        text: 'Remedial!',
         icon: 'info',
         confirmButtonText: 'Ok'
       });
@@ -140,7 +140,7 @@ function Alert(subject) {
     case 'Indonesia':
       Swal.fire({
         title: 'Tugas Bahasa Indonesia',
-        text: 'Buat esai 500 kata tentang kebudayaan lokal!',
+        text: 'selesai pts update',
         icon: 'info',
         confirmButtonText: 'Ok'
       });
@@ -148,7 +148,7 @@ function Alert(subject) {
     case 'mtk':
       Swal.fire({
         title: 'Tugas Matematika',
-        text: 'Selesaikan soal halaman 50 hingga 55!',
+        text: 'selesai pts update',
         icon: 'warning',
         confirmButtonText: 'Ok'
       });
@@ -156,7 +156,7 @@ function Alert(subject) {
     case 'sejarah':
       Swal.fire({
         title: 'Tugas Sejarah',
-        text: 'Pelajari kembali bab Perang Dunia II dan buat rangkuman!',
+        text: 'selesai pts update',
         icon: 'info',
         confirmButtonText: 'Ok'
       });
@@ -164,7 +164,7 @@ function Alert(subject) {
     default:
       Swal.fire({
         title: 'Tugas tidak ditemukan',
-        text: 'Silahkan pilih tugas yang valid.',
+        text: 'selesai pts update',
         icon: 'error',
         confirmButtonText: 'Ok'
       });
