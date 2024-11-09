@@ -147,6 +147,18 @@ toggle.addEventListener('click', function() {
     document.getElementById('box2').style.backgroundImage = "linear-gradient(to left top,rgba(0, 183, 255, 1), rgba(10, 123, 232, 1))";
     document.getElementById('box3').style.backgroundImage = "linear-gradient(to left top,rgba(0, 183, 255, 1), rgba(10, 123, 232, 1))";
     document.getElementById('box4').style.backgroundImage = "linear-gradient(to left top,rgba(0, 183, 255, 1), rgba(10, 123, 232, 1))";
+    document.getElementById('box5').style.backgroundImage = "linear-gradient(to left top,rgba(0, 183, 255, 1), rgba(10, 123, 232, 1))";
+    document.getElementById('box6').style.backgroundImage = "linear-gradient(to left top,rgba(0, 183, 255, 1), rgba(10, 123, 232, 1))";
+    document.getElementById('box7').style.backgroundImage = "linear-gradient(to left top,rgba(0, 183, 255, 1), rgba(10, 123, 232, 1))";
+    document.getElementById('box8').style.backgroundImage = "linear-gradient(to left top,rgba(0, 183, 255, 1), rgba(10, 123, 232, 1))";
+    document.getElementById('box9').style.backgroundImage = "linear-gradient(to left top,rgba(0, 183, 255, 1), rgba(10, 123, 232, 1))";
+    document.getElementById('box10').style.backgroundImage = "linear-gradient(to left top,rgba(0, 183, 255, 1), rgba(10, 123, 232, 1))";
+    document.getElementById('box11').style.backgroundImage = "linear-gradient(to left top,rgba(0, 183, 255, 1), rgba(10, 123, 232, 1))";
+    document.getElementById('box12').style.backgroundImage = "linear-gradient(to left top,rgba(0, 183, 255, 1), rgba(10, 123, 232, 1))";
+    document.getElementById('box13').style.backgroundImage = "linear-gradient(to left top,rgba(0, 183, 255, 1), rgba(10, 123, 232, 1))";
+    document.getElementById('box14').style.backgroundImage = "linear-gradient(to left top,rgba(0, 183, 255, 1), rgba(10, 123, 232, 1))";
+    document.getElementById('box15').style.backgroundImage = "linear-gradient(to left top,rgba(0, 183, 255, 1), rgba(10, 123, 232, 1))";
+    document.getElementById('box16').style.backgroundImage = "linear-gradient(to left top,rgba(0, 183, 255, 1), rgba(10, 123, 232, 1))";
     document.getElementById("menfess").style.backgroundImage = 'linear-gradient(rgba(255, 219, 0, 1),rgba(150, 255, 0, 1))';
   }
 });
