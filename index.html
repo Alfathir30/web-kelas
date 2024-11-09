@@ -506,26 +506,32 @@
     AOS.init();
   </script>
   <script>
-            // Mendefinisikan username dan password
-        const username = "admin";
-        const password = "031104";
+         // Mendefinisikan username dan password yang benar
+        const correctUsername = "user";
+        const correctPassword = "1234";
+        
+        // Variabel untuk menyimpan input pengguna
+        let isAuthenticated = false;
+        
+        // Looping untuk meminta username dan password hingga benar
+        while (!isAuthenticated) {
+            // Mengambil input username dari pengguna
+            const inputUsername = prompt("Masukkan username:");
+            
+            // Jika username benar, meminta password
+            if (inputUsername === correctUsername) {
+                const inputPassword = prompt("Masukkan password:");
 
-        // Mengambil input username dari pengguna
-        const inputUsername = prompt("Masukkan username:");
-
-        // Mengecek apakah username sesuai
-        if (inputUsername === username) {
-            // Mengambil input password dari pengguna
-            const inputPassword = prompt("Masukkan password:");
-
-            // Mengecek apakah password sesuai
-            if (inputPassword === password) {
-                alert("Login berhasil! Selamat datang, " + username + "!");
+                // Memeriksa apakah password benar
+                if (inputPassword === correctPassword) {
+                    alert("Login berhasil! Selamat datang, " + correctUsername + "!");
+                    isAuthenticated = true; // Menghentikan loop jika login berhasil
+                } else {
+                    alert("Password salah. Coba lagi.");
+                }
             } else {
-                alert("Password salah. Login gagal.");
+                alert("Username tidak ditemukan. Coba lagi.");
             }
-        } else {
-            alert("Username tidak ditemukan. Login gagal.");
         }
   </script>
 </body>
