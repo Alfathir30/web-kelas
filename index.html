@@ -505,6 +505,29 @@
   <script>
     AOS.init();
   </script>
+  <script>
+            // Mendefinisikan username dan password
+        const username = "admin";
+        const password = "031104";
+
+        // Mengambil input username dari pengguna
+        const inputUsername = prompt("Masukkan username:");
+
+        // Mengecek apakah username sesuai
+        if (inputUsername === username) {
+            // Mengambil input password dari pengguna
+            const inputPassword = prompt("Masukkan password:");
+
+            // Mengecek apakah password sesuai
+            if (inputPassword === password) {
+                alert("Login berhasil! Selamat datang, " + username + "!");
+            } else {
+                alert("Password salah. Login gagal.");
+            }
+        } else {
+            alert("Username tidak ditemukan. Login gagal.");
+        }
+  </script>
 </body>
 
 </html>
