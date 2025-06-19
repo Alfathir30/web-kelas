@@ -582,32 +582,15 @@ def update_script_with_device_id(script_path, new_device_id, placeholder):
             content = f.read()
         
         # PERBAIKAN DI SINI: Regex untuk mencari string placeholder
-        # Kita perlu escape placeholder itu sendiri dan juga tanda kutip di sekelilingnya di Python.
-        # Python raw string (r'') tidak memproses backslash untuk escape karakter.
-        # Jadi, untuk mencari literal " (tanda kutip ganda), kita bisa pakai \\"
-        # Atau lebih baik, kita cari pattern string lengkapnya.
-        # Yang penting, re.escape(placeholder) sudah mengurus karakter khusus dalam placeholder.
-        
-        # Regex yang baru: Cari string literal "ALLOWED_DEVICE_ID = "PLACEHOLDER""
-        # Perhatikan: f-string Python akan menghasilkan " saat di-sub.
-        # Jadi kita perlu re.escape string "ALLOWED_DEVICE_ID = \"{placeholder}\""
-        
-        # Ini pendekatan yang lebih aman: kita mencari keseluruhan baris yang ada placeholder-nya.
-        # Karena placeholder itu sendiri tidak akan mengandung karakter regex yang perlu di-escape dua kali.
+        # Kita mencari keseluruhan baris yang ada placeholder-nya.
         # re.escape() akan mengurus semua karakter khusus di dalam placeholder itu sendiri.
         
-        # Membuat string literal yang akan dicari, lalu meng-escape-nya
-        # Pattern yang kita cari adalah: ALLOWED_DEVICE_ID = "YOUR_DEVICE_ID_WILL_BE_SET_HERE_BY_PYTHON_SCRIPT"
-        # Kita harus escape literal tanda kutip dan placeholder itu sendiri.
         search_pattern_str = f'ALLOWED_DEVICE_ID = "{placeholder}"'
         escaped_search_pattern = re.escape(search_pattern_str)
         pattern = re.compile(escaped_search_pattern)
 
         if pattern.search(content):
-            # Ini baris inti perbaikannya:
-            # Kita ingin menghasilkan string Python seperti ini: ALLOWED_DEVICE_ID = "ini_id_device_yang_di_escape"
             # new_device_id di sini adalah variabel Python, yang nilainya sudah aman untuk disisipkan.
-            # Python string literal for new_device_id itself.
             new_content = pattern.sub(f"ALLOWED_DEVICE_ID = \\"{new_device_id}\\"", content);
             
             with open(script_path, 'w', encoding='utf-8') as f:
@@ -677,7 +660,10 @@ def decode_marvel_string_from_list(marvel_word_list):
         if word in DECODE_TABLE:
             base64_chars.append(DECODE_TABLE[word])
         else:
-            print(f"Warning: Kata '{word}' tidak ditemukan di tabel dekode! Dekode mungkin tidak lengkap.")
+            # Penting: Kalau ada kata yang tidak dikenal, kita harus hati-hati.
+            # Ini bisa mengindikasikan kerusakan data atau tabel yang tidak lengkap.
+            # Mengembalikan None untuk menandakan kegagalan total.
+            print(f"Warning: Kata '{word}' tidak ditemukan di tabel dekode! Kode mungkin corrupt atau tabel tidak lengkap.")
             return None 
     
     base64_encoded_str = "".join(base64_chars)
@@ -689,7 +675,6 @@ def main():
 
     license_input = input("Masukkan License Key Anda: ").strip()
 
-    # Panggil check_protection_python dengan placeholder dari JS
     if not check_protection_python(license_input, current_script_path, "${deviceIdPlaceholder}"):
         sys.exit(1)
 
@@ -704,14 +689,23 @@ def main():
         decoded_bytes = base64.b64decode(base64_str_from_marvel)
         original_code = decoded_bytes.decode('utf-8')
         
+        # === TAMBAHAN BARU UNTUK DEBUGGING ===
+        # Simpan kode asli yang didekode ke file sementara
+        debug_output_filename = "DEBUG_DECODED_ORIGINAL_CODE.py"
+        with open(debug_output_filename, "w", encoding="utf-8") as debug_f:
+            debug_f.write(original_code)
+        print(f"INFO DEBUG: Kode asli setelah dekode disimpan ke '{debug_output_filename}' di direktori script.")
+        # =====================================
+
         print("\\n--- MENJALANKAN KODE ASLI ---")
+        # Fungsi exec() akan menjalankan string sebagai kode Python
         exec(original_code)
         print("--- EKSEKUSI KODE SELESAI ---")
 
     except Exception as e:
         print(f"\\nWaduh, ada error fatal saat mendekode atau menjalankan kode asli: {e}")
         import traceback
-        traceback.print_exc()
+        traceback.exc_info() # Ini akan mencetak traceback info lengkap
         sys.exit(1)
 
 if __name__ == "__main__":
