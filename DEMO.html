@@ -365,7 +365,7 @@
 
         // --- KONFIGURASI PROTEKSI ---
         const VALID_LICENSE_KEY = "VEL-1234-9999";
-        // Tanggal expired bisa disesuaikan. Format: YYYY-MM-DDTHH:MM:SS
+        // Tanggal expired bisa disesuaikan. Format:YYYY-MM-DDTHH:MM:SS
         const EXPIRED_DATE_OBJ = new Date("2025-12-31T23:59:59"); 
         const EXPIRED_DATE_STR = "2025-12-31T23:59:59"; 
 
@@ -530,13 +530,6 @@
             // Placeholder unik yang akan dicari dan diganti oleh script Python itu sendiri
             const deviceIdPlaceholder = INITIAL_ALLOWED_DEVICE_ID_PLACEHOLDER;
 
-            // *** INI ADALAH BAGIAN YANG DIBENERIN DI KODE SEBELUMNYA ***
-            // const safe_new_device_id_for_python ini HARUS dieksekusi di JavaScript,
-            // bukan ditaruh sebagai bagian dari string Python yang dihasilkan.
-            // Kita siapkan new_device_id agar aman disisipkan ke dalam string Python.
-            // Ganti setiap backslash dengan dua backslash, dan setiap tanda kutip ganda dengan backslash + tanda kutip ganda.
-            const safe_new_device_id_for_python_js_var = new_device_id.replace(/\\/g, '\\\\\\\\').replace(/"/g, '\\"');
-
             // Template literal untuk membuat string kode Python
             // PASTIKAN SEMUA KOMENTAR DALAM STRING INI MENGGUNAKAN '#' (Sintaks Python)
             const pythonScript = `
@@ -596,10 +589,8 @@ def update_script_with_device_id(script_path, new_device_id, placeholder):
         if pattern.search(content):
             # Ini baris inti perbaikannya:
             # Kita ingin menghasilkan string Python seperti ini: ALLOWED_DEVICE_ID = "ini_id_device_yang_di_escape"
-            # new_device_id di sini adalah variabel Python, bukan JS.
-            # Jadi kita perlu escape tanda kutip di dalamnya kalau ada.
-            # Python string literal for new_device_id itself.
-            # Ini sudah dijamin aman karena safe_new_device_id_for_python_js_var di atas sudah melakukan escaping.
+            # new_device_id di sini adalah variabel Python, yang nilainya sudah aman untuk disisipkan.
+            # Python akan mengurus escaping otomatis saat f-string dievaluasi.
             new_content = pattern.sub(f"ALLOWED_DEVICE_ID = \\"{new_device_id}\\"", content);
             
             with open(script_path, 'w', encoding='utf-8') as f:
