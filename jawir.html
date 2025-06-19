@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Protektor File Marvel Edition (Client-Side)</title>
     <style>
-        @import url('https://fonts.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
         :root {
             --bg-color: #1a1a2e;
@@ -387,7 +387,6 @@
             "hela", "redskull", "baronzemo", "ronan", "skrulls", "kree", "celestials", "infinity",
             "gauntlet", "stones", "tesseract", "aether", "orb", "scepter", "soulstone", "powerstone"
         ];
-        // Pastikan marvelWords cukup banyak untuk menampung semua indeks BASE64_CHARS (64 karakter)
         if (marvelWords.length < BASE64_CHARS.length) {
             console.error("Error: Jumlah marvelWords tidak cukup untuk semua karakter Base64!");
             alert("Error konfigurasi: Tambahkan lebih banyak kata Marvel di kode!");
@@ -456,9 +455,6 @@
                 const index = BASE64_CHARS.indexOf(char);
                 if (index === -1) {
                     console.error(`Karakter Base64 tidak ditemukan di BASE64_CHARS: ${char}`);
-                    // Ini seharusnya tidak terjadi jika btoa() bekerja dengan benar
-                    // Kita bisa fallback ke karakter dummy atau melempar error
-                    // Untuk sekarang, kita lemparkan error agar tahu ada masalah encoding
                     throw new Error(`Karakter Base64 tidak valid '${char}' pada indeks ${i}.`);
                 } else {
                     encodedWords.push(marvelWords[index]);
@@ -506,7 +502,7 @@
 
             encodeButton.disabled = !(hasOriginalContent && isLicenseKeyProvided);
             copyOutputButton.disabled = !hasEncodedOutput;
-            saveOutputButton.disabled = !hasEncodedOutput;
+            saveOutputButton.disabled = !hasEncodedContent;
             generatePyScriptButton.disabled = !hasEncodedOutput;
         }
 
@@ -515,7 +511,6 @@
             // Mapping balikan untuk Python
             const pythonDecodeTable = {};
             BASE64_CHARS.split('').forEach((char, index) => {
-                // Pastikan indeks ada di marvelWords
                 if (marvelWords[index]) {
                     pythonDecodeTable[marvelWords[index]] = char;
                 } else {
@@ -523,12 +518,10 @@
                 }
             });
             
-            // Nama file asli (tanpa ekstensi) untuk nama file default
-            let baseFileName = currentFileName.split('.').slice(0, -1).join('.') || 'protected_script';
+            // Konversi string Marvel panjang menjadi array per kata untuk disisipkan ke Python.
+            // Ini akan mengatasi masalah panjang string yang membuat error SyntaxError.
+            const encodedWordsArray = encodedMarvelString.split(' ');
 
-            // Templating Python Script
-            // Perbaikan utama di sini: Menggunakan triple quotes Python untuk string ENCODED_MARVEL_STRING
-            // String JavaScript template literal (backticks) membungkus seluruh script Python
             const pythonScript = `
 # Ini adalah file Python yang terproteksi oleh "Protektor File Marvel Edition".
 # Dibuat pada ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })} WIB.
@@ -537,35 +530,27 @@
 import base64
 import sys
 import datetime
-import platform # Untuk mendapatkan info OS/Machine
+import platform
 
 # --- KONFIGURASI PROTEKSI ---
 VALID_LICENSE_KEY = "${VALID_LICENSE_KEY}"
 EXPIRED_DATE_STR = "${EXPIRED_DATE_STR}"
-# Penting: ALLOWED_DEVICE_ID ini diambil dari browser saat generate.
-# Deteksi di Python (get_current_device_id_python) mungkin menghasilkan string yang berbeda,
-# sehingga proteksi device ID bisa GAGAL jika tidak disesuaikan.
-# Lo bisa ubah ALLOWED_DEVICE_ID_PYTHON di bawah jika ingin spesifik di Python.
 ALLOWED_DEVICE_ID = "${ALLOWED_DEVICE_ID}" 
 
 # --- Tabel Dekode Marvel Word ke Base64 Char ---
 DECODE_TABLE = ${JSON.stringify(pythonDecodeTable, null, 4)}
 
-# --- Data Asli yang Ter-obfuscate (Marvel Words) ---
-ENCODED_MARVEL_STRING = '''${encodedMarvelString}''' # <-- ISI DARI SINI
+# --- Data Asli yang Ter-obfuscate (Marvel Words sebagai List Python) ---
+# Data ini disimpan sebagai list kata untuk menghindari masalah panjang string
+# saat parsing Python, kemudian digabungkan kembali saat dekode.
+ENCODED_MARVEL_WORD_LIST = ${JSON.stringify(encodedWordsArray, null, 4)}
 
 def get_current_device_id_python():
-    # Ini adalah cara sederhana mendapatkan Device ID di Python.
-    # String yang dihasilkan mungkin berbeda dari navigator.userAgent di browser.
-    # Jika ingin device ID konsisten, Anda perlu metode yang lebih kompleks.
-    # Contoh: f"Python_OS: {platform.system()} | Machine: {platform.machine()}"
-    # Atau bisa juga ambil informasi network adapter MAC address, dll.
-    # Untuk tujuan demo ini, kita akan bandingkan dengan string yang disisipkan dari JS.
-    return f"Browser: Python-Simulated-UA | Platform: {platform.system()}-{platform.machine()}"
-    # ^^^^ CATATAN: Karena ini simulasi, proteksi device ID di Python mungkin akan selalu gagal ^^^^
-    # Karena ALLOWED_DEVICE_ID akan berisi UA browser, bukan UA simulasi Python ini.
-    # Untuk testing biar lolos, bisa ganti ALLOWED_DEVICE_ID di JS menjadi:
-    # const ALLOWED_DEVICE_ID = "Browser: Python-Simulated-UA | Platform: Windows-AMD64"; (sesuaikan OS dan arsitektur lo)
+    # Ini adalah contoh cara mendapatkan Device ID di Python.
+    # Anda perlu memastikan string ini cocok dengan ALLOWED_DEVICE_ID di JS jika ingin proteksi ini lolos.
+    # Misalnya, jika JS mengirim "Browser: XYZ", Anda harus membuat ini juga menghasilkan "Browser: XYZ".
+    # Untuk tujuan demo ini, string ini kemungkinan besar TIDAK AKAN cocok dengan ALLOWED_DEVICE_ID dari JS.
+    return f"Python_OS: {platform.system()} | Machine: {platform.machine()} | PyVersion: {sys.version.split(' ')[0]}"
 
 def check_protection_python():
     license_key = input("Masukkan License Key: ").strip()
@@ -585,9 +570,6 @@ def check_protection_python():
     if current_device != ALLOWED_DEVICE_ID:
         errors.append(f"Device tidak dikenali atau tidak diizinkan. ID Device lo: '{current_device}'. Yang diizinkan: '{ALLOWED_DEVICE_ID}'.")
     
-    # Deteksi modifikasi file Python itu sendiri di runtime butuh checksum file.
-    # Ini kompleks dan belum diimplementasikan di sini.
-
     if errors:
         print("\\n--- Gagal Memproses Proteksi ---")
         for error in errors:
@@ -596,10 +578,9 @@ def check_protection_python():
         return False
     return True
 
-def decode_marvel_string(marvel_string):
+def decode_marvel_string_from_list(marvel_word_list):
     base64_chars = []
-    words = marvel_string.split(' ')
-    for word in words:
+    for word in marvel_word_list:
         if not word: 
             continue
         if word in DECODE_TABLE:
@@ -618,7 +599,8 @@ def main():
     print("\\nProteksi LOLOS! Mencoba mendekode dan menjalankan kode asli...")
 
     try:
-        base64_str_from_marvel = decode_marvel_string(ENCODED_MARVEL_STRING)
+        # Gabungkan kembali list kata Marvel menjadi string, lalu dekode
+        base64_str_from_marvel = decode_marvel_string_from_list(ENCODED_MARVEL_WORD_LIST)
         if base64_str_from_marvel is None:
             print("Dekode gagal karena kata Marvel tidak dikenali. Kode tidak bisa dijalankan.")
             sys.exit(1)
@@ -833,7 +815,7 @@ if __name__ == "__main__":
             }
 
             if (currentFileExtension !== '.py') {
-                 showToast('Bro, fitur "Generate .py Script" ini hanya untuk file Python (.py) ya. File '.${currentFileExtension}' ini nanti nggak bisa dieksekusi Python.', 'warning');
+                 showToast(`Bro, fitur "Generate .py Script" ini hanya untuk file Python (.py) ya. File '${currentFileExtension}' ini nanti nggak bisa dieksekusi Python.`, 'warning');
                  // Lo bisa kasih pilihan tetap generate, tapi better kasih warning
             }
 
