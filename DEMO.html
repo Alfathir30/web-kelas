@@ -375,11 +375,6 @@
         // Gunakan string placeholder unik yang akan dicari dan diganti di script Python.
         const INITIAL_ALLOWED_DEVICE_ID_PLACEHOLDER = "YOUR_DEVICE_ID_WILL_BE_SET_HERE_BY_PYTHON_SCRIPT";
         
-        // CURRENT_DEVICE_ID dan ALLOWED_DEVICE_ID di sini hanya relevan jika ada logika proteksi di sisi browser.
-        // Untuk script ini, mereka tidak digunakan lagi untuk validasi Device ID.
-        // const CURRENT_DEVICE_ID = `Browser: ${navigator.userAgent.substring(0, Math.min(navigator.userAgent.length, 50))}... | Platform: ${navigator.platform}`;
-        // const ALLOWED_DEVICE_ID = CURRENT_DEVICE_ID; // Ini sudah tidak dipakai untuk validasi Device ID
-
         // --- MAPPING BASE64 KE KATA MARVEL (KONSISTEN) ---
         const BASE64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
         const marvelWords = [
@@ -698,14 +693,26 @@ def main():
         # =====================================
 
         print("\\n--- MENJALANKAN KODE ASLI ---")
-        # Fungsi exec() akan menjalankan string sebagai kode Python
-        exec(original_code)
+        
+        # === INI BAGIAN PENTINGNYA, BRE! ===
+        # Kita akan membungkus exec() dengan try-except yang lebih detail
+        try:
+            # Fungsi exec() akan menjalankan string sebagai kode Python
+            exec(original_code)
+        except Exception as inner_e:
+            print(f"\\n!!!! DETECTED: ERROR SAAT MENJALANKAN KODE ASLI !!!!")
+            print(f"Detail Error: {inner_e}")
+            import traceback
+            traceback.print_exc() # Ini yang akan mencetak stack trace lengkap
+            print("\\n!!!! EKSEKUSI KODE ASLI GAGAL !!!!")
+            sys.exit(1) # Hentikan eksekusi jika kode asli error
+            
         print("--- EKSEKUSI KODE SELESAI ---")
 
     except Exception as e:
         print(f"\\nWaduh, ada error fatal saat mendekode atau menjalankan kode asli: {e}")
         import traceback
-        traceback.exc_info() # Ini akan mencetak traceback info lengkap
+        traceback.print_exc()
         sys.exit(1)
 
 if __name__ == "__main__":
