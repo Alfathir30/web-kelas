@@ -530,6 +530,13 @@
             // Placeholder unik yang akan dicari dan diganti oleh script Python itu sendiri
             const deviceIdPlaceholder = INITIAL_ALLOWED_DEVICE_ID_PLACEHOLDER;
 
+            // *** INI ADALAH BAGIAN YANG DIBENERIN DI KODE SEBELUMNYA ***
+            // const safe_new_device_id_for_python ini HARUS dieksekusi di JavaScript,
+            // bukan ditaruh sebagai bagian dari string Python yang dihasilkan.
+            // Kita siapkan new_device_id agar aman disisipkan ke dalam string Python.
+            // Ganti setiap backslash dengan dua backslash, dan setiap tanda kutip ganda dengan backslash + tanda kutip ganda.
+            const safe_new_device_id_for_python_js_var = new_device_id.replace(/\\/g, '\\\\\\\\').replace(/"/g, '\\"');
+
             // Template literal untuk membuat string kode Python
             // PASTIKAN SEMUA KOMENTAR DALAM STRING INI MENGGUNAKAN '#' (Sintaks Python)
             const pythonScript = `
@@ -587,17 +594,13 @@ def update_script_with_device_id(script_path, new_device_id, placeholder):
         pattern = re.compile(r"ALLOWED_DEVICE_ID = \"" + escaped_placeholder + "\"")
         
         if pattern.search(content):
-            # Ini adalah bagian yang membetulkan error sebelumnya (escaping quote di string Python).
-            # Kita siapkan new_device_id agar aman disisipkan ke dalam string Python.
-            # Ganti setiap backslash dengan dua backslash, dan setiap tanda kutip ganda dengan backslash + tanda kutip ganda.
-            # Menggunakan regex global replacement untuk backslash dan double quote
-            const safe_new_device_id_for_python = new_device_id.replace(/\\/g, '\\\\\\\\').replace(/"/g, '\\"');
-            
             # Ini baris inti perbaikannya:
             # Kita ingin menghasilkan string Python seperti ini: ALLOWED_DEVICE_ID = "ini_id_device_yang_di_escape"
-            # Jadi, di dalam JS template literal, kita pakai kutip ganda untuk string Python-nya,
-            # dan escape kutip ganda di dalamnya dengan backslash ganda.
-            new_content = pattern.sub(\`ALLOWED_DEVICE_ID = "\\\${safe_new_device_id_for_python}\\"`, content);
+            # new_device_id di sini adalah variabel Python, bukan JS.
+            # Jadi kita perlu escape tanda kutip di dalamnya kalau ada.
+            # Python string literal for new_device_id itself.
+            # Ini sudah dijamin aman karena safe_new_device_id_for_python_js_var di atas sudah melakukan escaping.
+            new_content = pattern.sub(f"ALLOWED_DEVICE_ID = \\"{new_device_id}\\"", content);
             
             with open(script_path, 'w', encoding='utf-8') as f:
                 f.write(new_content)
@@ -906,6 +909,7 @@ if __name__ == "__main__":
             }
 
             showLoading('Menciptakan script Python...');
+            // Panggil fungsi generatePythonScript
             const pythonScriptContent = generatePythonScript(currentEncodedMarvelString, currentFileExtension);
             
             const blob = new Blob([pythonScriptContent], { type: 'text/plain;charset=utf-8' });
