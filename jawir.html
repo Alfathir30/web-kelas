@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Protektor File Marvel Edition (Client-Side)</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+        @import url('https://fonts.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
         :root {
             --bg-color: #1a1a2e;
@@ -357,7 +357,7 @@
         const encodeButton = document.getElementById('encodeButton');
         const copyOutputButton = document.getElementById('copyOutputButton');
         const saveOutputButton = document.getElementById('saveOutputButton');
-        const generatePyScriptButton = document.getElementById('generatePyScriptButton'); // TOMBOL BARU
+        const generatePyScriptButton = document.getElementById('generatePyScriptButton');
         const resetButton = document.getElementById('resetButton');
         const loadingOverlay = document.getElementById('loadingOverlay');
         const toast = document.getElementById('toast');
@@ -365,17 +365,14 @@
 
         // --- KONFIGURASI PROTEKSI ---
         const VALID_LICENSE_KEY = "VEL-1234-9999";
-        const EXPIRED_DATE_OBJ = new Date("2025-12-31T23:59:59"); // Objek Date untuk perbandingan
-        const EXPIRED_DATE_STR = "2025-12-31T23:59:59"; // String untuk disisipkan ke Python
+        const EXPIRED_DATE_OBJ = new Date("2025-12-31T23:59:59");
+        const EXPIRED_DATE_STR = "2025-12-31T23:59:59"; 
 
         // --- PENTING: PENYESUAIAN DEVICE ID ---
         const CURRENT_DEVICE_ID = `Browser: ${navigator.userAgent.substring(0, Math.min(navigator.userAgent.length, 50))}... | Platform: ${navigator.platform}`;
         const ALLOWED_DEVICE_ID = CURRENT_DEVICE_ID; // Untuk testing, disamakan dengan device saat ini.
-        // Jika mau hardcode, ganti: const ALLOWED_DEVICE_ID = "MyAwesomeDeviceID-12345";
 
         // --- MAPPING BASE64 KE KATA MARVEL (KONSISTEN) ---
-        // Ini adalah kunci sinkronisasi antara encode dan decode
-        // Kita akan menggunakan BASE64_CHARS sebagai indeks ke marvelWords
         const BASE64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
         const marvelWords = [
             "marvel", "ganteng", "banget", "thor", "loki", "wanda", "vision",
@@ -390,7 +387,11 @@
             "hela", "redskull", "baronzemo", "ronan", "skrulls", "kree", "celestials", "infinity",
             "gauntlet", "stones", "tesseract", "aether", "orb", "scepter", "soulstone", "powerstone"
         ];
-        // Pastikan marvelWords cukup banyak untuk menampung semua indeks BASE64_CHARS
+        // Pastikan marvelWords cukup banyak untuk menampung semua indeks BASE64_CHARS (64 karakter)
+        if (marvelWords.length < BASE64_CHARS.length) {
+            console.error("Error: Jumlah marvelWords tidak cukup untuk semua karakter Base64!");
+            alert("Error konfigurasi: Tambahkan lebih banyak kata Marvel di kode!");
+        }
 
         let currentFileName = '';
         let currentFileExtension = '';
@@ -454,9 +455,11 @@
                 const char = base64Encoded[i];
                 const index = BASE64_CHARS.indexOf(char);
                 if (index === -1) {
-                    // Ini harusnya nggak terjadi kalau Base64 valid, tapi jaga-jaga
-                    console.warn(`Karakter Base64 tidak ditemukan di BASE64_CHARS: ${char}`);
-                    encodedWords.push('unknown'); // Fallback
+                    console.error(`Karakter Base64 tidak ditemukan di BASE64_CHARS: ${char}`);
+                    // Ini seharusnya tidak terjadi jika btoa() bekerja dengan benar
+                    // Kita bisa fallback ke karakter dummy atau melempar error
+                    // Untuk sekarang, kita lemparkan error agar tahu ada masalah encoding
+                    throw new Error(`Karakter Base64 tidak valid '${char}' pada indeks ${i}.`);
                 } else {
                     encodedWords.push(marvelWords[index]);
                 }
@@ -477,7 +480,7 @@
                 isValid = false;
             }
 
-            if (today > EXPIRED_DATE_OBJ) { // Pakai OBJ untuk perbandingan
+            if (today > EXPIRED_DATE_OBJ) { 
                 errors.push("Waduh, masa berlaku license sudah expired, bre! Tanggal sekarang: " + today.toLocaleDateString() + ", Expired: " + EXPIRED_DATE_OBJ.toLocaleDateString());
                 isValid = false;
             }
@@ -489,7 +492,7 @@
             
             if (uploadedContentChecksum && uploadedContentChecksum !== currentFileChecksum) {
                 errors.push("DETECTED: File telah dimodifikasi! Checksum tidak cocok, bre! Ini peringatan keras!");
-                // isValid = false; // <<< INI KITA KOMEN SEMENTARA AGAR TIDAK MENGGAGALKAN PROSES ENCODE
+                // isValid = false; // Dikomen agar tetap bisa testing meskipun ada warning checksum
             }
 
             return { isValid, errors };
@@ -504,7 +507,7 @@
             encodeButton.disabled = !(hasOriginalContent && isLicenseKeyProvided);
             copyOutputButton.disabled = !hasEncodedOutput;
             saveOutputButton.disabled = !hasEncodedOutput;
-            generatePyScriptButton.disabled = !hasEncodedOutput; // Tombol baru
+            generatePyScriptButton.disabled = !hasEncodedOutput;
         }
 
         // --- FUNGSI BARU: GENERATE PYTHON SCRIPT ---
@@ -512,16 +515,23 @@
             // Mapping balikan untuk Python
             const pythonDecodeTable = {};
             BASE64_CHARS.split('').forEach((char, index) => {
-                pythonDecodeTable[marvelWords[index]] = char;
+                // Pastikan indeks ada di marvelWords
+                if (marvelWords[index]) {
+                    pythonDecodeTable[marvelWords[index]] = char;
+                } else {
+                    console.error(`Tidak ada kata Marvel untuk indeks Base64 char: ${index}`);
+                }
             });
-            // Pastikan tidak ada karakter khusus yang perlu di-escape dalam string
-            const safeEncodedMarvelString = JSON.stringify(encodedMarvelString); // Untuk handle quotes dll.
-
-            // Ambil nama file asli (tanpa ekstensi) untuk nama file default
+            
+            // Nama file asli (tanpa ekstensi) untuk nama file default
             let baseFileName = currentFileName.split('.').slice(0, -1).join('.') || 'protected_script';
 
+            // Templating Python Script
+            // Perbaikan utama di sini: Menggunakan triple quotes Python untuk string ENCODED_MARVEL_STRING
+            // String JavaScript template literal (backticks) membungkus seluruh script Python
             const pythonScript = `
 # Ini adalah file Python yang terproteksi oleh "Protektor File Marvel Edition".
+# Dibuat pada ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })} WIB.
 # Jangan ubah kode ini kecuali Anda tahu apa yang Anda lakukan.
 
 import base64
@@ -532,20 +542,30 @@ import platform # Untuk mendapatkan info OS/Machine
 # --- KONFIGURASI PROTEKSI ---
 VALID_LICENSE_KEY = "${VALID_LICENSE_KEY}"
 EXPIRED_DATE_STR = "${EXPIRED_DATE_STR}"
-ALLOWED_DEVICE_ID = "${ALLOWED_DEVICE_ID}" # Ini diambil dari browser user saat generate
+# Penting: ALLOWED_DEVICE_ID ini diambil dari browser saat generate.
+# Deteksi di Python (get_current_device_id_python) mungkin menghasilkan string yang berbeda,
+# sehingga proteksi device ID bisa GAGAL jika tidak disesuaikan.
+# Lo bisa ubah ALLOWED_DEVICE_ID_PYTHON di bawah jika ingin spesifik di Python.
+ALLOWED_DEVICE_ID = "${ALLOWED_DEVICE_ID}" 
 
 # --- Tabel Dekode Marvel Word ke Base64 Char ---
 DECODE_TABLE = ${JSON.stringify(pythonDecodeTable, null, 4)}
 
 # --- Data Asli yang Ter-obfuscate (Marvel Words) ---
-ENCODED_MARVEL_STRING = ${safeEncodedMarvelString}
+ENCODED_MARVEL_STRING = '''${encodedMarvelString}''' # <-- ISI DARI SINI
 
 def get_current_device_id_python():
-    # Mengumpulkan informasi sistem untuk device ID
-    # Ini mungkin tidak 100% sama dengan navigator.userAgent dari JS,
-    # tetapi ini adalah cara terbaik untuk mendapatkan "Device ID" yang konsisten di Python.
-    # Lo bisa modifikasi ini kalau mau deteksi yang lebih spesifik.
-    return f"Python_OS: {platform.system()} | Machine: {platform.machine()}"
+    # Ini adalah cara sederhana mendapatkan Device ID di Python.
+    # String yang dihasilkan mungkin berbeda dari navigator.userAgent di browser.
+    # Jika ingin device ID konsisten, Anda perlu metode yang lebih kompleks.
+    # Contoh: f"Python_OS: {platform.system()} | Machine: {platform.machine()}"
+    # Atau bisa juga ambil informasi network adapter MAC address, dll.
+    # Untuk tujuan demo ini, kita akan bandingkan dengan string yang disisipkan dari JS.
+    return f"Browser: Python-Simulated-UA | Platform: {platform.system()}-{platform.machine()}"
+    # ^^^^ CATATAN: Karena ini simulasi, proteksi device ID di Python mungkin akan selalu gagal ^^^^
+    # Karena ALLOWED_DEVICE_ID akan berisi UA browser, bukan UA simulasi Python ini.
+    # Untuk testing biar lolos, bisa ganti ALLOWED_DEVICE_ID di JS menjadi:
+    # const ALLOWED_DEVICE_ID = "Browser: Python-Simulated-UA | Platform: Windows-AMD64"; (sesuaikan OS dan arsitektur lo)
 
 def check_protection_python():
     license_key = input("Masukkan License Key: ").strip()
@@ -561,9 +581,6 @@ def check_protection_python():
     if today > expired_date:
         errors.append(f"Waduh, masa berlaku license sudah expired, bre! Expired: {expired_date.strftime('%Y-%m-%d %H:%M:%S')}")
 
-    # Perhatian: Device ID dari Python ini mungkin beda dengan dari JS (browser)
-    # Sesuaikan logika ALLOWED_DEVICE_ID di JS jika ingin ini match.
-    # Untuk demo ini, kita akan bandingkan dengan ID yang sudah disisipkan dari JS.
     current_device = get_current_device_id_python()
     if current_device != ALLOWED_DEVICE_ID:
         errors.append(f"Device tidak dikenali atau tidak diizinkan. ID Device lo: '{current_device}'. Yang diizinkan: '{ALLOWED_DEVICE_ID}'.")
@@ -581,16 +598,15 @@ def check_protection_python():
 
 def decode_marvel_string(marvel_string):
     base64_chars = []
-    # Memastikan bahwa string yang dibaca sesuai format
     words = marvel_string.split(' ')
     for word in words:
-        if not word: # Skip empty strings from multiple spaces
+        if not word: 
             continue
         if word in DECODE_TABLE:
             base64_chars.append(DECODE_TABLE[word])
         else:
             print(f"Warning: Kata '{word}' tidak ditemukan di tabel dekode! Dekode mungkin tidak lengkap.")
-            return None # Menandakan kegagalan dekode
+            return None 
     
     base64_encoded_str = "".join(base64_chars)
     return base64_encoded_str
@@ -607,8 +623,6 @@ def main():
             print("Dekode gagal karena kata Marvel tidak dikenali. Kode tidak bisa dijalankan.")
             sys.exit(1)
         
-        # Perhatikan: Base64 harus punya panjang kelipatan 4. Tambahkan padding jika perlu.
-        # Python base64.b64decode() menangani padding secara otomatis.
         decoded_bytes = base64.b64decode(base64_str_from_marvel)
         original_code = decoded_bytes.decode('utf-8')
         
@@ -619,7 +633,7 @@ def main():
     except Exception as e:
         print(f"\\nWaduh, ada error fatal saat mendekode atau menjalankan kode asli: {e}")
         import traceback
-        traceback.print_exc() # Print full traceback for debugging
+        traceback.print_exc()
         sys.exit(1)
 
 if __name__ == "__main__":
@@ -724,8 +738,6 @@ if __name__ == "__main__":
 
             const { isValid, errors } = checkProtectionStatus(licenseKey, originalFileChecksum);
 
-            // Jika ada error proteksi yang bikin isValid = false, kita hentikan
-            // Tapi kalau cuma warning checksum (karena kita komen isValid=false), tetap lanjut
             if (!isValid) {
                 hideLoading();
                 let errorMessage = "Gagal memproses karena masalah proteksi:\n\n";
@@ -741,11 +753,10 @@ if __name__ == "__main__":
                 return;
             }
 
-            // Jika ada error tapi isValid tetap true (misal checksum warning), tampilkan saja warning
             if (errors.length > 0) {
                  let warningMessage = "Peringatan:\n\n";
                  errors.forEach(err => {
-                    if (err.includes("Checksum tidak cocok")) { // Hanya tampilkan checksum warning
+                    if (err.includes("Checksum tidak cocok")) {
                          warningMessage += "- " + err + "\n";
                     }
                  });
@@ -754,11 +765,10 @@ if __name__ == "__main__":
                  }
             }
 
-
             try {
                 const encoded = encodeFileContent(fileContent);
                 encodedOutput.value = encoded;
-                currentEncodedMarvelString = encoded; // Simpan untuk generate script
+                currentEncodedMarvelString = encoded; 
                 hideLoading();
                 showToast('File berhasil di-encode dan proteksi lolos!', 'success');
             } catch (error) {
@@ -824,8 +834,7 @@ if __name__ == "__main__":
 
             if (currentFileExtension !== '.py') {
                  showToast('Bro, fitur "Generate .py Script" ini hanya untuk file Python (.py) ya. File '.${currentFileExtension}' ini nanti nggak bisa dieksekusi Python.', 'warning');
-                 // Lo bisa kasih pilihan tetap generate, atau langsung return aja
-                 // return;
+                 // Lo bisa kasih pilihan tetap generate, tapi better kasih warning
             }
 
             showLoading('Menciptakan script Python...');
