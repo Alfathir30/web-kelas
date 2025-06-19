@@ -497,12 +497,12 @@
         // --- UI UPDATE FUNCTIONS ---
         function updateButtonStates() {
             const hasOriginalContent = originalContentArea.value.trim() !== '';
-            const hasEncodedOutput = encodedOutput.value.trim() !== '';
+            const hasEncodedOutput = encodedOutput.value.trim() !== ''; 
             const isLicenseKeyProvided = licenseKeyInput.value.trim() !== '';
 
             encodeButton.disabled = !(hasOriginalContent && isLicenseKeyProvided);
             copyOutputButton.disabled = !hasEncodedOutput;
-            saveOutputButton.disabled = !hasEncodedContent;
+            saveOutputButton.disabled = !hasEncodedOutput; // <<< INI YANG DIBENERIN
             generatePyScriptButton.disabled = !hasEncodedOutput;
         }
 
