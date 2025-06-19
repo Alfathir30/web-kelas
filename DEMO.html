@@ -374,8 +374,11 @@
         // Ini hanya sebagai placeholder atau nilai default di sisi generator.
         // Gunakan string placeholder unik yang akan dicari dan diganti di script Python.
         const INITIAL_ALLOWED_DEVICE_ID_PLACEHOLDER = "YOUR_DEVICE_ID_WILL_BE_SET_HERE_BY_PYTHON_SCRIPT";
+        
+        // CURRENT_DEVICE_ID dan ALLOWED_DEVICE_ID di sini hanya relevan jika ada logika proteksi di sisi browser.
+        // Untuk script ini, mereka tidak digunakan lagi untuk cek proteksi.
         const CURRENT_DEVICE_ID = `Browser: ${navigator.userAgent.substring(0, Math.min(navigator.userAgent.length, 50))}... | Platform: ${navigator.platform}`;
-        const ALLOWED_DEVICE_ID = CURRENT_DEVICE_ID; // Ini hanya untuk cek proteksi di sisi browser jika diperlukan
+        // const ALLOWED_DEVICE_ID = CURRENT_DEVICE_ID; // Ini sudah tidak dipakai untuk validasi
 
         // --- MAPPING BASE64 KE KATA MARVEL (KONSISTEN) ---
         const BASE64_CHARS = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
@@ -469,6 +472,8 @@
         }
 
         // --- PROTECTION LOGIC (Hanya untuk cek di sisi browser, tidak relevan untuk auto-registrasi di Python) ---
+        // Fungsi ini tidak lagi digunakan untuk memvalidasi Device ID, karena validasi Device ID
+        // sekarang sepenuhnya ditangani oleh script Python yang dihasilkan.
         function checkProtectionStatus(licenseKey, uploadedContentChecksum) {
             const today = new Date();
             const errors = [];
@@ -485,12 +490,6 @@
                 errors.push("Waduh, masa berlaku license sudah expired, bre! Tanggal sekarang: " + today.toLocaleDateString() + ", Expired: " + EXPIRED_DATE_OBJ.toLocaleDateString());
                 isValid = false;
             }
-            // CATATAN: Pengecekan device ID di sini (sisi browser) tidak relevan
-            // karena proteksi device ID utama terjadi di script Python setelah di-generate
-            // if (CURRENT_DEVICE_ID !== ALLOWED_DEVICE_ID) {
-            //     errors.push("Device tidak dikenali atau tidak diizinkan. ID Device lo: '" + CURRENT_DEVICE_ID + "'. Yang diizinkan: '" + ALLOWED_DEVICE_ID + "'.");
-            //     isValid = false;
-            // }
             
             if (uploadedContentChecksum && uploadedContentChecksum !== currentFileChecksum) {
                 errors.push("DETECTED: File telah dimodifikasi! Checksum tidak cocok, bre! Ini peringatan keras!");
@@ -586,10 +585,15 @@ def update_script_with_device_id(script_path, new_device_id, placeholder):
         pattern = re.compile(r"ALLOWED_DEVICE_ID = \"" + escaped_placeholder + "\"")
         
         if pattern.search(content):
-            # Ganti placeholder dengan new_device_id
-            # Pastikan new_device_id juga di-escape jika mengandung karakter khusus untuk string Python
-            safe_new_device_id = new_device_id.replace('\\\\', '\\\\\\\\').replace('"', '\\"')
-            new_content = pattern.sub(f"ALLOWED_DEVICE_ID = \"{safe_new_device_id}\"", content)
+            // *** INI ADALAH BAGIAN YANG DIBENERIN DI KODE SEBELUMNYA ***
+            // Pastikan new_device_id di-escape dengan benar untuk dimasukkan ke string Python.
+            // Ganti setiap backslash dengan dua backslash, dan setiap tanda kutip ganda dengan backslash + tanda kutip ganda.
+            const safe_new_device_id_for_python = new_device_id.replace(/\\\\/g, '\\\\\\\\').replace(/"/g, '\\"');
+            
+            // Perhatikan penggunaan tanda kutip di f-string Python: f"ALLOWED_DEVICE_ID = \"{...}\""
+            // Backslash sebelum tanda kutip dalam "{...}" di-escape agar Python memahaminya sebagai bagian dari string literal,
+            // bukan penutup f-string.
+            new_content = pattern.sub(f"ALLOWED_DEVICE_ID = \"{safe_new_device_id_for_python}\"", content);
             
             with open(script_path, 'w', encoding='utf-8') as f:
                 f.write(new_content)
