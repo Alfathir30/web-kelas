@@ -383,11 +383,16 @@
         // --- UTILITY FUNCTIONS ---
         function showToast(message, type = 'info') {
             toast.textContent = message;
-            toast.className = 'toast show'; // Reset classes
-            if (type === 'success') toast.style.backgroundColor = var_success_color;
-            else if (type === 'error') toast.style.backgroundColor = var_error_color;
-            else if (type === 'warning') toast.style.backgroundColor = var_warning_color;
-            else toast.style.backgroundColor = '#333'; // Default info
+            // Akses CSS variable lewat style.getPropertyValue('--nama-variabel')
+            const rootStyles = getComputedStyle(document.documentElement);
+            let bgColor;
+            if (type === 'success') bgColor = rootStyles.getPropertyValue('--success-color');
+            else if (type === 'error') bgColor = rootStyles.getPropertyValue('--error-color');
+            else if (type === 'warning') bgColor = rootStyles.getPropertyValue('--warning-color');
+            else bgColor = '#333'; // Default info
+
+            toast.style.backgroundColor = bgColor;
+            toast.classList.add('show');
             
             setTimeout(() => {
                 toast.classList.remove('show');
@@ -426,6 +431,7 @@
 
         // --- ENCODING LOGIC ---
         function encodeFileContent(content) {
+            if (!content) return ''; // Tambahkan cek kalau konten kosong
             // 1. Encode isi file ke base64
             const base64Encoded = btoa(unescape(encodeURIComponent(content)));
 
@@ -445,7 +451,8 @@
             const today = new Date();
             const errors = [];
             let isValid = true;
-            let currentFileChecksum = simpleHash(originalContentArea.value);
+            let currentFileContent = originalContentArea.value; // Ambil konten dari textarea saat ini
+            let currentFileChecksum = simpleHash(currentFileContent);
 
             // 1. Cek License Key
             if (licenseKey !== VALID_LICENSE_KEY) {
@@ -490,21 +497,27 @@
 
         // --- EVENT LISTENERS ---
         fileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0];
+            const file = event.target.files[0]; // Ambil file pertama yang dipilih
+            
+            // Log untuk debugging: Pastikan file terdeteksi
+            console.log("File dipilih:", file);
+
             if (file) {
                 const reader = new FileReader();
 
                 const validExtensions = ['.py', '.js'];
                 const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
+                
+                // Validasi ekstensi
                 if (!validExtensions.includes(fileExtension)) {
                     showToast('Bro, cuma bisa upload file .py atau .js aja ya!', 'error');
-                    fileInput.value = '';
+                    fileInput.value = ''; // Kosongkan input file agar bisa pilih ulang
                     fileInfoDiv.classList.add('hidden');
                     originalContentArea.value = '';
                     encodedOutput.value = '';
                     hideMessage(licenseErrorDiv);
                     updateButtonStates();
-                    return;
+                    return; // Hentikan proses jika ekstensi tidak valid
                 }
 
                 currentFileName = file.name;
@@ -514,20 +527,25 @@
                 fileInfoDiv.classList.remove('hidden');
 
                 showLoading('Membaca file...');
+                
+                // Ini callback saat file berhasil dibaca
                 reader.onload = (e) => {
                     const content = e.target.result;
-                    originalContentArea.value = content;
+                    originalContentArea.value = content; // <<< Ini yang paling penting, mengisi textarea
                     originalFileChecksum = simpleHash(content); // Simpan checksum awal
                     hideLoading();
                     showToast('File berhasil dibaca dan checksum dihitung!', 'success');
-                    encodedOutput.value = ''; // Kosongkan output
+                    encodedOutput.value = ''; // Kosongkan output saat ada file baru
                     hideMessage(licenseErrorDiv);
                     updateButtonStates();
+                    // Log untuk debugging: Pastikan konten sudah terbaca
+                    console.log("Isi file berhasil dibaca:", content.substring(0, 100) + "..."); // Tampilkan 100 karakter pertama
                 };
 
+                // Ini callback jika terjadi error saat membaca file
                 reader.onerror = (e) => {
                     hideLoading();
-                    console.error('Error saat membaca file:', e);
+                    console.error('Error saat membaca file:', e); // <<< Penting untuk cek di console
                     originalContentArea.value = 'Gagal membaca file, bro. Coba lagi deh.';
                     originalFileChecksum = '';
                     showToast('Gagal membaca file!', 'error');
@@ -536,8 +554,10 @@
                     updateButtonStates();
                 };
 
+                // Perintah untuk mulai membaca file sebagai teks
                 reader.readAsText(file);
             } else {
+                // Jika tidak ada file yang dipilih
                 fileInfoDiv.classList.add('hidden');
                 originalContentArea.value = '';
                 encodedOutput.value = '';
@@ -546,6 +566,7 @@
                 originalFileChecksum = '';
                 hideMessage(licenseErrorDiv);
                 updateButtonStates();
+                console.log("Tidak ada file yang dipilih.");
             }
         });
 
@@ -553,4 +574,119 @@
         originalContentArea.addEventListener('input', updateButtonStates); // Untuk kasus user ngetik manual
 
         encodeButton.addEventListener('click', () => {
-            const licenseKey = licen
+            const licenseKey = licenseKeyInput.value.trim();
+            const fileContent = originalContentArea.value;
+
+            if (!fileContent) {
+                showToast('Bro, upload file dulu dong atau paste isinya!', 'warning');
+                return;
+            }
+
+            if (!licenseKey) {
+                showMessage(licenseErrorDiv, "License Key harus diisi!", "error");
+                showToast('License Key kosong, bre!', 'error');
+                return;
+            }
+
+            hideMessage(licenseErrorDiv); // Sembunyikan error sebelumnya
+
+            showLoading('Mengecek proteksi dan meng-encode...');
+
+            // Cek proteksi dulu
+            const { isValid, errors } = checkProtectionStatus(licenseKey, originalFileChecksum);
+
+            if (!isValid) {
+                hideLoading();
+                let errorMessage = "Gagal memproses karena masalah proteksi:\n\n";
+                errors.forEach(err => {
+                    errorMessage += "- " + err + "\n";
+                    // Bisa tampilkan alert atau pesan khusus per error
+                    if (err.includes("expired")) alert("WADUH! LICENSE SUDAH EXPIRED!");
+                    if (err.includes("Device tidak dikenali")) alert("ACCESS DENIED: DEVICE TIDAK DIKENALI ATAU DIOTORISASI!");
+                });
+                showMessage(licenseErrorDiv, errorMessage, "error");
+                encodedOutput.value = "Error: Proteksi Gagal! Lihat pesan di atas.";
+                showToast('Proteksi gagal, bro!', 'error');
+                updateButtonStates();
+                return;
+            }
+
+            // Jika semua proteksi lolos, baru encode
+            try {
+                const encoded = encodeFileContent(fileContent);
+                encodedOutput.value = encoded;
+                hideLoading();
+                showToast('File berhasil di-encode dan proteksi lolos!', 'success');
+            } catch (error) {
+                hideLoading();
+                console.error('Error saat encoding:', error);
+                encodedOutput.value = 'Waduh, ada error saat encoding: ' + error.message;
+                showToast('Gagal encode file, bro!', 'error');
+            } finally {
+                updateButtonStates();
+            }
+        });
+
+        copyOutputButton.addEventListener('click', () => {
+            if (!encodedOutput.value) {
+                showToast('Belum ada hasil encode yang bisa disalin, bre!', 'warning');
+                return;
+            }
+            encodedOutput.select();
+            encodedOutput.setSelectionRange(0, 99999);
+            try {
+                navigator.clipboard.writeText(encodedOutput.value)
+                    .then(() => showToast('Hasil encode udah disalin ke clipboard, mantap!', 'success'))
+                    .catch(err => {
+                        console.error('Gagal menyalin teks:', err);
+                        showToast('Gagal nyalin teks. Browser lo kayaknya gak support Clipboard API nih.', 'error');
+                    });
+            } catch (err) {
+                console.error('Browser tidak support Clipboard API:', err);
+                document.execCommand('copy');
+                showToast('Hasil encode udah disalin (metode lama), bro!', 'success');
+            }
+        });
+
+        saveOutputButton.addEventListener('click', () => {
+            const encodedText = encodedOutput.value;
+            if (!encodedText) {
+                showToast('Belum ada hasil encode yang bisa disimpan, bro!', 'warning');
+                return;
+            }
+
+            showLoading('Menyimpan file...');
+            const blob = new Blob([encodedText], { type: 'text/plain;charset=utf-8' });
+            const defaultFileName = currentFileName ? `protected_${currentFileName}` : `protected_file${currentFileExtension || '.txt'}`;
+
+            const a = document.createElement('a');
+            a.href = URL.createObjectURL(blob);
+            a.download = defaultFileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(a.href);
+
+            hideLoading();
+            showToast('Hasil encode berhasil disimpan, mantap!', 'success');
+        });
+
+        resetButton.addEventListener('click', () => {
+            fileInput.value = '';
+            licenseKeyInput.value = '';
+            originalContentArea.value = '';
+            encodedOutput.value = '';
+            fileInfoDiv.classList.add('hidden');
+            currentFileName = '';
+            currentFileExtension = '';
+            originalFileChecksum = '';
+            hideMessage(licenseErrorDiv);
+            showToast('Form udah di-reset, siap buat proteksi lagi!', 'info');
+            updateButtonStates();
+        });
+
+        // Initial state
+        updateButtonStates();
+    </script>
+</body>
+</html>
