@@ -590,12 +590,14 @@ def update_script_with_device_id(script_path, new_device_id, placeholder):
             # Ini adalah bagian yang membetulkan error sebelumnya (escaping quote di string Python).
             # Kita siapkan new_device_id agar aman disisipkan ke dalam string Python.
             # Ganti setiap backslash dengan dua backslash, dan setiap tanda kutip ganda dengan backslash + tanda kutip ganda.
-            safe_new_device_id_for_python = new_device_id.replace('\\\\', '\\\\\\\\').replace('"', '\\"');
+            # Menggunakan regex global replacement untuk backslash dan double quote
+            const safe_new_device_id_for_python = new_device_id.replace(/\\/g, '\\\\\\\\').replace(/"/g, '\\"');
             
-            # Perhatikan penggunaan tanda kutip di f-string Python: f"ALLOWED_DEVICE_ID = \"{...}\""
-            # Backslash sebelum tanda kutip dalam "{...}" di-escape agar Python memahaminya sebagai bagian dari string literal,
-            # bukan penutup f-string.
-            new_content = pattern.sub(f"ALLOWED_DEVICE_ID = \"{safe_new_device_id_for_python}\"", content);
+            # Ini baris inti perbaikannya:
+            # Kita ingin menghasilkan string Python seperti ini: ALLOWED_DEVICE_ID = "ini_id_device_yang_di_escape"
+            # Jadi, di dalam JS template literal, kita pakai kutip ganda untuk string Python-nya,
+            # dan escape kutip ganda di dalamnya dengan backslash ganda.
+            new_content = pattern.sub(\`ALLOWED_DEVICE_ID = "\\\${safe_new_device_id_for_python}\\"`, content);
             
             with open(script_path, 'w', encoding='utf-8') as f:
                 f.write(new_content)
