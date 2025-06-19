@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protektor File Marvel Edition (Client-Side) - v2.7 TANPA DEBUG FILE</title>
+    <title>Protektor File Marvel Edition (Client-Side) - v2.9 Auto Ext</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -72,7 +72,7 @@
             color: var(--text-color);
         }
 
-        input[type="file"], input[type="text"] {
+        input[type="file"], input[type="text"], input[type="date"], input[type="number"], select {
             display: block;
             width: calc(100% - 20px);
             padding: 10px;
@@ -99,10 +99,20 @@
             background-color: var(--button-hover);
         }
 
-        input[type="file"]:focus, input[type="text"]:focus {
+        input[type="file"]:focus, input[type="text"]:focus, input[type="date"]:focus, input[type="number"]:focus, select:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.5);
+        }
+
+        select {
+            appearance: none; /* Remove default arrow */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23e0e0e0" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px center;
+            padding-right: 30px; /* Make space for the arrow */
         }
 
         textarea {
@@ -273,6 +283,18 @@
             opacity: 1;
         }
 
+        .expiration-options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .expiration-options div {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
         /* Responsif untuk HP */
         @media (max-width: 600px) {
             body {
@@ -297,18 +319,51 @@
             .button-group {
                 flex-direction: column;
             }
+            .expiration-options div {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            .expiration-options input, .expiration-options select {
+                width: 100%;
+            }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Protektor File Marvel Edition v2.7 (TANPA DEBUG FILE)</h1>
+        <h1>Protektor File Marvel Edition v2.9 (Auto Ext)</h1>
 
         <div class="form-group">
             <label for="licenseKeyInput">License Key (akan menjadi kunci proteksi):</label>
             <input type="text" id="licenseKeyInput" placeholder="Masukkan license key yang Anda inginkan (misal: MY-CUSTOM-KEY)">
             <div id="licenseError" class="message error hidden"></div>
+        </div>
+
+        <div class="form-group">
+            <label>Pengaturan Tanggal Kedaluwarsa:</label>
+            <div class="expiration-options">
+                <div>
+                    <input type="radio" id="expireSpecificDate" name="expireType" value="specific" checked>
+                    <label for="expireSpecificDate">Tanggal Spesifik:</label>
+                    <input type="date" id="specificDateInput">
+                </div>
+                <div>
+                    <input type="radio" id="expireRelative" name="expireType" value="relative">
+                    <label for="expireRelative">Dari Sekarang:</label>
+                    <input type="number" id="relativeDurationInput" value="1" min="1" style="width: 80px;">
+                    <select id="relativeUnitSelect">
+                        <option value="hours">Jam</option>
+                        <option value="days" selected>Hari</option>
+                        <option value="months">Bulan</option>
+                    </select>
+                </div>
+                <div>
+                    <input type="radio" id="expireNever" name="expireType" value="never">
+                    <label for="expireNever">Tidak Akan Kedaluwarsa (Selamanya)</label>
+                </div>
+            </div>
+            <div id="expireDateDisplay" class="message success hidden"></div>
         </div>
 
         <div class="form-group">
@@ -334,10 +389,9 @@
             <button class="btn" id="encodeButton" disabled>Encode File & Proteksi</button>
             <button class="btn" id="copyOutputButton" disabled>Salin Hasil Encode</button>
             <button class="btn" id="saveOutputButton" disabled>Simpan Hasil Encode (Teks)</button>
-            <button class="btn" id="generatePyScriptButton" disabled>Generate .py Script (Self-Decode)</button>
-            <button class="btn btn-reset" id="resetButton">Reset</button>
+            <button class="btn" id="generateScriptButton" disabled>Generate Script (Self-Decode)</button> <button class="btn btn-reset" id="resetButton">Reset</button>
         </div>
-    </div>
+        <div id="jsWarningMessage" class="message warning hidden"></div> </div>
 
     <div id="loadingOverlay" class="loading-overlay hidden">
         <div class="loader"></div>
@@ -358,16 +412,23 @@
         const encodeButton = document.getElementById('encodeButton');
         const copyOutputButton = document.getElementById('copyOutputButton');
         const saveOutputButton = document.getElementById('saveOutputButton');
-        const generatePyScriptButton = document.getElementById('generatePyScriptButton');
+        const generateScriptButton = document.getElementById('generateScriptButton'); // Diperbarui
         const resetButton = document.getElementById('resetButton');
         const loadingOverlay = document.getElementById('loadingOverlay');
         const toast = document.getElementById('toast');
         const fileContentDisplay = document.getElementById('fileContentDisplay');
+        const jsWarningMessage = document.getElementById('jsWarningMessage'); // Elemen warning baru
+
+        // Expire Date Elements
+        const expireSpecificDateRadio = document.getElementById('expireSpecificDate');
+        const specificDateInput = document.getElementById('specificDateInput');
+        const expireRelativeRadio = document.getElementById('expireRelative');
+        const relativeDurationInput = document.getElementById('relativeDurationInput');
+        const relativeUnitSelect = document.getElementById('relativeUnitSelect');
+        const expireNeverRadio = document.getElementById('expireNever');
+        const expireDateDisplay = document.getElementById('expireDateDisplay');
 
         // --- KONFIGURASI PROTEKSI ---
-        const EXPIRED_DATE_OBJ = new Date("2025-12-31T23:59:59"); 
-        const EXPIRED_DATE_STR = "2025-12-31T23:59:59"; 
-
         const INITIAL_ALLOWED_DEVICE_ID_PLACEHOLDER = "YOUR_DEVICE_ID_WILL_BE_SET_HERE_BY_PYTHON_SCRIPT";
         
         // --- MAPPING BASE64 KE KATA MARVEL (KONSISTEN) ---
@@ -391,13 +452,10 @@
         }
 
         // --- Seed untuk Random Shuffling (PENTING: harus sama di JS dan Python) ---
-        // Gunakan seed berbasis waktu untuk sedikit variasi setiap kali generate,
-        // TAPI PASTIKAN seednya tetap konsisten untuk satu proses enkripsi/dekripsi.
-        // Untuk demo ini, kita pake nilai statis biar gampang debug.
         const SHUFFLE_SEED = 1337; 
 
         let currentFileName = '';
-        let currentFileExtension = '';
+        let currentFileExtension = ''; // Misal: '.py' atau '.js'
         let originalFileChecksum = '';
         let currentEncodedMarvelString = ''; // Menyimpan hasil encode Marvel (setelah Zlib)
 
@@ -450,17 +508,12 @@
 
         // --- ZLIB Compression/Decompression (menggunakan Pako.js) ---
         function compressContent(content) {
-            // Encode UTF-8 string to Uint8Array
             const binaryString = new TextEncoder().encode(content);
-            // Compress using pako.deflate (zlib format)
-            const compressed = pako.deflate(binaryString, { level: 9 }); // level 9 untuk kompresi maksimal
-            // Convert Uint8Array to Base64 string
+            const compressed = pako.deflate(binaryString, { level: 9 });
             return btoa(String.fromCharCode.apply(null, compressed));
         }
         
         // --- RANDOM SHUFFLE FUNCTION (untuk memastikan konsistensi seed antara JS dan Python) ---
-        // Implementasi LCG (Linear Congruential Generator) sederhana untuk random number generator
-        // agar konsisten dengan `random.seed` di Python.
         let _currentSeed = SHUFFLE_SEED;
         function getNextPseudoRandom() {
             _currentSeed = (_currentSeed * 9301 + 49297) % 233280;
@@ -468,16 +521,12 @@
         }
 
         function seededShuffle(array) {
-            _currentSeed = SHUFFLE_SEED; // Reset seed setiap kali mau shuffle
+            _currentSeed = SHUFFLE_SEED; 
             let currentIndex = array.length, randomIndex;
 
-            // While there remain elements to shuffle.
             while (currentIndex !== 0) {
-                // Pick a remaining element.
                 randomIndex = Math.floor(getNextPseudoRandom() * currentIndex);
                 currentIndex--;
-
-                // And swap it with the current element.
                 [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
             }
             return array;
@@ -487,13 +536,9 @@
         function encodeFileContent(content) {
             if (!content) return ''; 
 
-            // Layer 1: Base64 encode
             const base64Encoded = btoa(unescape(encodeURIComponent(content)));
-
-            // Layer 2: Zlib compress (pake pako.js)
             const zlibCompressedBase64 = compressContent(base64Encoded);
 
-            // Layer 3: Marvel Words encode
             let encodedWords = [];
             for (let i = 0; i < zlibCompressedBase64.length; i++) {
                 const char = zlibCompressedBase64[i];
@@ -508,8 +553,55 @@
             return encodedWords.join(' ');
         }
 
+        // --- FUNGSI BARU: HITUNG TANGGAL KEDALUWARSA ---
+        function calculateExpiryDate() {
+            let expiryDate = null;
+            if (expireSpecificDateRadio.checked) {
+                if (specificDateInput.value) {
+                    expiryDate = new Date(specificDateInput.value);
+                    // Set time to end of day for specific date, for consistency
+                    expiryDate.setHours(23, 59, 59, 999); 
+                }
+            } else if (expireRelativeRadio.checked) {
+                const duration = parseInt(relativeDurationInput.value);
+                const unit = relativeUnitSelect.value;
+                if (!isNaN(duration) && duration > 0) {
+                    expiryDate = new Date(); // Current date/time
+                    if (unit === 'hours') {
+                        expiryDate.setHours(expiryDate.getHours() + duration);
+                    } else if (unit === 'days') {
+                        expiryDate.setDate(expiryDate.getDate() + duration);
+                        expiryDate.setHours(23, 59, 59, 999); // Set to end of day
+                    } else if (unit === 'months') {
+                        expiryDate.setMonth(expiryDate.getMonth() + duration);
+                        expiryDate.setHours(23, 59, 59, 999); // Set to end of day
+                    }
+                }
+            } else if (expireNeverRadio.checked) {
+                // No expiration, send a special string or a very distant future date
+                expiryDate = new Date("9999-12-31T23:59:59"); // Very distant future
+            }
+
+            if (expiryDate) {
+                // Format to ISO string for consistency with Python's fromisoformat
+                return expiryDate.toISOString().slice(0, 19); // YYYY-MM-DDTHH:mm:ss
+            }
+            return null; // Should not happen if a valid option is selected
+        }
+
+        function updateExpiryDisplay() {
+            const calculatedDate = calculateExpiryDate();
+            if (expireNeverRadio.checked) {
+                showMessage(expireDateDisplay, "Mode: Tidak akan kedaluwarsa (Selamanya)", "success");
+            } else if (calculatedDate) {
+                showMessage(expireDateDisplay, `Tanggal kedaluwarsa yang dihitung: ${new Date(calculatedDate).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'medium' })} WIB`, "success");
+            } else {
+                hideMessage(expireDateDisplay);
+            }
+        }
+
         // --- PROTECTION LOGIC (Hanya untuk cek di sisi browser, tidak relevan untuk auto-registrasi di Python) ---
-        function checkProtectionStatus(licenseKey, uploadedContentChecksum) {
+        function checkProtectionStatus(licenseKey, uploadedContentChecksum, actualExpireDateStr) {
             const today = new Date();
             const errors = [];
             let isValid = true;
@@ -521,9 +613,15 @@
                 isValid = false;
             }
 
-            if (today > EXPIRED_DATE_OBJ) { 
-                errors.push("Waduh, masa berlaku license sudah expired, bre! Tanggal sekarang: " + today.toLocaleDateString() + ", Expired: " + EXPIRED_DATE_OBJ.toLocaleDateString());
-                isValid = false;
+            // Check expiration only if not "never expire"
+            if (expireNeverRadio.checked) {
+                // No date check in browser if set to never expire
+            } else {
+                const EXPIRED_DATE_OBJ_CHECK = new Date(actualExpireDateStr);
+                if (today > EXPIRED_DATE_OBJ_CHECK) { 
+                    errors.push("Waduh, masa berlaku license sudah expired, bre! Tanggal sekarang: " + today.toLocaleDateString() + ", Expired: " + EXPIRED_DATE_OBJ_CHECK.toLocaleDateString());
+                    isValid = false;
+                }
             }
             
             if (uploadedContentChecksum && uploadedContentChecksum !== currentFileChecksum) {
@@ -543,45 +641,53 @@
             encodeButton.disabled = !(hasOriginalContent && isLicenseKeyProvided);
             copyOutputButton.disabled = !hasEncodedOutput;
             saveOutputButton.disabled = !hasEncodedOutput;
-            generatePyScriptButton.disabled = !hasEncodedOutput;
+            generateScriptButton.disabled = !hasEncodedOutput; // Diperbarui
+
+            // Enable/disable specific date input based on radio button
+            specificDateInput.disabled = !expireSpecificDateRadio.checked;
+            relativeDurationInput.disabled = !expireRelativeRadio.checked;
+            relativeUnitSelect.disabled = !expireRelativeRadio.checked;
+            
+            updateExpiryDisplay();
+
+            // Show/hide JS warning
+            if (currentFileExtension === '.js' && hasEncodedOutput) {
+                showMessage(jsWarningMessage, "Perhatian: File ini awalnya JavaScript (.js). Script yang dihasilkan adalah Python dan harus dijalankan dengan interpreter Python (misal: `python nama_file.js`).", "warning");
+            } else {
+                hideMessage(jsWarningMessage);
+            }
         }
 
         // --- FUNGSI UTAMA: GENERATE PYTHON SCRIPT UNTUK SELF-DECODE DAN SELF-REGISTER DEVICE ID ---
-        function generatePythonScript(encodedMarvelString, originalExtension, customLicenseKey) {
-            // Kita akan shuffle pasangan (base64_char, marvel_word)
+        function generatePythonScript(encodedMarvelString, originalExtension, customLicenseKey, finalExpireDateStr) {
             let charWordPairs = [];
             for (let i = 0; i < BASE64_CHARS_ORIGINAL.length; i++) {
                 charWordPairs.push([BASE64_CHARS_ORIGINAL[i], marvelWordsOriginal[i]]);
             }
 
-            // Lakukan shuffling pada pasangan ini dengan seededShuffle
-            const shuffledPairs = seededShuffle([...charWordPairs]); // Buat copy agar original tidak berubah
-
-            // Pisahkan kembali menjadi dua list terpisah
+            const shuffledPairs = seededShuffle([...charWordPairs]); 
             const shuffledBase64Chars = shuffledPairs.map(pair => pair[0]);
             const shuffledMarvelWords = shuffledPairs.map(pair => pair[1]);
 
             console.log("DEBUG - Shuffled Base64 Chars (dikirim ke Python):", shuffledBase64Chars);
             console.log("DEBUG - Shuffled Marvel Words (dikirim ke Python):", shuffledMarvelWords);
 
-            // Format array Python dengan benar: setiap string diapit kutip tunggal
             const pythonShuffledBase64Chars = `[${shuffledBase64Chars.map(s => `'${s}'`).join(', ')}]`;
             const pythonShuffledMarvelWords = `[${shuffledMarvelWords.map(s => `'${s}'`).join(', ')}]`;
             
-            // Konversi string Marvel panjang menjadi array per kata untuk disisipkan ke Python.
             const encodedWordsArray = encodedMarvelString.split(' ');
             const pythonEncodedMarvelWordList = `[${encodedWordsArray.map(word => `'${word}'`).join(', ')}]`;
 
             const deviceIdPlaceholder = INITIAL_ALLOWED_DEVICE_ID_PLACEHOLDER;
 
-            // Perbaikan TERAKHIR: Menggunakan string concatenation (' + '\n') untuk setiap baris
-            // agar JavaScript tidak salah menginterpretasikan template literal yang kompleks.
-            // Ini adalah metode paling aman untuk embedded multiline string.
-            // PERHATIKAN: Perbaikan pada 'search_pattern_str' dan 'new_content' agar tanda kutip ganda di dalam
-            // string Python ter-escape dengan benar saat di-generate oleh JavaScript.
+            // Jika "never expire", kirim string khusus ke Python
+            const expiredDateConfigPython = expireNeverRadio.checked ?
+                                            `EXPIRED_DATE_STR = "NEVER_EXPIRE"` :
+                                            `EXPIRED_DATE_STR = "${finalExpireDateStr}"`;
+
             const pythonScript = 
                 '"""\n' +
-                'Ini adalah file Python yang terproteksi oleh "Protektor File Marvel Edition v2.7".\n' +
+                'Ini adalah file Python yang terproteksi oleh "Protektor File Marvel Edition v2.9".\n' +
                 `Dibuat pada ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })} WIB.\n` +
                 'Jangan ubah kode ini kecuali Anda tahu apa yang Anda lakukan.\n' +
                 '"""\n' +
@@ -599,12 +705,10 @@
                 '\n' +
                 '# --- KONFIGURASI PROTEKSI ---\n' +
                 `VALID_LICENSE_KEY = "${customLicenseKey}" \n` +
-                `EXPIRED_DATE_STR = "${EXPIRED_DATE_STR}"\n` +
+                `${expiredDateConfigPython}\n` + // Menggunakan string yang sudah dikonfigurasi
                 `ALLOWED_DEVICE_ID = "${deviceIdPlaceholder}" \n` +
                 '\n' +
                 '# --- Data untuk Merekonstruksi Tabel Dekode ---\n' +
-                '# Ini adalah karakter Base64 dan kata Marvel yang sudah diacak urutannya.\n' +
-                '# Mereka akan disatukan kembali menggunakan seed yang sama.\n' +
                 `_SHUFFLED_BASE64_CHARS = ${pythonShuffledBase64Chars}\n` +
                 `_SHUFFLED_MARVEL_WORDS = ${pythonShuffledMarvelWords}\n` +
                 `_SHUFFLE_SEED = ${SHUFFLE_SEED} \n` +
@@ -674,15 +778,20 @@
                 '            return False \n' +
                 '    \n' +
                 '    today = datetime.datetime.now()\n' +
-                '    expired_date = datetime.datetime.fromisoformat(EXPIRED_DATE_STR)\n' +
                 '\n' +
                 '    errors = []\n' +
                 '\n' +
                 '    if user_license_key != VALID_LICENSE_KEY: \n' +
                 '        errors.append("License Key salah, Bro! Cek lagi ya.")\n' +
                 '\n' +
-                '    if today > expired_date:\n' +
-                '        errors.append(f"Waduh, masa berlaku license sudah expired, bre! Expired: {expired_date.strftime(\'%Y-%m-%d %H:%M:%S\')}")\n' +
+                '    # Check expiration only if not "NEVER_EXPIRE"\n' +
+                '    if EXPIRED_DATE_STR != "NEVER_EXPIRE":\n' +
+                '        try:\n' +
+                '            expired_date = datetime.datetime.fromisoformat(EXPIRED_DATE_STR)\n' +
+                '            if today > expired_date:\n' +
+                '                errors.append(f"Waduh, masa berlaku license sudah expired, bre! Expired: {expired_date.strftime(\'%Y-%m-%d %H:%M:%S\')}")\n' +
+                '        except ValueError:\n' +
+                '            errors.append("Format tanggal kedaluwarsa tidak valid. Hubungi penyedia lisensi.")\n' +
                 '\n' +
                 '    if current_device != ALLOWED_DEVICE_ID:\n' +
                 '        errors.append(f"Device tidak dikenali atau tidak diizinkan.\\nID Device Anda: \'{current_device}\'.\\nYang Diizinkan: \'{ALLOWED_DEVICE_ID}\'.")\n' +
@@ -697,16 +806,7 @@
                 '\n' +
                 'def reconstruct_decode_table():\n' +
                 '    """Merekonstruksi DECODE_TABLE dari data yang diacak."""\n' +
-                '    random.seed(_SHUFFLE_SEED) # Menggunakan seed yang sama untuk konsistensi\n' +
-                '    \n' +
-                '    # Kita perlu membuat salinan lokal dari list yang di-shuffle\n' +
-                '    # agar `random.shuffle` bisa mengocoknya secara in-place.\n' +
-                '    # Namun, karena _SHUFFLED_BASE64_CHARS dan _SHUFFLED_MARVEL_WORDS\n' +
-                '    # sudah datang dalam urutan yang terpasang dari JS,\n' +
-                '    # kita cukup membuat dictionary dari pasangan tersebut.\n' +
-                '    # Konsep \'shuffling\' di sini adalah bahwa _SHUFFLED_BASE64_CHARS dan _SHUFFLED_MARVEL_WORDS\n' +
-                '    # sudah datang dalam urutan acak yang sinkron, jadi kita tidak perlu mengocok lagi di sini,\n' +
-                '    # cukup membuat mapping-nya.\n' +
+                '    random.seed(_SHUFFLE_SEED) \n' +
                 '    \n' +
                 '    decode_table = {word: char for char, word in zip(_SHUFFLED_BASE64_CHARS, _SHUFFLED_MARVEL_WORDS)}\n' +
                 '    \n' +
@@ -718,7 +818,7 @@
                 '    for word in marvel_word_list:\n' +
                 '        if not word: \n' +
                 '            continue\n' +
-                '        if word in decode_table_ref: # Gunakan tabel yang sudah direkonstruksi\n' +
+                '        if word in decode_table_ref: \n' +
                 '            base64_chars.append(decode_table_ref[word])\n' +
                 '        else:\n' +
                 '            print(f"Warning: Kata \'{word}\' tidak ditemukan di tabel dekode! Kode mungkin corrupt atau tabel tidak lengkap.")\n' +
@@ -762,7 +862,6 @@
                 '    print("\\nProteksi LOLOS! Mencoba mendekode dan menjalankan kode asli...")\n' +
                 '\n' +
                 '    try:\n' +
-                '        # Rekonstruksi DECODE_TABLE sebelum digunakan\n' +
                 '        DECODE_TABLE_RECONSTRUCTED = reconstruct_decode_table()\n' +
                 '        if DECODE_TABLE_RECONSTRUCTED is None:\n' +
                 '            print("Gagal merekonstruksi tabel dekode. Kode tidak bisa dijalankan.")\n' +
@@ -772,22 +871,16 @@
                 '        if original_code is None:\n' + 
                 '            print("Dekode gagal. Kode tidak bisa dijalankan.")\n' +
                 '            sys.exit(1)\n' +
-                '        \n' +
-                // DEBUG_DECODED_ORIGINAL_CODE.py sudah dihapus dari sini.
                 '\n' +
                 '        print("\\n--- MENJALANKAN KODE ASLI ---")\n' +
                 '        \n' +
                 '        try:\n' +
-                '            # Tambahkan direktori script ke sys.path agar impor relatif di kode asli berfungsi\n' +
                 '            script_dir = os.path.dirname(current_script_path)\n' +
                 '            if script_dir not in sys.path:\n' +
                 '                sys.path.insert(0, script_dir)\n' +
                 '\n' +
-                '            # Untuk .py files, kita bisa langsung exec.\n' +
-                '            # Untuk .js files, exec tidak akan berfungsi langsung di Python.\n' +
-                '            # Ini hanya contoh, exec() harus sesuai dengan tipe file asli.\n' +
-                '            # Asumsi: Ini untuk file Python\n' +
-                '            exec(original_code, {\'__name__\': \'__main__\'}) # Set __name__ agar exec berjalan seperti main script\n' +
+                '            # Executing the decoded code\n' +
+                '            exec(original_code, {\'__name__\': \'__main__\'})\n' +
                 '        except Exception as inner_e:\n' +
                 '            print(f"\\n!!!! DETECTED: ERROR SAAT MENJALANKAN KODE ASLI !!!!")\n' +
                 '            print(f"Detail Error: {inner_e}")\n' +
@@ -827,6 +920,7 @@
                     originalContentArea.value = '';
                     encodedOutput.value = '';
                     hideMessage(licenseErrorDiv);
+                    hideMessage(jsWarningMessage); // Sembunyikan warning jika file tidak valid
                     updateButtonStates();
                     return; 
                 }
@@ -848,7 +942,7 @@
                     encodedOutput.value = ''; 
                     currentEncodedMarvelString = ''; 
                     hideMessage(licenseErrorDiv);
-                    updateButtonStates();
+                    updateButtonStates(); // Akan menampilkan atau menyembunyikan warning JS
                     console.log("Isi file berhasil dibaca:", content.substring(0, Math.min(content.length, 100)) + "...");
                 };
 
@@ -861,6 +955,7 @@
                     encodedOutput.value = '';
                     currentEncodedMarvelString = ''; 
                     hideMessage(licenseErrorDiv);
+                    hideMessage(jsWarningMessage); // Sembunyikan warning jika error
                     updateButtonStates();
                 };
 
@@ -874,6 +969,7 @@
                 originalFileChecksum = '';
                 currentEncodedMarvelString = ''; 
                 hideMessage(licenseErrorDiv);
+                hideMessage(jsWarningMessage); // Sembunyikan warning jika tidak ada file
                 updateButtonStates();
                 console.log("Tidak ada file yang dipilih.");
             }
@@ -881,8 +977,17 @@
 
         licenseKeyInput.addEventListener('input', updateButtonStates);
         originalContentArea.addEventListener('input', updateButtonStates); 
+        
+        // Event listeners for expiration options
+        expireSpecificDateRadio.addEventListener('change', updateButtonStates);
+        specificDateInput.addEventListener('change', updateButtonStates);
+        expireRelativeRadio.addEventListener('change', updateButtonStates);
+        relativeDurationInput.addEventListener('input', updateButtonStates);
+        relativeUnitSelect.addEventListener('change', updateButtonStates);
+        expireNeverRadio.addEventListener('change', updateButtonStates);
 
-        encodeButton.addEventListener('click', async () => { // Tambahkan async di sini
+
+        encodeButton.addEventListener('click', async () => { 
             const licenseKey = licenseKeyInput.value.trim(); 
             const fileContent = originalContentArea.value;
 
@@ -897,11 +1002,19 @@
                 return;
             }
 
+            // Hitung tanggal kedaluwarsa yang akan digunakan
+            const calculatedExpireDateStr = calculateExpiryDate();
+            if (!calculatedExpireDateStr && !expireNeverRadio.checked) {
+                showMessage(licenseErrorDiv, "Pilih atau masukkan tanggal kedaluwarsa yang valid!", "error");
+                showToast('Tanggal kedaluwarsa belum diatur dengan benar!', 'error');
+                return;
+            }
+
             hideMessage(licenseErrorDiv); 
 
             showLoading('Mengecek proteksi dan meng-encode...');
 
-            const { isValid, errors } = checkProtectionStatus(licenseKey, originalFileChecksum);
+            const { isValid, errors } = checkProtectionStatus(licenseKey, originalFileChecksum, calculatedExpireDateStr);
 
             if (!isValid) {
                 hideLoading();
@@ -930,7 +1043,6 @@
             }
 
             try {
-                // Perubahan di sini: Panggil encodeFileContent
                 const encoded = encodeFileContent(fileContent);
                 encodedOutput.value = encoded;
                 currentEncodedMarvelString = encoded; 
@@ -990,34 +1102,42 @@
             showToast('Hasil encode teks berhasil disimpan!', 'success');
         });
 
-        generatePyScriptButton.addEventListener('click', () => {
+        // Diperbarui: generateScriptButton
+        generateScriptButton.addEventListener('click', () => {
             if (!currentEncodedMarvelString) {
-                showToast('Encode dulu filenya, bro, baru bisa generate script Python!', 'warning');
+                showToast('Encode dulu filenya, bro, baru bisa generate script!', 'warning');
                 return;
             }
 
-            if (currentFileExtension !== '.py') {
-                 showToast(`Bro, fitur "Generate .py Script" ini hanya untuk file Python (.py) ya. Kalau '${currentFileExtension}' nanti pas dijalanin Pythonnya agak aneh hasilnya.`, 'warning');
+            const customLicenseKey = licenseKeyInput.value.trim(); 
+            const finalExpireDateStr = calculateExpiryDate();
+
+            if (!finalExpireDateStr && !expireNeverRadio.checked) {
+                showToast('Pilih atau masukkan tanggal kedaluwarsa yang valid sebelum generate script!', 'error');
+                return;
             }
 
-            const customLicenseKey = licenseKeyInput.value.trim(); 
-            showLoading('Menciptakan script Python...');
+            showLoading('Menciptakan script...');
             
-            const pythonScriptContent = generatePythonScript(currentEncodedMarvelString, currentFileExtension, customLicenseKey);
+            const pythonScriptContent = generatePythonScript(currentEncodedMarvelString, currentFileExtension, customLicenseKey, finalExpireDateStr);
             
             const blob = new Blob([pythonScriptContent], { type: 'text/plain;charset=utf-8' });
-            const defaultFileName = currentFileName ? `protected_${currentFileName}` : `protected_script_default.py`;
+            
+            // Tentukan nama file yang sesuai dengan ekstensi asli
+            const outputFileName = currentFileName ? 
+                                    `protected_${currentFileName}` : 
+                                    `protected_script_default${currentFileExtension || '.py'}`; // Fallback ke .py jika tidak ada ekstensi
 
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
-            a.download = defaultFileName;
+            a.download = outputFileName;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(a.href);
 
             hideLoading();
-            showToast('Script Python terproteksi berhasil di-generate dan diunduh!', 'success');
+            showToast(`Script terproteksi berhasil di-generate dan diunduh sebagai '${outputFileName}'!`, 'success');
         });
 
 
@@ -1032,12 +1152,23 @@
             originalFileChecksum = '';
             currentEncodedMarvelString = ''; 
             hideMessage(licenseErrorDiv);
+            hideMessage(jsWarningMessage); // Sembunyikan warning saat reset
+            specificDateInput.value = ''; // Clear specific date
+            relativeDurationInput.value = '1';
+            relativeUnitSelect.value = 'days';
+            expireSpecificDateRadio.checked = true; // Reset to specific date default
             showToast('Form udah di-reset, siap buat proteksi lagi!', 'info');
             updateButtonStates();
         });
 
         // Initial state
         updateButtonStates();
+
+        // Set default specific date to tomorrow
+        const tomorrow = new Date();
+        tomorrow.setDate(tomorrow.getDate() + 1);
+        specificDateInput.value = tomorrow.toISOString().split('T')[0];
+        updateExpiryDisplay();
     </script>
 </body>
 </html>
