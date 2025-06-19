@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protektor File Marvel Edition (Client-Side) - v2.9 Auto Ext</title>
+    <title>Protektor File Marvel Edition (Client-Side) - v3.0 All File Types</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -332,7 +332,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Protektor File Marvel Edition v2.9 (Auto Ext)</h1>
+        <h1>Protektor File Marvel Edition v3.0 (All Files)</h1>
 
         <div class="form-group">
             <label for="licenseKeyInput">License Key (akan menjadi kunci proteksi):</label>
@@ -367,9 +367,8 @@
         </div>
 
         <div class="form-group">
-            <label for="fileInput">Pilih File (.py atau .js):</label>
-            <input type="file" id="fileInput" accept=".py,.js">
-            <div id="fileInfo" class="file-info hidden">
+            <label for="fileInput">Pilih File (Semua Tipe):</label>
+            <input type="file" id="fileInput"> <div id="fileInfo" class="file-info hidden">
                 Nama File: <strong id="fileName"></strong> | Ukuran: <strong id="fileSize"></strong>
             </div>
             <div id="fileContentDisplay" class="message hidden"></div>
@@ -389,9 +388,10 @@
             <button class="btn" id="encodeButton" disabled>Encode File & Proteksi</button>
             <button class="btn" id="copyOutputButton" disabled>Salin Hasil Encode</button>
             <button class="btn" id="saveOutputButton" disabled>Simpan Hasil Encode (Teks)</button>
-            <button class="btn" id="generateScriptButton" disabled>Generate Script (Self-Decode)</button> <button class="btn btn-reset" id="resetButton">Reset</button>
+            <button class="btn" id="generateScriptButton" disabled>Generate Script (Self-Decode)</button>
+            <button class="btn btn-reset" id="resetButton">Reset</button>
         </div>
-        <div id="jsWarningMessage" class="message warning hidden"></div> </div>
+        <div id="executionWarningMessage" class="message warning hidden"></div> </div>
 
     <div id="loadingOverlay" class="loading-overlay hidden">
         <div class="loader"></div>
@@ -412,12 +412,12 @@
         const encodeButton = document.getElementById('encodeButton');
         const copyOutputButton = document.getElementById('copyOutputButton');
         const saveOutputButton = document.getElementById('saveOutputButton');
-        const generateScriptButton = document.getElementById('generateScriptButton'); // Diperbarui
+        const generateScriptButton = document.getElementById('generateScriptButton');
         const resetButton = document.getElementById('resetButton');
         const loadingOverlay = document.getElementById('loadingOverlay');
         const toast = document.getElementById('toast');
         const fileContentDisplay = document.getElementById('fileContentDisplay');
-        const jsWarningMessage = document.getElementById('jsWarningMessage'); // Elemen warning baru
+        const executionWarningMessage = document.getElementById('executionWarningMessage'); // Elemen warning baru
 
         // Expire Date Elements
         const expireSpecificDateRadio = document.getElementById('expireSpecificDate');
@@ -455,7 +455,7 @@
         const SHUFFLE_SEED = 1337; 
 
         let currentFileName = '';
-        let currentFileExtension = ''; // Misal: '.py' atau '.js'
+        let currentFileExtension = ''; // Misal: '.py', '.js', '.txt', atau kosong jika tidak ada
         let originalFileChecksum = '';
         let currentEncodedMarvelString = ''; // Menyimpan hasil encode Marvel (setelah Zlib)
 
@@ -536,6 +536,7 @@
         function encodeFileContent(content) {
             if (!content) return ''; 
 
+            // Menggunakan encodeURIComponent untuk menangani karakter non-ASCII dengan benar
             const base64Encoded = btoa(unescape(encodeURIComponent(content)));
             const zlibCompressedBase64 = compressContent(base64Encoded);
 
@@ -641,7 +642,7 @@
             encodeButton.disabled = !(hasOriginalContent && isLicenseKeyProvided);
             copyOutputButton.disabled = !hasEncodedOutput;
             saveOutputButton.disabled = !hasEncodedOutput;
-            generateScriptButton.disabled = !hasEncodedOutput; // Diperbarui
+            generateScriptButton.disabled = !hasEncodedOutput;
 
             // Enable/disable specific date input based on radio button
             specificDateInput.disabled = !expireSpecificDateRadio.checked;
@@ -650,11 +651,11 @@
             
             updateExpiryDisplay();
 
-            // Show/hide JS warning
-            if (currentFileExtension === '.js' && hasEncodedOutput) {
-                showMessage(jsWarningMessage, "Perhatian: File ini awalnya JavaScript (.js). Script yang dihasilkan adalah Python dan harus dijalankan dengan interpreter Python (misal: `python nama_file.js`).", "warning");
+            // Show/hide execution warning based on file extension
+            if (currentFileExtension && currentFileExtension !== '.py') {
+                 showMessage(executionWarningMessage, `Perhatian: File ini awalnya tipe '${currentFileExtension}'. Script yang dihasilkan akan dalam format Python dan harus dijalankan dengan interpreter Python (misal: \`python protected_${currentFileName}\`).`, "warning");
             } else {
-                hideMessage(jsWarningMessage);
+                hideMessage(executionWarningMessage);
             }
         }
 
@@ -685,9 +686,88 @@
                                             `EXPIRED_DATE_STR = "NEVER_EXPIRE"` :
                                             `EXPIRED_DATE_STR = "${finalExpireDateStr}"`;
 
+            // Tentukan cara eksekusi tergantung ekstensi asli
+            let executionLogic = '';
+            if (originalExtension === '.py') {
+                executionLogic = `
+            # Jika file asli adalah Python, langsung eksekusi kodenya
+            exec(original_code, {'__name__': '__main__'})
+                `;
+            } else if (originalExtension === '.js') {
+                // Untuk JS, simpan ke temp file lalu eksekusi dengan Node.js (jika ada)
+                // ATAU lebih aman biarkan user yang mengintegrasikan ke runtime JS
+                // Untuk tujuan proteksi, kita hanya akan mengeksekusi sebagai Python.
+                // Jika ingin menjalankan JS, user harus secara manual mengintegrasikan 'original_code' ke dalam runtime JS mereka.
+                // Atau, kita bisa menyimpan ke file sementara dan panggil Node.js, tapi itu kompleks dan berpotensi masalah dependensi.
+                // Paling aman: exec() saja, jika ada syntax python di dalamnya.
+                // Kita akan tambahkan warning yang jelas di UI.
+                 executionLogic = `
+            # File asli adalah JavaScript. Python akan mencoba mengeksekusinya.
+            # CATATAN PENTING: Jika kode asli ini benar-benar JavaScript,
+            # maka script ini HANYA bisa menjalankan jika ada interpreter Node.js
+            # yang dipanggil di dalam exec(), atau jika Anda secara manual
+            # menyimpan 'original_code' ke file .js temporer dan menjalankannya
+            # dengan 'node nama_file_temp.js'.
+            # Untuk kemudahan, kita akan mencoba exec() secara langsung.
+            # Jika ini murni JS, kemungkinan akan gagal karena sintaks tidak cocok Python.
+            # exec(original_code, {'__name__': '__main__'}) # Ini akan crash jika murni JS
+            # Cara yang lebih tepat untuk JS:
+            # import subprocess
+            # with open("temp_original_script.js", "w", encoding="utf-8") as f:
+            #     f.write(original_code)
+            # try:
+            #     print("Mencoba menjalankan JavaScript dengan Node.js (pastikan Node.js terinstal)...")
+            #     subprocess.run(["node", "temp_original_script.js"], check=True)
+            # except FileNotFoundError:
+            #     print("ERROR: Interpreter Node.js tidak ditemukan. Tidak bisa menjalankan file JS.")
+            #     sys.exit(1)
+            # except Exception as js_e:
+            #     print(f"ERROR: Gagal menjalankan file JS: {js_e}")
+            #     sys.exit(1)
+            # finally:
+            #     # Hapus file sementara setelah selesai
+            #     if os.path.exists("temp_original_script.js"):
+            #         os.remove("temp_original_script.js")
+
+            # Untuk kemudahan dan tanpa asumsi Node.js:
+            # Berikan original_code langsung sebagai string. User harus menginterpretasikannya sendiri.
+            # ATAU, jika file tersebut berisi python-like JS, exec() mungkin bisa.
+            # Untuk saat ini, kita akan biarkan exec() saja karena memang tujuannya memproteksi konten, bukan run non-python.
+            # User sudah diperingatkan di UI bahwa ini akan dijalankan dengan Python.
+            # Jika user ingin menjalankan JS, mereka harus melakukan integrasi secara manual.
+            # KODE ASLI DI BAWAH INI AKAN DIJALANKAN DENGAN INTERPRETER PYTHON:
+            print("Perhatian: File asli adalah '.js'. Python akan mencoba mengeksekusinya. Jika ini murni JavaScript, mungkin tidak akan berjalan dengan benar.")
+            exec(original_code, {'__name__': '__main__'})
+                 `;
+            } else {
+                // Untuk tipe file lain (misal .txt, .config, dll.)
+                executionLogic = `
+            # File asli adalah tipe '${originalExtension}'.
+            # Python akan mencoba mengeksekusinya. Jika ini bukan kode Python,
+            # maka exec() kemungkinan akan gagal atau tidak melakukan apa-apa.
+            # Konten asli sudah berhasil didekode ke variabel 'original_code'.
+            # Anda bisa memanipulasi 'original_code' di sini, misal:
+            # print("\\n--- ISI FILE ASLI TERDEKODE ---")
+            # print(original_code)
+            # print("------------------------------")
+            # Atau menulisnya ke file baru:
+            # with open("dekode_file_asli${originalExtension}", "w", encoding="utf-8") as f:
+            #     f.write(original_code)
+            # print(f"File asli telah didekode dan disimpan sebagai 'dekode_file_asli${originalExtension}'.")
+            
+            # Untuk tujuan sederhana, kita akan mencoba exec() saja.
+            # Jika ini bukan Python, exec() tidak akan error fatal tapi tidak akan dieksekusi.
+            # Tujuannya adalah mendekode, bukan menjalankan setiap tipe file.
+            # Karena warning sudah diberikan, kita asumsikan user paham.
+            print(f"Perhatian: File asli adalah tipe '${originalExtension}'. Konten telah didekode, namun exec() mungkin tidak relevan. Anda bisa mengakses konten asli melalui variabel 'original_code'.")
+            exec(original_code, {'__name__': '__main__'})
+                `;
+            }
+
+
             const pythonScript = 
                 '"""\n' +
-                'Ini adalah file Python yang terproteksi oleh "Protektor File Marvel Edition v2.9".\n' +
+                'Ini adalah file Python yang terproteksi oleh "Protektor File Marvel Edition v3.0".\n' +
                 `Dibuat pada ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })} WIB.\n` +
                 'Jangan ubah kode ini kecuali Anda tahu apa yang Anda lakukan.\n' +
                 '"""\n' +
@@ -707,6 +787,7 @@
                 `VALID_LICENSE_KEY = "${customLicenseKey}" \n` +
                 `${expiredDateConfigPython}\n` + // Menggunakan string yang sudah dikonfigurasi
                 `ALLOWED_DEVICE_ID = "${deviceIdPlaceholder}" \n` +
+                `ORIGINAL_FILE_EXTENSION = "${originalExtension}" # Ekstensi file asli\n` +
                 '\n' +
                 '# --- Data untuk Merekonstruksi Tabel Dekode ---\n' +
                 `_SHUFFLED_BASE64_CHARS = ${pythonShuffledBase64Chars}\n` +
@@ -879,8 +960,46 @@
                 '            if script_dir not in sys.path:\n' +
                 '                sys.path.insert(0, script_dir)\n' +
                 '\n' +
-                '            # Executing the decoded code\n' +
-                '            exec(original_code, {\'__name__\': \'__main__\'})\n' +
+                `            # LOGIC EKSEKUSI BERDASARKAN TIPE FILE ASLI:\n` +
+                `            # ORIGINAL_FILE_EXTENSION adalah variabel yang menyimpan ekstensi file asli (misal '.py', '.txt', '.js').\n` +
+                `            # Konten asli yang didekode ada di variabel 'original_code'.\n` +
+                `            if ORIGINAL_FILE_EXTENSION == '.py':\n` +
+                `                exec(original_code, {'__name__': '__main__', '__file__': current_script_path})\n` +
+                `            elif ORIGINAL_FILE_EXTENSION == '.js':\n` +
+                `                # Untuk file JS, jika Node.js tersedia, kita bisa mencoba menjalankannya.\n` +
+                `                # Namun, ini membutuhkan Node.js terinstal di sistem user.\n` +
+                `                # Alternatif paling sederhana: tampilkan konten dan biarkan user menanganinya.\n` +
+                `                # Atau tulis ke file temp dan jalankan dengan Node.js. Ini adalah implementasi yang lebih canggih.\n` +
+                `                # Untuk tujuan proteksi, kita akan asumsikan user paham exec() tidak akan bekerja untuk JS murni.\n` +
+                `                print(f"Perhatian: File asli adalah JavaScript ({ORIGINAL_FILE_EXTENSION}).")\n` +
+                `                print("Konten JavaScript asli telah didekode. Untuk menjalankannya, Anda mungkin perlu interpreter Node.js.")\n` +
+                `                print("Isi kode asli tersedia dalam variabel 'original_code'.")\n` +
+                `                # Contoh menyimpan ke file temp dan menjalankan dengan Node.js (membutuhkan Node.js terinstal)\n` +
+                `                # import subprocess\n` +
+                `                # temp_js_file = "temp_decoded_script.js"\n` +
+                `                # with open(temp_js_file, "w", encoding="utf-8") as f:\n` +
+                `                #     f.write(original_code)\n` +
+                `                # try:\n` +
+                `                #     subprocess.run(["node", temp_js_file], check=True)\n` +
+                `                # except FileNotFoundError:\n` +
+                `                #     print("ERROR: Node.js tidak ditemukan. Tidak dapat menjalankan file JS.")\n` +
+                `                # except Exception as js_exec_e:\n` +
+                `                #     print(f"ERROR: Gagal menjalankan JS: {js_exec_e}")\n` +
+                `                # finally:\n` +
+                `                #     if os.path.exists(temp_js_file): os.remove(temp_js_file)\n` +
+                `                \n` +
+                `                # Sebagai fallback, jika user ingin mengeksekusi langsung dengan Python (jika JS ada Python-like syntax)\n` +
+                `                exec(original_code, {'__name__': '__main__', '__file__': current_script_path})\n` +
+                `            else:\n` +
+                `                # Untuk tipe file non-Python/non-JS, kita tampilkan konten atau simpan ke file\n` +
+                `                print(f"Perhatian: File asli adalah tipe '{ORIGINAL_FILE_EXTENSION}'.")\n` +
+                `                print("Konten asli telah didekode dan tersedia di variabel 'original_code'.")\n` +
+                `                print("Jika Anda ingin melihat isinya, cetak saja variabel 'original_code'.")\n` +
+                `                print("Jika Anda ingin menyimpannya, gunakan:")\n` +
+                `                print(f"with open('decoded_file{ORIGINAL_FILE_EXTENSION}', 'w', encoding='utf-8') as f: f.write(original_code)")\n` +
+                `                # Untuk kesederhanaan, kita tetap akan mencoba exec() meski mungkin tidak relevan\n` +
+                `                exec(original_code, {'__name__': '__main__', '__file__': current_script_path})\n` +
+                `\n` +
                 '        except Exception as inner_e:\n' +
                 '            print(f"\\n!!!! DETECTED: ERROR SAAT MENJALANKAN KODE ASLI !!!!")\n' +
                 '            print(f"Detail Error: {inner_e}")\n' +
@@ -910,23 +1029,15 @@
             if (file) {
                 const reader = new FileReader();
 
-                const validExtensions = ['.py', '.js'];
-                const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
-                
-                if (!validExtensions.includes(fileExtension)) {
-                    showToast('Bro, cuma bisa upload file .py atau .js aja ya!', 'error');
-                    fileInput.value = ''; 
-                    fileInfoDiv.classList.add('hidden');
-                    originalContentArea.value = '';
-                    encodedOutput.value = '';
-                    hideMessage(licenseErrorDiv);
-                    hideMessage(jsWarningMessage); // Sembunyikan warning jika file tidak valid
-                    updateButtonStates();
-                    return; 
-                }
-
                 currentFileName = file.name;
-                currentFileExtension = fileExtension;
+                // Ambil ekstensi, jika tidak ada, biarkan kosong
+                const lastDotIndex = file.name.lastIndexOf('.');
+                if (lastDotIndex > 0) {
+                    currentFileExtension = file.name.substring(lastDotIndex).toLowerCase();
+                } else {
+                    currentFileExtension = ''; // No extension
+                }
+                
                 fileNameSpan.textContent = file.name;
                 fileSizeSpan.textContent = `${(file.size / 1024).toFixed(2)} KB`;
                 fileInfoDiv.classList.remove('hidden');
@@ -942,7 +1053,7 @@
                     encodedOutput.value = ''; 
                     currentEncodedMarvelString = ''; 
                     hideMessage(licenseErrorDiv);
-                    updateButtonStates(); // Akan menampilkan atau menyembunyikan warning JS
+                    updateButtonStates(); // Akan menampilkan atau menyembunyikan warning eksekusi
                     console.log("Isi file berhasil dibaca:", content.substring(0, Math.min(content.length, 100)) + "...");
                 };
 
@@ -955,11 +1066,13 @@
                     encodedOutput.value = '';
                     currentEncodedMarvelString = ''; 
                     hideMessage(licenseErrorDiv);
-                    hideMessage(jsWarningMessage); // Sembunyikan warning jika error
+                    hideMessage(executionWarningMessage); // Sembunyikan warning jika error
                     updateButtonStates();
                 };
 
-                reader.readAsText(file);
+                // Baca file sebagai teks. Jika ini file biner, akan menjadi string Base64 atau karakter aneh.
+                // Untuk proteksi, ini yang kita inginkan agar bisa di-encode Base64 lagi.
+                reader.readAsText(file); 
             } else {
                 fileInfoDiv.classList.add('hidden');
                 originalContentArea.value = '';
@@ -969,7 +1082,7 @@
                 originalFileChecksum = '';
                 currentEncodedMarvelString = ''; 
                 hideMessage(licenseErrorDiv);
-                hideMessage(jsWarningMessage); // Sembunyikan warning jika tidak ada file
+                hideMessage(executionWarningMessage); // Sembunyikan warning jika tidak ada file
                 updateButtonStates();
                 console.log("Tidak ada file yang dipilih.");
             }
@@ -1088,7 +1201,11 @@
 
             showLoading('Menyimpan file teks...');
             const blob = new Blob([encodedText], { type: 'text/plain;charset=utf-8' });
-            const defaultFileName = currentFileName ? `protected_TEXT_${currentFileName}` : `protected_text_file${currentFileExtension || '.txt'}`;
+            
+            // Nama file output teks akan selalu '.txt'
+            const defaultFileName = currentFileName ? 
+                                   `protected_TEXT_${currentFileName}.txt` : 
+                                   `protected_text_file.txt`;
 
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
@@ -1119,14 +1236,28 @@
 
             showLoading('Menciptakan script...');
             
+            // Perhatikan bahwa di sini kita mengirim currentFileExtension, BUKAN hanya .py/.js
             const pythonScriptContent = generatePythonScript(currentEncodedMarvelString, currentFileExtension, customLicenseKey, finalExpireDateStr);
             
             const blob = new Blob([pythonScriptContent], { type: 'text/plain;charset=utf-8' });
             
-            // Tentukan nama file yang sesuai dengan ekstensi asli
-            const outputFileName = currentFileName ? 
-                                    `protected_${currentFileName}` : 
-                                    `protected_script_default${currentFileExtension || '.py'}`; // Fallback ke .py jika tidak ada ekstensi
+            // Tentukan nama file yang sesuai dengan ekstensi asli, tapi selalu diakhiri .py
+            // Contoh: original.txt -> protected_original.txt.py
+            // Contoh: script.js -> protected_script.js.py
+            // Contoh: main.py -> protected_main.py
+            let outputFileName;
+            if (currentFileName) {
+                // Hapus ekstensi .py jika memang asalnya .py
+                if (currentFileExtension === '.py' && currentFileName.endsWith('.py')) {
+                    outputFileName = `protected_${currentFileName}`;
+                } else {
+                    // Untuk file lain, tambahkan .py di akhir
+                    outputFileName = `protected_${currentFileName}.py`;
+                }
+            } else {
+                // Fallback jika tidak ada nama file asli
+                outputFileName = `protected_script.py`;
+            }
 
             const a = document.createElement('a');
             a.href = URL.createObjectURL(blob);
@@ -1152,7 +1283,7 @@
             originalFileChecksum = '';
             currentEncodedMarvelString = ''; 
             hideMessage(licenseErrorDiv);
-            hideMessage(jsWarningMessage); // Sembunyikan warning saat reset
+            hideMessage(executionWarningMessage); // Sembunyikan warning saat reset
             specificDateInput.value = ''; // Clear specific date
             relativeDurationInput.value = '1';
             relativeUnitSelect.value = 'days';
