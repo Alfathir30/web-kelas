@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protektor File Marvel Edition (Client-Side) - v2.3 FIX II Obfuscated Table</title>
+    <title>Protektor File Marvel Edition (Client-Side) - v2.4 FINAL FIX</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -303,7 +303,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Protektor File Marvel Edition v2.3 (FIX: II Obfuscated Table)</h1>
+        <h1>Protektor File Marvel Edition v2.4 (FINAL FIX)</h1>
 
         <div class="form-group">
             <label for="licenseKeyInput">License Key (akan menjadi kunci proteksi):</label>
@@ -565,24 +565,23 @@
             console.log("DEBUG - Shuffled Marvel Words (dikirim ke Python):", shuffledMarvelWords);
 
             // Format array Python dengan benar: setiap string diapit kutip tunggal
-            // JSON.stringify juga bisa dipakai, tapi pastikan outputnya valid untuk Python.
-            // map(s => `'${s}'`).join(', ') lebih aman untuk list string sederhana.
             const pythonShuffledBase64Chars = `[${shuffledBase64Chars.map(s => `'${s}'`).join(', ')}]`;
             const pythonShuffledMarvelWords = `[${shuffledMarvelWords.map(s => `'${s}'`).join(', ')}]`;
             
             // Konversi string Marvel panjang menjadi array per kata untuk disisipkan ke Python.
-            // Pastikan setiap kata diapit kutip tunggal dan digabungkan dengan koma
             const encodedWordsArray = encodedMarvelString.split(' ');
             const pythonEncodedMarvelWordList = `[${encodedWordsArray.map(word => `'${word}'`).join(', ')}]`;
 
 
             const deviceIdPlaceholder = INITIAL_ALLOWED_DEVICE_ID_PLACEHOLDER;
 
-            // Perubahan di sini: Mengurangi komentar di awal template literal dan menghindari # di awal baris
-            // agar tidak bentrok dengan parser JavaScript
-            const pythonScript = `# Ini adalah file Python yang terproteksi oleh "Protektor File Marvel Edition v2.3".
-# Dibuat pada ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })} WIB.
-# Jangan ubah kode ini kecuali Anda tahu apa yang Anda lakukan.
+            // Perbaikan di sini: Menggunakan multiline string Python (docstring) untuk komentar header
+            // agar tidak bentrok dengan parser JavaScript yang sensitif terhadap # di awal baris
+            const pythonScript = `"""
+Ini adalah file Python yang terproteksi oleh "Protektor File Marvel Edition v2.4".
+Dibuat pada ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })} WIB.
+Jangan ubah kode ini kecuali Anda tahu apa yang Anda lakukan.
+"""
 
 import base64
 import sys
@@ -767,7 +766,7 @@ def main():
             sys.exit(1)
 
         original_code = decode_marvel_string_from_list(_ENCODED_MARVEL_WORD_LIST, DECODE_TABLE_RECONSTRUCTED)
-        if original_code is None:
+        if original_code === None: # Perbaikan: '===' menjadi '==' untuk Python
             print("Dekode gagal. Kode tidak bisa dijalankan.")
             sys.exit(1)
         
