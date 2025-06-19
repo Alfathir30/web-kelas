@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protektor File Marvel Edition (Client-Side) - v2.2 FIX Obfuscated Table</title>
+    <title>Protektor File Marvel Edition (Client-Side) - v2.3 FIX II Obfuscated Table</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -303,7 +303,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Protektor File Marvel Edition v2.2 (FIX: Obfuscated Table)</h1>
+        <h1>Protektor File Marvel Edition v2.3 (FIX: II Obfuscated Table)</h1>
 
         <div class="form-group">
             <label for="licenseKeyInput">License Key (akan menjadi kunci proteksi):</label>
@@ -565,6 +565,8 @@
             console.log("DEBUG - Shuffled Marvel Words (dikirim ke Python):", shuffledMarvelWords);
 
             // Format array Python dengan benar: setiap string diapit kutip tunggal
+            // JSON.stringify juga bisa dipakai, tapi pastikan outputnya valid untuk Python.
+            // map(s => `'${s}'`).join(', ') lebih aman untuk list string sederhana.
             const pythonShuffledBase64Chars = `[${shuffledBase64Chars.map(s => `'${s}'`).join(', ')}]`;
             const pythonShuffledMarvelWords = `[${shuffledMarvelWords.map(s => `'${s}'`).join(', ')}]`;
             
@@ -576,8 +578,9 @@
 
             const deviceIdPlaceholder = INITIAL_ALLOWED_DEVICE_ID_PLACEHOLDER;
 
-            const pythonScript = `
-# Ini adalah file Python yang terproteksi oleh "Protektor File Marvel Edition v2.2".
+            // Perubahan di sini: Mengurangi komentar di awal template literal dan menghindari # di awal baris
+            // agar tidak bentrok dengan parser JavaScript
+            const pythonScript = `# Ini adalah file Python yang terproteksi oleh "Protektor File Marvel Edition v2.3".
 # Dibuat pada ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })} WIB.
 # Jangan ubah kode ini kecuali Anda tahu apa yang Anda lakukan.
 
