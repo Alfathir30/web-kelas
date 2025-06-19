@@ -376,7 +376,7 @@
         const INITIAL_ALLOWED_DEVICE_ID_PLACEHOLDER = "YOUR_DEVICE_ID_WILL_BE_SET_HERE_BY_PYTHON_SCRIPT";
         
         // CURRENT_DEVICE_ID dan ALLOWED_DEVICE_ID di sini hanya relevan jika ada logika proteksi di sisi browser.
-        // Untuk script ini, mereka tidak digunakan lagi untuk cek proteksi Device ID.
+        // Untuk script ini, mereka tidak digunakan lagi untuk validasi Device ID.
         // const CURRENT_DEVICE_ID = `Browser: ${navigator.userAgent.substring(0, Math.min(navigator.userAgent.length, 50))}... | Platform: ${navigator.platform}`;
         // const ALLOWED_DEVICE_ID = CURRENT_DEVICE_ID; // Ini sudah tidak dipakai untuk validasi Device ID
 
@@ -581,16 +581,33 @@ def update_script_with_device_id(script_path, new_device_id, placeholder):
         with open(script_path, 'r', encoding='utf-8') as f:
             content = f.read()
         
-        # Buat regex pattern untuk mencari baris ALLOWED_DEVICE_ID dengan placeholder
-        # Perhatikan escaping karakter khusus dalam regex
-        escaped_placeholder = re.escape(placeholder)
-        pattern = re.compile(r"ALLOWED_DEVICE_ID = \"" + escaped_placeholder + "\"")
+        # PERBAIKAN DI SINI: Regex untuk mencari string placeholder
+        # Kita perlu escape placeholder itu sendiri dan juga tanda kutip di sekelilingnya di Python.
+        # Python raw string (r'') tidak memproses backslash untuk escape karakter.
+        # Jadi, untuk mencari literal " (tanda kutip ganda), kita bisa pakai \\"
+        # Atau lebih baik, kita cari pattern string lengkapnya.
+        # Yang penting, re.escape(placeholder) sudah mengurus karakter khusus dalam placeholder.
         
+        # Regex yang baru: Cari string literal "ALLOWED_DEVICE_ID = "PLACEHOLDER""
+        # Perhatikan: f-string Python akan menghasilkan " saat di-sub.
+        # Jadi kita perlu re.escape string "ALLOWED_DEVICE_ID = \"{placeholder}\""
+        
+        # Ini pendekatan yang lebih aman: kita mencari keseluruhan baris yang ada placeholder-nya.
+        # Karena placeholder itu sendiri tidak akan mengandung karakter regex yang perlu di-escape dua kali.
+        # re.escape() akan mengurus semua karakter khusus di dalam placeholder itu sendiri.
+        
+        # Membuat string literal yang akan dicari, lalu meng-escape-nya
+        # Pattern yang kita cari adalah: ALLOWED_DEVICE_ID = "YOUR_DEVICE_ID_WILL_BE_SET_HERE_BY_PYTHON_SCRIPT"
+        # Kita harus escape literal tanda kutip dan placeholder itu sendiri.
+        search_pattern_str = f'ALLOWED_DEVICE_ID = "{placeholder}"'
+        escaped_search_pattern = re.escape(search_pattern_str)
+        pattern = re.compile(escaped_search_pattern)
+
         if pattern.search(content):
             # Ini baris inti perbaikannya:
             # Kita ingin menghasilkan string Python seperti ini: ALLOWED_DEVICE_ID = "ini_id_device_yang_di_escape"
             # new_device_id di sini adalah variabel Python, yang nilainya sudah aman untuk disisipkan.
-            # Python akan mengurus escaping otomatis saat f-string dievaluasi.
+            # Python string literal for new_device_id itself.
             new_content = pattern.sub(f"ALLOWED_DEVICE_ID = \\"{new_device_id}\\"", content);
             
             with open(script_path, 'w', encoding='utf-8') as f:
