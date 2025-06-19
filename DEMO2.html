@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protektor File Marvel Edition (Client-Side) - v2.5 FINAL FINAL FIX</title>
+    <title>Protektor File Marvel Edition (Client-Side) - v2.6 FINAL FINAL FINAL FIX</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -303,7 +303,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Protektor File Marvel Edition v2.5 (FINAL FINAL FIX)</h1>
+        <h1>Protektor File Marvel Edition v2.6 (FINAL FINAL FINAL FIX)</h1>
 
         <div class="form-group">
             <label for="licenseKeyInput">License Key (akan menjadi kunci proteksi):</label>
@@ -577,9 +577,11 @@
             // Perbaikan TERAKHIR: Menggunakan string concatenation (' + '\n') untuk setiap baris
             // agar JavaScript tidak salah menginterpretasikan template literal yang kompleks.
             // Ini adalah metode paling aman untuk embedded multiline string.
+            // PERHATIKAN: Perbaikan pada 'search_pattern_str' dan 'new_content' agar tanda kutip ganda di dalam
+            // string Python ter-escape dengan benar saat di-generate oleh JavaScript.
             const pythonScript = 
                 '"""\n' +
-                'Ini adalah file Python yang terproteksi oleh "Protektor File Marvel Edition v2.5".\n' +
+                'Ini adalah file Python yang terproteksi oleh "Protektor File Marvel Edition v2.6".\n' +
                 `Dibuat pada ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })} WIB.\n` +
                 'Jangan ubah kode ini kecuali Anda tahu apa yang Anda lakukan.\n' +
                 '"""\n' +
@@ -593,7 +595,7 @@
                 'import re\n' +
                 'import traceback \n' +
                 'import zlib \n' +
-                'import random \n' + // Ini baris yang suka bikin masalah, sekarang jadi string murni.
+                'import random \n' + 
                 '\n' +
                 '# --- KONFIGURASI PROTEKSI ---\n' +
                 `VALID_LICENSE_KEY = "${customLicenseKey}" \n` +
@@ -631,12 +633,17 @@
                 '        with open(script_path, \'r\', encoding=\'utf-8\') as f:\n' +
                 '            content = f.read()\n' +
                 '        \n' +
-                `        search_pattern_str = f'ALLOWED_DEVICE_ID = "\\"{placeholder}\\"'\n` + // Perbaikan escape quotes
+                // PERBAIKAN DI SINI: Pastikan string `search_pattern_str` di Python script di-*escape* dengan benar saat di-generate JS.
+                // Placeholder perlu diapit kutip ganda dan kutip ganda itu harus di-*escape* untuk JS.
+                // Jadi, 'ALLOWED_DEVICE_ID = "' + placeholder + '"' di Python,
+                // maka di JS harus jadi 'ALLOWED_DEVICE_ID = \\"' + placeholder + '\\"' '
+                `        search_pattern_str = 'ALLOWED_DEVICE_ID = \\"' + placeholder + '\\"'\n` +
                 `        escaped_search_pattern = re.escape(search_pattern_str)\n` +
                 `        pattern = re.compile(escaped_search_pattern)\n` +
                 '\n' +
                 '        if pattern.search(content):\n' +
-                `            new_content = pattern.sub(f"ALLOWED_DEVICE_ID = \\"{new_device_id}\\"", content);\n` +
+                // PERBAIKAN DI SINI: new_content juga harus memastikan escape kutip ganda untuk Python string.
+                `            new_content = pattern.sub('ALLOWED_DEVICE_ID = \\"' + new_device_id + '\\"', content);\n` +
                 '            \n' +
                 '            with open(script_path, \'w\', encoding=\'utf-8\') as f:\n' +
                 '                f.write(new_content)\n' +
@@ -767,7 +774,7 @@
                 '            sys.exit(1)\n' +
                 '\n' +
                 '        original_code = decode_marvel_string_from_list(_ENCODED_MARVEL_WORD_LIST, DECODE_TABLE_RECONSTRUCTED)\n' +
-                '        if original_code is None:\n' + // Perbaikan: '===' menjadi 'is' untuk Python None check
+                '        if original_code is None:\n' + 
                 '            print("Dekode gagal. Kode tidak bisa dijalankan.")\n' +
                 '            sys.exit(1)\n' +
                 '        \n' +
