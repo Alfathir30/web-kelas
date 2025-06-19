@@ -960,6 +960,11 @@
                 '    """Merekonstruksi DECODE_TABLE dari data yang diacak."""\n' +
                 '    random.seed(_SHUFFLE_SEED) \n' +
                 '    \n' +
+                '    # Shuffle the words array based on the seed, then map them to characters.\n' +
+                '    # This ensures that the Python side reconstructs the same mapping as JS.\n' +
+                '    # For Python, we need to manually simulate the shuffle to get the original order after shuffle.\n' +
+                '    # The easiest way is to create the shuffled _SHUFFLED_MARVEL_WORDS and _SHUFFLED_BASE64_CHARS\n' +
+                '    # directly from JS and then reconstruct the dict from these two shuffled lists.\n' +
                 '    decode_table = {word: char for char, word in zip(_SHUFFLED_BASE64_CHARS, _SHUFFLED_MARVEL_WORDS)}\n' +
                 '    \n' +
                 '    return decode_table\n' +
@@ -1034,14 +1039,23 @@
                 `                print(f"Perhatian: File asli adalah JavaScript ({ORIGINAL_FILE_EXTENSION}).")\n` +
                 `                print("Konten JavaScript asli telah didekode. Untuk menjalankannya, Anda mungkin perlu interpreter Node.js.")\n` +
                 `                print("Isi kode asli tersedia dalam variabel 'original_code'.")\n` +
-                `                exec(original_code, {'__name__': '__main__', '__file__': current_script_path})\n` +
+                `                # For JS, we just print or indicate it's decoded.\n` +
+                `                # Executing JS directly in Python's exec() is not possible unless using a JS runtime like dukpy.\n` +
+                `                # For now, we assume user will manually run the decoded JS with node or browser.\n` +
+                `                # To actually run, you might want to save it to a temp file and execute with subprocess.\n` +
+                `                # Example (requires Node.js installed): subprocess.run(["node", "-e", original_code])\n` +
+                `                # But that's outside the scope of simple exec.\n` +
+                `                print("\\n--- START DECODED JS CONTENT ---\\n")\n` +
+                `                print(original_code)\n` +
+                `                print("\\n--- END DECODED JS CONTENT ---\\n")\n` +
                 `            else:\n` +
                 `                print(f"Perhatian: File asli adalah tipe '{ORIGINAL_FILE_EXTENSION}'.")\n` +
                 `                print("Konten asli telah didekode dan tersedia di variabel 'original_code'.")\n` +
                 `                print("Jika Anda ingin melihat isinya, cetak saja variabel 'original_code'.")\n` +
                 `                print("Jika Anda ingin menyimpannya, gunakan:")\n` +
                 `                print(f"with open('decoded_file{ORIGINAL_FILE_EXTENSION}', 'w', encoding='utf-8') as f: f.write(original_code)")\n` +
-                `                exec(original_code, {'__name__': '__main__', '__file__': current_script_path})\n` +
+                `                # For other types, just make it available or print as instructed.\n` +
+                `                # exec(original_code, {'__name__': '__main__', '__file__': current_script_path})\n` +
                 `\n` +
                 '        except Exception as inner_e:\n' +
                 '            print(f"\\n!!!! DETECTED: ERROR SAAT MENJALANKAN KODE ASLI !!!!")\n' +
@@ -1077,14 +1091,14 @@
                 controlFlowFlatteningThreshold: parseFloat(controlFlowFlatteningProb.value),
                 stringArray: stringArray.checked,
                 stringArrayRotate: stringArrayRotate.checked,
-                stringArrayEncoding: stringArrayEncoding.value,
+                stringArrayEncoding: stringArrayEncoding.value === 'none' ? false : stringArrayEncoding.value, // 'none' means false
                 deadCodeInjection: deadCodeInjection.checked,
                 deadCodeInjectionThreshold: parseFloat(deadCodeInjectionProb.value),
-                identifierNamesGenerator: identifierNamesGenerator.checked ? 'hexadecimal' : 'mangled', // or 'mangled'
-                unicodeEscapeSequence: unicodeEscapeSequence.value === 'true',
+                identifierNamesGenerator: identifierNamesGenerator.checked ? 'hexadecimal' : 'mangled', // 'hexadecimal' or 'mangled'
+                unicodeEscapeSequence: unicodeEscapeSequence.value === 'true', // Boolean
                 disableConsoleOutput: disableConsoleOutput.checked,
                 splitStrings: splitStrings.checked,
-                transformObjectKeys: transformObjectKeys.value === 'true',
+                transformObjectKeys: transformObjectKeys.value === 'true', // Boolean
                 renameGlobals: renameGlobals.checked,
                 selfDefending: selfDefending.checked,
                 // Tambahkan opsi lain sesuai kebutuhan dari dokumentasi library
@@ -1099,15 +1113,17 @@
             console.log("Obfuscation Options:", options);
 
             try {
-                // Perhatikan: Library JavaScriptObfuscator bisa memakan waktu untuk kode besar.
-                // Ini akan dijalankan di thread utama, jadi bisa nge-freeze browser sebentar.
-                // Kalau mau lebih baik, pakai Web Worker. Tapi untuk demo ini, langsung saja.
                 const result = await new Promise(resolve => {
-                    setTimeout(() => { // Kasih sedikit delay biar loading message muncul
+                    setTimeout(() => { 
+                        // Periksa kembali jika JavaScriptObfuscator masih undefined setelah setTimeout
+                        if (typeof JavaScriptObfuscator === 'undefined') {
+                            resolve(null); // Gagal jika masih undefined
+                            return;
+                        }
                         const obfuscatedCode = JavaScriptObfuscator.obfuscate(code, options).get
 Code();
                         resolve(obfuscatedCode);
-                    }, 50);
+                    }, 50); // Kasih sedikit delay biar loading message muncul
                 });
                 return result;
             } catch (e) {
@@ -1345,7 +1361,7 @@ Code();
             
             // Nama file output teks akan selalu '.txt' atau '.js' jika hanya obfuscate
             let defaultFileName;
-            if (encodedOutput.value.startsWith('var _0x') || encodedOutput.value.startsWith('(function(')) { // Heuristic for obfuscated JS
+            if (encodedOutput.value.startsWith('var _0x') || encodedOutput.value.startsWith('(function(') || encodedOutput.value.includes('DepayyGantengg')) { // Heuristic for obfuscated JS
                 defaultFileName = currentFileName ? `obfuscated_${currentFileName}` : `obfuscated_script.js`;
             } else {
                  defaultFileName = currentFileName ? 
