@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Encoder File Ajaib ala Marvel</title>
+    <title>Protektor File Marvel Edition (Client-Side)</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -16,6 +16,9 @@
             --border-color: #0f3460;
             --textarea-bg: #0d1627;
             --placeholder-color: #a0a0a0;
+            --error-color: #dc3545;
+            --warning-color: #ffc107;
+            --success-color: #28a745;
         }
 
         body {
@@ -26,7 +29,7 @@
             padding: 20px;
             display: flex;
             justify-content: center;
-            align-items: flex-start; /* Mengubah align-items ke flex-start */
+            align-items: flex-start;
             min-height: 100vh;
             box-sizing: border-box;
         }
@@ -37,9 +40,9 @@
             border-radius: 12px;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
             width: 100%;
-            max-width: 700px;
+            max-width: 800px; /* Lebih lebar sedikit */
             animation: fadeIn 0.8s ease-out;
-            margin-top: 50px; /* Menambah margin-top */
+            margin-top: 50px;
         }
 
         @keyframes fadeIn {
@@ -69,15 +72,15 @@
             color: var(--text-color);
         }
 
-        input[type="file"] {
+        input[type="file"], input[type="text"] {
             display: block;
-            width: 100%;
+            width: calc(100% - 20px); /* Adjust width for padding */
             padding: 10px;
             border: 1px solid var(--border-color);
             border-radius: 8px;
             background-color: var(--textarea-bg);
             color: var(--text-color);
-            cursor: pointer;
+            box-sizing: border-box; /* Include padding in width */
             transition: border-color 0.3s ease;
         }
 
@@ -96,7 +99,7 @@
             background-color: var(--button-hover);
         }
 
-        input[type="file"]:focus {
+        input[type="file"]:focus, input[type="text"]:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.5);
@@ -113,7 +116,7 @@
             min-height: 150px;
             resize: vertical;
             transition: border-color 0.3s ease;
-            box-sizing: border-box; /* Penting untuk perhitungan lebar */
+            box-sizing: border-box;
         }
 
         textarea::placeholder {
@@ -144,8 +147,8 @@
             font-size: 1rem;
             font-weight: 500;
             transition: background-color 0.3s ease, transform 0.2s ease;
-            flex-grow: 1; /* Biar tombol bisa merata */
-            min-width: 120px; /* Biar ada ukuran minimal */
+            flex-grow: 1;
+            min-width: 120px;
         }
 
         .btn:hover {
@@ -157,8 +160,14 @@
             transform: translateY(0);
         }
 
+        .btn:disabled {
+            background-color: #3f5b82;
+            cursor: not-allowed;
+            transform: none;
+        }
+
         .btn-reset {
-            background-color: #d9534f; /* Merah untuk reset */
+            background-color: #d9534f;
         }
 
         .btn-reset:hover {
@@ -176,7 +185,38 @@
         }
 
         .hidden {
-            display: none;
+            display: none !important; /* Use !important to ensure override */
+        }
+
+        .message {
+            padding: 10px 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 0.95em;
+            font-weight: 500;
+            display: none; /* Hidden by default */
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.error {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+        }
+
+        .message.warning {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: var(--warning-color);
+            border: 1px solid var(--warning-color);
+        }
+
+        .message.success {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
         }
 
         .loading-overlay {
@@ -251,7 +291,7 @@
             .btn {
                 padding: 10px 15px;
                 font-size: 0.9rem;
-                flex-basis: 100%; /* Tombol jadi satu kolom di HP */
+                flex-basis: 100%;
             }
 
             .button-group {
@@ -262,7 +302,13 @@
 </head>
 <body>
     <div class="container">
-        <h1>Encoder File Ajaib ala Marvel</h1>
+        <h1>Protektor File Marvel Edition</h1>
+
+        <div class="form-group">
+            <label for="licenseKeyInput">License Key (e.g., VEL-1234-9999):</label>
+            <input type="text" id="licenseKeyInput" placeholder="Masukkan license key Anda">
+            <div id="licenseError" class="message error hidden"></div>
+        </div>
 
         <div class="form-group">
             <label for="fileInput">Pilih File (.py atau .js):</label>
@@ -270,16 +316,23 @@
             <div id="fileInfo" class="file-info hidden">
                 Nama File: <strong id="fileName"></strong> | Ukuran: <strong id="fileSize"></strong>
             </div>
+            <div id="fileContentDisplay" class="message hidden"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="originalContentArea">Isi File Asli:</label>
+            <textarea id="originalContentArea" placeholder="Isi file yang di-upload akan muncul di sini..." readonly></textarea>
         </div>
 
         <div class="form-group">
             <label for="encodedOutput">Hasil Encode (Marvel Edition):</label>
-            <textarea id="encodedOutput" placeholder="Hasil encoding akan muncul di sini..."></textarea>
+            <textarea id="encodedOutput" placeholder="Hasil encoding akan muncul di sini..." readonly></textarea>
         </div>
 
         <div class="button-group">
-            <button class="btn" id="copyButton" disabled>Salin Hasil Encode</button>
-            <button class="btn" id="saveButton" disabled>Simpan Hasil Encode</button>
+            <button class="btn" id="encodeButton" disabled>Encode File & Proteksi</button>
+            <button class="btn" id="copyOutputButton" disabled>Salin Hasil Encode</button>
+            <button class="btn" id="saveOutputButton" disabled>Simpan Hasil Encode</button>
             <button class="btn btn-reset" id="resetButton">Reset</button>
         </div>
     </div>
@@ -292,27 +345,63 @@
     <div id="toast" class="toast"></div>
 
     <script>
+        const licenseKeyInput = document.getElementById('licenseKeyInput');
+        const licenseErrorDiv = document.getElementById('licenseError');
         const fileInput = document.getElementById('fileInput');
         const fileNameSpan = document.getElementById('fileName');
         const fileSizeSpan = document.getElementById('fileSize');
         const fileInfoDiv = document.getElementById('fileInfo');
+        const originalContentArea = document.getElementById('originalContentArea');
         const encodedOutput = document.getElementById('encodedOutput');
-        const copyButton = document.getElementById('copyButton');
-        const saveButton = document.getElementById('saveButton');
+        const encodeButton = document.getElementById('encodeButton');
+        const copyOutputButton = document.getElementById('copyOutputButton');
+        const saveOutputButton = document.getElementById('saveOutputButton');
         const resetButton = document.getElementById('resetButton');
         const loadingOverlay = document.getElementById('loadingOverlay');
         const toast = document.getElementById('toast');
+        const fileContentDisplay = document.getElementById('fileContentDisplay'); // Untuk deteksi modifikasi
 
-        const marvelWords = ["marvel", "ganteng", "banget", "iyakan", "gitu", "kan", "thor", "loki", "wanda", "vision"];
+        // --- KONFIGURASI PROTEKSI ---
+        const VALID_LICENSE_KEY = "VEL-1234-9999";
+        const EXPIRED_DATE = new Date("2025-12-31T23:59:59"); // Format YYYY-MM-DDTHH:mm:ss
+        // Ganti ini dengan user agent atau ID unik yang lo mau. Contoh: 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36'
+        const ALLOWED_DEVICE_ID = "MyAwesomeDeviceID-12345"; // Atau bisa pakai navigator.userAgent
+        
+        // Buat debugging, lo bisa ganti jadi navigator.userAgent
+        const CURRENT_DEVICE_ID = `Browser: ${navigator.userAgent.substring(0, 50)}... | Platform: ${navigator.platform}`; // Contoh lebih realistis
+
+        const marvelWords = [
+            "marvel", "ganteng", "banget", "thor", "loki", "wanda", "vision",
+            "hulk", "ultron", "wakanda", "hydra", "ironman", "venom", "strange",
+            "groot", "rocket", "mjolnir", "thanos", "antman", "panther", "bucky", "shuri"
+        ];
+
         let currentFileName = '';
         let currentFileExtension = '';
+        let originalFileChecksum = ''; // Untuk menyimpan checksum file asli
 
-        function showToast(message) {
+        // --- UTILITY FUNCTIONS ---
+        function showToast(message, type = 'info') {
             toast.textContent = message;
-            toast.classList.add('show');
+            toast.className = 'toast show'; // Reset classes
+            if (type === 'success') toast.style.backgroundColor = var_success_color;
+            else if (type === 'error') toast.style.backgroundColor = var_error_color;
+            else if (type === 'warning') toast.style.backgroundColor = var_warning_color;
+            else toast.style.backgroundColor = '#333'; // Default info
+            
             setTimeout(() => {
                 toast.classList.remove('show');
-            }, 3000); // Hilang setelah 3 detik
+            }, 3000);
+        }
+
+        function showMessage(element, message, type) {
+            element.textContent = message;
+            element.className = `message ${type} show`;
+        }
+
+        function hideMessage(element) {
+            element.classList.remove('show');
+            element.textContent = '';
         }
 
         function showLoading(message = "Sedang memproses...") {
@@ -324,21 +413,97 @@
             loadingOverlay.classList.add('hidden');
         }
 
+        // Fungsi hashing sederhana (bukan kriptografi, hanya untuk deteksi modifikasi)
+        function simpleHash(str) {
+            let hash = 0;
+            for (let i = 0; i < str.length; i++) {
+                const char = str.charCodeAt(i);
+                hash = ((hash << 5) - hash) + char;
+                hash |= 0; // Convert to 32bit integer
+            }
+            return hash.toString();
+        }
+
+        // --- ENCODING LOGIC ---
+        function encodeFileContent(content) {
+            // 1. Encode isi file ke base64
+            const base64Encoded = btoa(unescape(encodeURIComponent(content)));
+
+            // 2. Ubah setiap karakter base64 menjadi kata dari list Marvel unik
+            let encodedWords = [];
+            for (let i = 0; i < base64Encoded.length; i++) {
+                const char = base64Encoded[i];
+                // Menggunakan charCodeAt untuk mendapatkan indeks unik
+                const index = char.charCodeAt(0) % marvelWords.length;
+                encodedWords.push(marvelWords[index]);
+            }
+            return encodedWords.join(' ');
+        }
+
+        // --- PROTECTION LOGIC ---
+        function checkProtectionStatus(licenseKey, uploadedContentChecksum) {
+            const today = new Date();
+            const errors = [];
+            let isValid = true;
+            let currentFileChecksum = simpleHash(originalContentArea.value);
+
+            // 1. Cek License Key
+            if (licenseKey !== VALID_LICENSE_KEY) {
+                errors.push("License Key salah, Bro! Cek lagi ya. License Key harus '" + VALID_LICENSE_KEY + "'.");
+                isValid = false;
+            }
+
+            // 2. Cek Expired Time
+            if (today > EXPIRED_DATE) {
+                errors.push("Waduh, masa berlaku license sudah expired, bre! Tanggal sekarang: " + today.toLocaleDateString() + ", Expired: " + EXPIRED_DATE.toLocaleDateString());
+                isValid = false;
+            }
+
+            // 3. Cek Hostname/Device ID
+            if (CURRENT_DEVICE_ID !== ALLOWED_DEVICE_ID) {
+                errors.push("Device tidak dikenali atau tidak diizinkan. ID Device lo: '" + CURRENT_DEVICE_ID + "'. Yang diizinkan: '" + ALLOWED_DEVICE_ID + "'.");
+                isValid = false;
+            }
+            
+            // 4. Deteksi Modifikasi File (Checksum)
+            // Ini akan muncul kalau checksum saat upload beda dengan checksum di textarea
+            if (uploadedContentChecksum && uploadedContentChecksum !== currentFileChecksum) {
+                errors.push("DETECTED: File telah dimodifikasi! Checksum tidak cocok, bre! Ini peringatan keras!");
+                isValid = false; // Anggap sebagai indikasi masalah
+            }
+
+
+            return { isValid, errors };
+        }
+
+        // --- UI UPDATE FUNCTIONS ---
+        function updateButtonStates() {
+            const hasOriginalContent = originalContentArea.value.trim() !== '';
+            const hasEncodedOutput = encodedOutput.value.trim() !== '';
+            const isLicenseKeyProvided = licenseKeyInput.value.trim() !== '';
+
+            // Encode button enabled only if file is loaded AND license key is provided
+            encodeButton.disabled = !(hasOriginalContent && isLicenseKeyProvided);
+            copyOutputButton.disabled = !hasEncodedOutput;
+            saveOutputButton.disabled = !hasEncodedOutput;
+        }
+
+        // --- EVENT LISTENERS ---
         fileInput.addEventListener('change', (event) => {
             const file = event.target.files[0];
             if (file) {
                 const reader = new FileReader();
 
-                // Validasi tipe file
                 const validExtensions = ['.py', '.js'];
                 const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
                 if (!validExtensions.includes(fileExtension)) {
-                    showToast('Bro, cuma bisa upload file .py atau .js aja ya!');
-                    fileInput.value = ''; // Kosongkan input file
+                    showToast('Bro, cuma bisa upload file .py atau .js aja ya!', 'error');
+                    fileInput.value = '';
                     fileInfoDiv.classList.add('hidden');
+                    originalContentArea.value = '';
                     encodedOutput.value = '';
-                    copyButton.disabled = true;
-                    saveButton.disabled = true;
+                    hideMessage(licenseErrorDiv);
+                    updateButtonStates();
                     return;
                 }
 
@@ -348,119 +513,44 @@
                 fileSizeSpan.textContent = `${(file.size / 1024).toFixed(2)} KB`;
                 fileInfoDiv.classList.remove('hidden');
 
-                showLoading('Membaca dan meng-encode file...');
+                showLoading('Membaca file...');
                 reader.onload = (e) => {
-                    const fileContent = e.target.result;
-                    try {
-                        const encoded = encodeFileContent(fileContent);
-                        encodedOutput.value = encoded;
-                        copyButton.disabled = false;
-                        saveButton.disabled = false;
-                        showToast('File berhasil di-encode, bre!');
-                    } catch (error) {
-                        console.error('Error saat encoding:', error);
-                        encodedOutput.value = 'Waduh, ada error saat encoding: ' + error.message;
-                        copyButton.disabled = true;
-                        saveButton.disabled = true;
-                        showToast('Gagal encode file, bro!');
-                    } finally {
-                        hideLoading();
-                    }
+                    const content = e.target.result;
+                    originalContentArea.value = content;
+                    originalFileChecksum = simpleHash(content); // Simpan checksum awal
+                    hideLoading();
+                    showToast('File berhasil dibaca dan checksum dihitung!', 'success');
+                    encodedOutput.value = ''; // Kosongkan output
+                    hideMessage(licenseErrorDiv);
+                    updateButtonStates();
                 };
 
                 reader.onerror = (e) => {
                     hideLoading();
                     console.error('Error saat membaca file:', e);
-                    encodedOutput.value = 'Gagal membaca file, bro. Coba lagi deh.';
-                    copyButton.disabled = true;
-                    saveButton.disabled = true;
-                    showToast('Gagal membaca file!');
+                    originalContentArea.value = 'Gagal membaca file, bro. Coba lagi deh.';
+                    originalFileChecksum = '';
+                    showToast('Gagal membaca file!', 'error');
+                    encodedOutput.value = '';
+                    hideMessage(licenseErrorDiv);
+                    updateButtonStates();
                 };
 
-                reader.readAsText(file); // Membaca file sebagai teks
+                reader.readAsText(file);
             } else {
                 fileInfoDiv.classList.add('hidden');
+                originalContentArea.value = '';
                 encodedOutput.value = '';
-                copyButton.disabled = true;
-                saveButton.disabled = true;
+                currentFileName = '';
+                currentFileExtension = '';
+                originalFileChecksum = '';
+                hideMessage(licenseErrorDiv);
+                updateButtonStates();
             }
         });
 
-        function encodeFileContent(content) {
-            // 1. Ubah isi file menjadi base64
-            const base64Encoded = btoa(unescape(encodeURIComponent(content)));
+        licenseKeyInput.addEventListener('input', updateButtonStates);
+        originalContentArea.addEventListener('input', updateButtonStates); // Untuk kasus user ngetik manual
 
-            // 2. Konversi setiap karakter base64 menjadi kata acak dari array marvelWords
-            let encodedWords = [];
-            for (let i = 0; i < base64Encoded.length; i++) {
-                const char = base64Encoded[i];
-                // Kita akan menggunakan charCodeAt untuk mendapatkan nilai numerik dari karakter
-                // Kemudian modulo dengan panjang array marvelWords untuk mendapatkan indeks
-                const randomIndex = char.charCodeAt(0) % marvelWords.length;
-                encodedWords.push(marvelWords[randomIndex]);
-            }
-
-            // 3. Hasil encode berupa rangkaian kata-kata yang dipisahkan spasi
-            return encodedWords.join(' ');
-        }
-
-        copyButton.addEventListener('click', () => {
-            encodedOutput.select(); // Pilih semua teks di textarea
-            encodedOutput.setSelectionRange(0, 99999); // Untuk perangkat mobile
-            try {
-                navigator.clipboard.writeText(encodedOutput.value)
-                    .then(() => showToast('Hasil encode udah disalin ke clipboard, bre!'))
-                    .catch(err => {
-                        console.error('Gagal menyalin teks:', err);
-                        showToast('Gagal nyalin teks. Browser lo kayaknya gak support Clipboard API nih.');
-                    });
-            } catch (err) {
-                console.error('Browser tidak support Clipboard API:', err);
-                // Fallback untuk browser lama
-                document.execCommand('copy');
-                showToast('Hasil encode udah disalin (metode lama), bro!');
-            }
-        });
-
-        saveButton.addEventListener('click', () => {
-            const encodedText = encodedOutput.value;
-            if (!encodedText) {
-                showToast('Belum ada hasil encode yang bisa disimpan, bro!');
-                return;
-            }
-
-            showLoading('Menyimpan file...');
-            const blob = new Blob([encodedText], { type: 'text/plain;charset=utf-8' });
-            const defaultFileName = currentFileName ? `encoded_${currentFileName}` : `encoded_file${currentFileExtension || '.txt'}`;
-
-            const a = document.createElement('a');
-            a.href = URL.createObjectURL(blob);
-            a.download = defaultFileName; // Nama file saat diunduh
-            document.body.appendChild(a);
-            a.click();
-            document.body.removeChild(a);
-            URL.revokeObjectURL(a.href); // Bersihkan URL objek
-
-            hideLoading();
-            showToast('Hasil encode berhasil disimpan, mantap!');
-        });
-
-        resetButton.addEventListener('click', () => {
-            fileInput.value = ''; // Reset input file
-            encodedOutput.value = ''; // Kosongkan textarea
-            fileInfoDiv.classList.add('hidden'); // Sembunyikan info file
-            copyButton.disabled = true; // Nonaktifkan tombol salin
-            saveButton.disabled = true; // Nonaktifkan tombol simpan
-            currentFileName = '';
-            currentFileExtension = '';
-            showToast('Form udah di-reset, siap buat encoding lagi!');
-        });
-
-        // Initialize button states
-        if (!encodedOutput.value) {
-            copyButton.disabled = true;
-            saveButton.disabled = true;
-        }
-    </script>
-</body>
-</html>
+        encodeButton.addEventListener('click', () => {
+            const licenseKey = licen
