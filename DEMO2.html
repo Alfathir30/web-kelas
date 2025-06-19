@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protektor File Marvel Edition (Client-Side) - v2.4 FINAL FIX</title>
+    <title>Protektor File Marvel Edition (Client-Side) - v2.5 FINAL FINAL FIX</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -303,7 +303,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Protektor File Marvel Edition v2.4 (FINAL FIX)</h1>
+        <h1>Protektor File Marvel Edition v2.5 (FINAL FINAL FIX)</h1>
 
         <div class="form-group">
             <label for="licenseKeyInput">License Key (akan menjadi kunci proteksi):</label>
@@ -572,240 +572,240 @@
             const encodedWordsArray = encodedMarvelString.split(' ');
             const pythonEncodedMarvelWordList = `[${encodedWordsArray.map(word => `'${word}'`).join(', ')}]`;
 
-
             const deviceIdPlaceholder = INITIAL_ALLOWED_DEVICE_ID_PLACEHOLDER;
 
-            // Perbaikan di sini: Menggunakan multiline string Python (docstring) untuk komentar header
-            // agar tidak bentrok dengan parser JavaScript yang sensitif terhadap # di awal baris
-            const pythonScript = `"""
-Ini adalah file Python yang terproteksi oleh "Protektor File Marvel Edition v2.4".
-Dibuat pada ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })} WIB.
-Jangan ubah kode ini kecuali Anda tahu apa yang Anda lakukan.
-"""
-
-import base64
-import sys
-import datetime
-import platform
-import socket
-import os
-import re
-import traceback 
-import zlib 
-import random 
-
-# --- KONFIGURASI PROTEKSI ---
-VALID_LICENSE_KEY = "${customLicenseKey}" 
-EXPIRED_DATE_STR = "${EXPIRED_DATE_STR}"
-ALLOWED_DEVICE_ID = "${deviceIdPlaceholder}" 
-
-# --- Data untuk Merekonstruksi Tabel Dekode ---
-# Ini adalah karakter Base64 dan kata Marvel yang sudah diacak urutannya.
-# Mereka akan disatukan kembali menggunakan seed yang sama.
-_SHUFFLED_BASE64_CHARS = ${pythonShuffledBase64Chars}
-_SHUFFLED_MARVEL_WORDS = ${pythonShuffledMarvelWords}
-_SHUFFLE_SEED = ${SHUFFLE_SEED} 
-
-# --- Data Asli yang Ter-obfuscate (Marvel Words sebagai List Python) ---
-_ENCODED_MARVEL_WORD_LIST = ${pythonEncodedMarvelWordList}
-
-# --- FUNGSI UTILITY INTERNAL ---
-def get_current_device_id_python():
-    """Mengambil informasi unik dari device saat ini."""
-    parts = []
-    try:
-        parts.append(f"OS:{platform.system()}")
-        parts.append(f"Node:{socket.gethostname()}") 
-        parts.append(f"Machine:{platform.machine()}") 
-        parts.append(f"Processor:{platform.processor()}") 
-    except Exception as e:
-        parts.append(f"ErrorGettingDeviceID:{e}")
-    return "|".join(parts)
-
-def update_script_with_device_id(script_path, new_device_id, placeholder):
-    """
-    Menulis ulang file script untuk memasukkan Device ID yang baru ditemukan.
-    """
-    try:
-        with open(script_path, 'r', encoding='utf-8') as f:
-            content = f.read()
-        
-        search_pattern_str = f'ALLOWED_DEVICE_ID = "{placeholder}"'
-        escaped_search_pattern = re.escape(search_pattern_str)
-        pattern = re.compile(escaped_search_pattern)
-
-        if pattern.search(content):
-            new_content = pattern.sub(f"ALLOWED_DEVICE_ID = \\"{new_device_id}\\"", content);
-            
-            with open(script_path, 'w', encoding='utf-8') as f:
-                f.write(new_content)
-            print("INFO: Device ID berhasil direkam dan disimpan ke script untuk proteksi.")
-            return True
-        else:
-            print("WARNING: Placeholder Device ID tidak ditemukan di script. File mungkin sudah dimodifikasi atau rusak.")
-            return False
-    except Exception as e:
-        print(f"ERROR: Gagal menyimpan Device ID ke script: {e}")
-        print("Pastikan script memiliki izin tulis di lokasinya.")
-        print(f"Detail error: {e}")
-        return False
-
-def check_protection_python(user_license_key, current_script_path, device_id_placeholder_from_js):
-    current_device = get_current_device_id_python()
-    
-    global ALLOWED_DEVICE_ID 
-    
-    if ALLOWED_DEVICE_ID == device_id_placeholder_from_js:
-        print("\\n=======================================================")
-        print("          *** PROSES REGISTRASI DEVICE ***")
-        print("=======================================================")
-        print("Ini adalah pertama kali script dijalankan di device ini.")
-        print(f"DEVICE ID YANG AKAN DIREKAM: >>> {current_device} <<<")
-        print("Merekam Device ID ini untuk proteksi di masa depan...")
-        
-        if update_script_with_device_id(current_script_path, current_device, device_id_placeholder_from_js):
-            ALLOWED_DEVICE_ID = current_device
-            print("Registrasi Device ID berhasil! Script akan melanjutkan eksekusi.")
-        else:
-            print("\\nERROR: Gagal melakukan registrasi device otomatis. Script tidak dapat dilanjutkan.")
-            return False 
-    
-    today = datetime.datetime.now()
-    expired_date = datetime.datetime.fromisoformat(EXPIRED_DATE_STR)
-
-    errors = []
-
-    if user_license_key != VALID_LICENSE_KEY: 
-        errors.append("License Key salah, Bro! Cek lagi ya.")
-
-    if today > expired_date:
-        errors.append(f"Waduh, masa berlaku license sudah expired, bre! Expired: {expired_date.strftime('%Y-%m-%d %H:%M:%S')}")
-
-    if current_device != ALLOWED_DEVICE_ID:
-        errors.append(f"Device tidak dikenali atau tidak diizinkan.\\nID Device Anda: '{current_device}'.\\nYang Diizinkan: '{ALLOWED_DEVICE_ID}'.")
-    
-    if errors:
-        print("\\n--- Gagal Memproses Proteksi ---")
-        for error in errors:
-            print(f"- {error}")
-        print("---------------------------------")
-        return False
-    return True
-
-def reconstruct_decode_table():
-    """Merekonstruksi DECODE_TABLE dari data yang diacak."""
-    random.seed(_SHUFFLE_SEED) # Menggunakan seed yang sama untuk konsistensi
-    
-    # Kita perlu membuat salinan lokal dari list yang di-shuffle
-    # agar `random.shuffle` bisa mengocoknya secara in-place.
-    # Namun, karena _SHUFFLED_BASE64_CHARS dan _SHUFFLED_MARVEL_WORDS
-    # sudah datang dalam urutan yang terpasang dari JS,
-    # kita cukup membuat dictionary dari pasangan tersebut.
-    # Konsep 'shuffling' di sini adalah bahwa _SHUFFLED_BASE64_CHARS dan _SHUFFLED_MARVEL_WORDS
-    # sudah datang dalam urutan acak yang sinkron, jadi kita tidak perlu mengocok lagi di sini,
-    # cukup membuat mapping-nya.
-    
-    decode_table = {word: char for char, word in zip(_SHUFFLED_BASE64_CHARS, _SHUFFLED_MARVEL_WORDS)}
-    
-    return decode_table
-
-def decode_marvel_string_from_list(marvel_word_list, decode_table_ref):
-    # Layer 3: Dekode Marvel Words ke Base64 (setelah Zlib)
-    base64_chars = []
-    for word in marvel_word_list:
-        if not word: 
-            continue
-        if word in decode_table_ref: # Gunakan tabel yang sudah direkonstruksi
-            base64_chars.append(decode_table_ref[word])
-        else:
-            print(f"Warning: Kata '{word}' tidak ditemukan di tabel dekode! Kode mungkin corrupt atau tabel tidak lengkap.")
-            return None 
-    
-    zlib_compressed_base64_str = "".join(base64_chars)
-
-    # Layer 2: Dekompresi Zlib
-    try:
-        compressed_bytes = base64.b64decode(zlib_compressed_base64_str)
-        decompressed_bytes = zlib.decompress(compressed_bytes)
-        
-        base64_str_from_zlib = decompressed_bytes.decode('utf-8')
-
-        # Layer 1: Dekode Base64
-        decoded_original_bytes = base64.b64decode(base64_str_from_zlib)
-        original_code = decoded_original_bytes.decode('utf-8')
-        
-        return original_code
-
-    except zlib.error as e:
-        print(f"ERROR DECODE: Gagal dekompresi Zlib. Data mungkin korup atau bukan format Zlib yang diharapkan: {e}")
-        return None
-    except base64.binascii.Error as e:
-        print(f"ERROR DECODE: Gagal Base64 decode setelah dekompresi Zlib. Data mungkin korup: {e}")
-        return None
-    except Exception as e:
-        print(f"ERROR DECODE: Terjadi kesalahan tidak terduga selama dekode: {e}")
-        traceback.print_exc()
-        return None
-
-
-def main():
-    current_script_path = os.path.abspath(sys.argv[0])
-
-    license_input = input("Masukkan License Key Anda: ").strip()
-
-    if not check_protection_python(license_input, current_script_path, "${INITIAL_ALLOWED_DEVICE_ID_PLACEHOLDER}"):
-        sys.exit(1)
-
-    print("\\nProteksi LOLOS! Mencoba mendekode dan menjalankan kode asli...")
-
-    try:
-        # Rekonstruksi DECODE_TABLE sebelum digunakan
-        DECODE_TABLE_RECONSTRUCTED = reconstruct_decode_table()
-        if DECODE_TABLE_RECONSTRUCTED is None:
-            print("Gagal merekonstruksi tabel dekode. Kode tidak bisa dijalankan.")
-            sys.exit(1)
-
-        original_code = decode_marvel_string_from_list(_ENCODED_MARVEL_WORD_LIST, DECODE_TABLE_RECONSTRUCTED)
-        if original_code === None: # Perbaikan: '===' menjadi '==' untuk Python
-            print("Dekode gagal. Kode tidak bisa dijalankan.")
-            sys.exit(1)
-        
-        # Simpan kode asli yang didekode ke file sementara untuk debugging
-        debug_output_filename = "DEBUG_DECODED_ORIGINAL_CODE.py"
-        with open(debug_output_filename, "w", encoding="utf-8") as debug_f:
-            debug_f.write(original_code)
-        print(f"INFO DEBUG: Kode asli setelah dekode disimpan ke '{debug_output_filename}' di direktori script.")
-
-        print("\\n--- MENJALANKAN KODE ASLI ---")
-        
-        try:
-            # Tambahkan direktori script ke sys.path agar impor relatif di kode asli berfungsi
-            script_dir = os.path.dirname(current_script_path)
-            if script_dir not in sys.path:
-                sys.path.insert(0, script_dir)
-
-            # Untuk .py files, kita bisa langsung exec.
-            # Untuk .js files, exec tidak akan berfungsi langsung di Python.
-            # Ini hanya contoh, exec() harus sesuai dengan tipe file asli.
-            # Asumsi: Ini untuk file Python
-            exec(original_code, {'__name__': '__main__'}) # Set __name__ agar exec berjalan seperti main script
-        except Exception as inner_e:
-            print(f"\\n!!!! DETECTED: ERROR SAAT MENJALANKAN KODE ASLI !!!!")
-            print(f"Detail Error: {inner_e}")
-            traceback.print_exc()
-            print("\\n!!!! EKSEKUSI KODE ASLI GAGAL !!!!")
-            sys.exit(1)
-            
-        print("--- EKSEKUSI KODE SELESAI ---")
-
-    except Exception as e:
-        print(f"\\nWaduh, ada error fatal saat mendekode atau menjalankan kode asli: {e}")
-        traceback.print_exc()
-        sys.exit(1)
-
-if __name__ == "__main__":
-    main()
-`;
+            // Perbaikan TERAKHIR: Menggunakan string concatenation (' + '\n') untuk setiap baris
+            // agar JavaScript tidak salah menginterpretasikan template literal yang kompleks.
+            // Ini adalah metode paling aman untuk embedded multiline string.
+            const pythonScript = 
+                '"""\n' +
+                'Ini adalah file Python yang terproteksi oleh "Protektor File Marvel Edition v2.5".\n' +
+                `Dibuat pada ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })} WIB.\n` +
+                'Jangan ubah kode ini kecuali Anda tahu apa yang Anda lakukan.\n' +
+                '"""\n' +
+                '\n' +
+                'import base64\n' +
+                'import sys\n' +
+                'import datetime\n' +
+                'import platform\n' +
+                'import socket\n' +
+                'import os\n' +
+                'import re\n' +
+                'import traceback \n' +
+                'import zlib \n' +
+                'import random \n' + // Ini baris yang suka bikin masalah, sekarang jadi string murni.
+                '\n' +
+                '# --- KONFIGURASI PROTEKSI ---\n' +
+                `VALID_LICENSE_KEY = "${customLicenseKey}" \n` +
+                `EXPIRED_DATE_STR = "${EXPIRED_DATE_STR}"\n` +
+                `ALLOWED_DEVICE_ID = "${deviceIdPlaceholder}" \n` +
+                '\n' +
+                '# --- Data untuk Merekonstruksi Tabel Dekode ---\n' +
+                '# Ini adalah karakter Base64 dan kata Marvel yang sudah diacak urutannya.\n' +
+                '# Mereka akan disatukan kembali menggunakan seed yang sama.\n' +
+                `_SHUFFLED_BASE64_CHARS = ${pythonShuffledBase64Chars}\n` +
+                `_SHUFFLED_MARVEL_WORDS = ${pythonShuffledMarvelWords}\n` +
+                `_SHUFFLE_SEED = ${SHUFFLE_SEED} \n` +
+                '\n' +
+                '# --- Data Asli yang Ter-obfuscate (Marvel Words sebagai List Python) ---\n' +
+                `_ENCODED_MARVEL_WORD_LIST = ${pythonEncodedMarvelWordList}\n` +
+                '\n' +
+                '# --- FUNGSI UTILITY INTERNAL ---\n' +
+                'def get_current_device_id_python():\n' +
+                '    """Mengambil informasi unik dari device saat ini."""\n' +
+                '    parts = []\n' +
+                '    try:\n' +
+                '        parts.append(f"OS:{platform.system()}")\n' +
+                '        parts.append(f"Node:{socket.gethostname()}") \n' +
+                '        parts.append(f"Machine:{platform.machine()}") \n' +
+                '        parts.append(f"Processor:{platform.processor()}") \n' +
+                '    except Exception as e:\n' +
+                '        parts.append(f"ErrorGettingDeviceID:{e}")\n' +
+                '    return "|".join(parts)\n' +
+                '\n' +
+                'def update_script_with_device_id(script_path, new_device_id, placeholder):\n' +
+                '    """\n' +
+                '    Menulis ulang file script untuk memasukkan Device ID yang baru ditemukan.\n' +
+                '    """\n' +
+                '    try:\n' +
+                '        with open(script_path, \'r\', encoding=\'utf-8\') as f:\n' +
+                '            content = f.read()\n' +
+                '        \n' +
+                `        search_pattern_str = f'ALLOWED_DEVICE_ID = "\\"{placeholder}\\"'\n` + // Perbaikan escape quotes
+                `        escaped_search_pattern = re.escape(search_pattern_str)\n` +
+                `        pattern = re.compile(escaped_search_pattern)\n` +
+                '\n' +
+                '        if pattern.search(content):\n' +
+                `            new_content = pattern.sub(f"ALLOWED_DEVICE_ID = \\"{new_device_id}\\"", content);\n` +
+                '            \n' +
+                '            with open(script_path, \'w\', encoding=\'utf-8\') as f:\n' +
+                '                f.write(new_content)\n' +
+                '            print("INFO: Device ID berhasil direkam dan disimpan ke script untuk proteksi.")\n' +
+                '            return True\n' +
+                '        else:\n' +
+                '            print("WARNING: Placeholder Device ID tidak ditemukan di script. File mungkin sudah dimodifikasi atau rusak.")\n' +
+                '            return False\n' +
+                '    except Exception as e:\n' +
+                '        print(f"ERROR: Gagal menyimpan Device ID ke script: {e}")\n' +
+                '        print("Pastikan script memiliki izin tulis di lokasinya.")\n' +
+                '        print(f"Detail error: {e}")\n' +
+                '        return False\n' +
+                '\n' +
+                'def check_protection_python(user_license_key, current_script_path, device_id_placeholder_from_js):\n' +
+                '    current_device = get_current_device_id_python()\n' +
+                '    \n' +
+                '    global ALLOWED_DEVICE_ID \n' +
+                '    \n' +
+                '    if ALLOWED_DEVICE_ID == device_id_placeholder_from_js:\n' +
+                '        print("\\n=======================================================")\n' +
+                '        print("          *** PROSES REGISTRASI DEVICE ***")\n' +
+                '        print("=======================================================")\n' +
+                '        print("Ini adalah pertama kali script dijalankan di device ini.")\n' +
+                '        print(f"DEVICE ID YANG AKAN DIREKAM: >>> {current_device} <<<")\n' +
+                '        print("Merekam Device ID ini untuk proteksi di masa depan...")\n' +
+                '        \n' +
+                '        if update_script_with_device_id(current_script_path, current_device, device_id_placeholder_from_js):\n' +
+                '            ALLOWED_DEVICE_ID = current_device\n' +
+                '            print("Registrasi Device ID berhasil! Script akan melanjutkan eksekusi.")\n' +
+                '        else:\n' +
+                '            print("\\nERROR: Gagal melakukan registrasi device otomatis. Script tidak dapat dilanjutkan.")\n' +
+                '            return False \n' +
+                '    \n' +
+                '    today = datetime.datetime.now()\n' +
+                '    expired_date = datetime.datetime.fromisoformat(EXPIRED_DATE_STR)\n' +
+                '\n' +
+                '    errors = []\n' +
+                '\n' +
+                '    if user_license_key != VALID_LICENSE_KEY: \n' +
+                '        errors.append("License Key salah, Bro! Cek lagi ya.")\n' +
+                '\n' +
+                '    if today > expired_date:\n' +
+                '        errors.append(f"Waduh, masa berlaku license sudah expired, bre! Expired: {expired_date.strftime(\'%Y-%m-%d %H:%M:%S\')}")\n' +
+                '\n' +
+                '    if current_device != ALLOWED_DEVICE_ID:\n' +
+                '        errors.append(f"Device tidak dikenali atau tidak diizinkan.\\nID Device Anda: \'{current_device}\'.\\nYang Diizinkan: \'{ALLOWED_DEVICE_ID}\'.")\n' +
+                '    \n' +
+                '    if errors:\n' +
+                '        print("\\n--- Gagal Memproses Proteksi ---")\n' +
+                '        for error in errors:\n' +
+                '            print(f"- {error}")\n' +
+                '        print("---------------------------------")\n' +
+                '        return False\n' +
+                '    return True\n' +
+                '\n' +
+                'def reconstruct_decode_table():\n' +
+                '    """Merekonstruksi DECODE_TABLE dari data yang diacak."""\n' +
+                '    random.seed(_SHUFFLE_SEED) # Menggunakan seed yang sama untuk konsistensi\n' +
+                '    \n' +
+                '    # Kita perlu membuat salinan lokal dari list yang di-shuffle\n' +
+                '    # agar `random.shuffle` bisa mengocoknya secara in-place.\n' +
+                '    # Namun, karena _SHUFFLED_BASE64_CHARS dan _SHUFFLED_MARVEL_WORDS\n' +
+                '    # sudah datang dalam urutan yang terpasang dari JS,\n' +
+                '    # kita cukup membuat dictionary dari pasangan tersebut.\n' +
+                '    # Konsep \'shuffling\' di sini adalah bahwa _SHUFFLED_BASE64_CHARS dan _SHUFFLED_MARVEL_WORDS\n' +
+                '    # sudah datang dalam urutan acak yang sinkron, jadi kita tidak perlu mengocok lagi di sini,\n' +
+                '    # cukup membuat mapping-nya.\n' +
+                '    \n' +
+                '    decode_table = {word: char for char, word in zip(_SHUFFLED_BASE64_CHARS, _SHUFFLED_MARVEL_WORDS)}\n' +
+                '    \n' +
+                '    return decode_table\n' +
+                '\n' +
+                'def decode_marvel_string_from_list(marvel_word_list, decode_table_ref):\n' +
+                '    # Layer 3: Dekode Marvel Words ke Base64 (setelah Zlib)\n' +
+                '    base64_chars = []\n' +
+                '    for word in marvel_word_list:\n' +
+                '        if not word: \n' +
+                '            continue\n' +
+                '        if word in decode_table_ref: # Gunakan tabel yang sudah direkonstruksi\n' +
+                '            base64_chars.append(decode_table_ref[word])\n' +
+                '        else:\n' +
+                '            print(f"Warning: Kata \'{word}\' tidak ditemukan di tabel dekode! Kode mungkin corrupt atau tabel tidak lengkap.")\n' +
+                '            return None \n' +
+                '    \n' +
+                '    zlib_compressed_base64_str = "".join(base64_chars)\n' +
+                '\n' +
+                '    # Layer 2: Dekompresi Zlib\n' +
+                '    try:\n' +
+                '        compressed_bytes = base64.b64decode(zlib_compressed_base64_str)\n' +
+                '        decompressed_bytes = zlib.decompress(compressed_bytes)\n' +
+                '        \n' +
+                '        base64_str_from_zlib = decompressed_bytes.decode(\'utf-8\')\n' +
+                '\n' +
+                '        # Layer 1: Dekode Base64\n' +
+                '        decoded_original_bytes = base64.b64decode(base64_str_from_zlib)\n' +
+                '        original_code = decoded_original_bytes.decode(\'utf-8\')\n' +
+                '        \n' +
+                '        return original_code\n' +
+                '\n' +
+                '    except zlib.error as e:\n' +
+                '        print(f"ERROR DECODE: Gagal dekompresi Zlib. Data mungkin korup atau bukan format Zlib yang diharapkan: {e}")\n' +
+                '        return None\n' +
+                '    except base64.binascii.Error as e:\n' +
+                '        print(f"ERROR DECODE: Gagal Base64 decode setelah dekompresi Zlib. Data mungkin korup: {e}")\n' +
+                '        return None\n' +
+                '    except Exception as e:\n' +
+                '        print(f"ERROR DECODE: Terjadi kesalahan tidak terduga selama dekode: {e}")\n' +
+                '        traceback.print_exc()\n' +
+                '        return None\n' +
+                '\n' +
+                '\n' +
+                'def main():\n' +
+                '    current_script_path = os.path.abspath(sys.argv[0])\n' +
+                '\n' +
+                '    license_input = input("Masukkan License Key Anda: ").strip()\n' +
+                '\n' +
+                `    if not check_protection_python(license_input, current_script_path, "${INITIAL_ALLOWED_DEVICE_ID_PLACEHOLDER}"):\n` +
+                '        sys.exit(1)\n' +
+                '\n' +
+                '    print("\\nProteksi LOLOS! Mencoba mendekode dan menjalankan kode asli...")\n' +
+                '\n' +
+                '    try:\n' +
+                '        # Rekonstruksi DECODE_TABLE sebelum digunakan\n' +
+                '        DECODE_TABLE_RECONSTRUCTED = reconstruct_decode_table()\n' +
+                '        if DECODE_TABLE_RECONSTRUCTED is None:\n' +
+                '            print("Gagal merekonstruksi tabel dekode. Kode tidak bisa dijalankan.")\n' +
+                '            sys.exit(1)\n' +
+                '\n' +
+                '        original_code = decode_marvel_string_from_list(_ENCODED_MARVEL_WORD_LIST, DECODE_TABLE_RECONSTRUCTED)\n' +
+                '        if original_code is None:\n' + // Perbaikan: '===' menjadi 'is' untuk Python None check
+                '            print("Dekode gagal. Kode tidak bisa dijalankan.")\n' +
+                '            sys.exit(1)\n' +
+                '        \n' +
+                '        # Simpan kode asli yang didekode ke file sementara untuk debugging\n' +
+                '        debug_output_filename = "DEBUG_DECODED_ORIGINAL_CODE.py"\n' +
+                '        with open(debug_output_filename, "w", encoding="utf-8") as debug_f:\n' +
+                '            debug_f.write(original_code)\n' +
+                `        print(f"INFO DEBUG: Kode asli setelah dekode disimpan ke \'{debug_output_filename}\' di direktori script.")\n` +
+                '\n' +
+                '        print("\\n--- MENJALANKAN KODE ASLI ---")\n' +
+                '        \n' +
+                '        try:\n' +
+                '            # Tambahkan direktori script ke sys.path agar impor relatif di kode asli berfungsi\n' +
+                '            script_dir = os.path.dirname(current_script_path)\n' +
+                '            if script_dir not in sys.path:\n' +
+                '                sys.path.insert(0, script_dir)\n' +
+                '\n' +
+                '            # Untuk .py files, kita bisa langsung exec.\n' +
+                '            # Untuk .js files, exec tidak akan berfungsi langsung di Python.\n' +
+                '            # Ini hanya contoh, exec() harus sesuai dengan tipe file asli.\n' +
+                '            # Asumsi: Ini untuk file Python\n' +
+                '            exec(original_code, {\'__name__\': \'__main__\'}) # Set __name__ agar exec berjalan seperti main script\n' +
+                '        except Exception as inner_e:\n' +
+                '            print(f"\\n!!!! DETECTED: ERROR SAAT MENJALANKAN KODE ASLI !!!!")\n' +
+                '            print(f"Detail Error: {inner_e}")\n' +
+                '            traceback.print_exc()\n' +
+                '            print("\\n!!!! EKSEKUSI KODE ASLI GAGAL !!!!")\n' +
+                '            sys.exit(1)\n' +
+                '            \n' +
+                '        print("--- EKSEKUSI KODE SELESAI ---")\n' +
+                '\n' +
+                '    except Exception as e:\n' +
+                '        print(f"\\nWaduh, ada error fatal saat mendekode atau menjalankan kode asli: {e}")\n' +
+                '        traceback.print_exc()\n' +
+                '        sys.exit(1)\n' +
+                '\n' +
+                'if __name__ == "__main__":\n' +
+                '    main()\n';
             return pythonScript;
         }
 
