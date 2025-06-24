@@ -3,261 +3,590 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JS Obfuscator Generator (Lokal)</title>
+    <title>JS Obfuscator - Hacker Edition</title>
+    <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.0.2/dist/index.browser.js"></script>
     <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            margin: 20px;
-            background-color: #f4f4f4;
-            color: #333;
+            background: #000;
+            color: #00ff00;
+            font-family: 'Courier New', 'Monaco', 'Menlo', monospace;
+            min-height: 100vh;
+            padding: 20px;
+            background-image: 
+                radial-gradient(rgba(0, 255, 0, 0.1) 1px, transparent 1px);
+            background-size: 50px 50px;
+            animation: matrix-bg 20s linear infinite;
         }
+
+        @keyframes matrix-bg {
+            0% { background-position: 0 0; }
+            100% { background-position: 50px 50px; }
+        }
+
         .container {
-            max-width: 800px;
+            max-width: 1200px;
             margin: 0 auto;
-            background-color: #fff;
-            padding: 25px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            background: rgba(0, 0, 0, 0.9);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 30px;
+            box-shadow: 
+                0 0 20px rgba(0, 255, 0, 0.3),
+                inset 0 0 20px rgba(0, 255, 0, 0.1);
         }
-        h1 {
+
+        .header {
             text-align: center;
-            color: #0056b3;
+            margin-bottom: 40px;
+            border-bottom: 2px solid #00ff00;
+            padding-bottom: 20px;
         }
-        label {
-            display: block;
-            margin-bottom: 8px;
+
+        .title {
+            font-size: 2.5rem;
             font-weight: bold;
+            text-shadow: 0 0 10px #00ff00;
+            margin-bottom: 10px;
+            height: 60px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
-        textarea {
-            width: 100%;
-            padding: 10px;
+
+        .cursor {
+            animation: blink 1s infinite;
+            font-weight: normal;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .subtitle {
+            font-size: 1rem;
+            color: #00cc00;
+            opacity: 0.8;
+        }
+
+        .section {
+            margin-bottom: 30px;
+            padding: 20px;
+            border: 1px solid #00ff00;
+            border-radius: 5px;
+            background: rgba(0, 255, 0, 0.05);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
             margin-bottom: 15px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            box-sizing: border-box;
-            min-height: 200px;
-            resize: vertical;
+            color: #00ff00;
+            text-shadow: 0 0 5px #00ff00;
         }
-        input[type="file"] {
-            margin-bottom: 15px;
-            border: 1px solid #ddd;
-            padding: 8px;
-            border-radius: 4px;
-            width: 100%;
-            box-sizing: border-box;
-        }
-        button {
-            background-color: #007bff;
-            color: white;
-            padding: 10px 15px;
-            border: none;
-            border-radius: 4px;
+
+        .file-input-container {
+            position: relative;
+            display: inline-block;
             cursor: pointer;
-            font-size: 16px;
-            margin-right: 10px;
-            transition: background-color 0.2s;
+            background: #111;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
+            padding: 12px 20px;
+            transition: all 0.3s ease;
         }
-        button:hover {
-            background-color: #0056b3;
+
+        .file-input-container:hover {
+            background: rgba(0, 255, 0, 0.1);
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
         }
-        #obfuscatedOutput {
-            background-color: #e9e9e9;
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-label {
+            color: #00ff00;
+            font-weight: bold;
+            pointer-events: none;
+        }
+
+        .file-info {
+            margin-top: 10px;
+            padding: 10px;
+            background: #111;
+            border-radius: 3px;
+            border-left: 3px solid #00ff00;
+            display: none;
+        }
+
+        .textarea-container {
+            position: relative;
+        }
+
+        .code-textarea {
+            width: 100%;
+            height: 300px;
+            background: #000;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            border-radius: 5px;
             padding: 15px;
-            border-radius: 4px;
-            white-space: pre-wrap;
-            word-wrap: break-word;
-            min-height: 100px;
-            margin-top: 20px;
-            border: 1px dashed #ccc;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            resize: vertical;
+            outline: none;
+            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2);
         }
-        .note {
-            font-size: 0.9em;
-            color: #666;
+
+        .code-textarea:focus {
+            box-shadow: 
+                inset 0 0 10px rgba(0, 255, 0, 0.3),
+                0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .code-textarea::placeholder {
+            color: #006600;
+        }
+
+        .button {
+            background: #111;
+            color: #00ff00;
+            border: 2px solid #00ff00;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 5px;
+        }
+
+        .button:hover {
+            background: rgba(0, 255, 0, 0.1);
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .button:active {
+            transform: translateY(0);
+        }
+
+        .button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .button:disabled:hover {
+            background: #111;
+            box-shadow: none;
+            transform: none;
+        }
+
+        .controls {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
             margin-top: 15px;
-            border-top: 1px solid #eee;
-            padding-top: 10px;
         }
-        .file-upload-section {
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 1px dashed #eee;
+
+        .status {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 3px;
+            display: none;
+        }
+
+        .status.success {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+        }
+
+        .status.error {
+            background: rgba(255, 0, 0, 0.1);
+            border: 1px solid #ff0000;
+            color: #ff0000;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .loading-text {
+            color: #00ff00;
+            animation: pulse 1.5s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-item {
+            background: #111;
+            padding: 15px;
+            border-radius: 5px;
+            border-left: 3px solid #00ff00;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #00ff00;
+            text-shadow: 0 0 5px #00ff00;
+        }
+
+        .stat-label {
+            font-size: 0.9rem;
+            color: #00cc00;
+            margin-top: 5px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+                margin: 10px;
+            }
+            
+            .title {
+                font-size: 1.8rem;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
-
     <div class="container">
-        <h1>JS Obfuscator Generator (Mode Lokal)</h1>
-        <p>Halo, bre! Lo bisa masukin kode JS langsung di teks area, atau kalo males, upload aja file .js nya!</p>
-
-        <div class="file-upload-section">
-            <label for="jsFileUpload">Upload File JavaScript (.js):</label>
-            <input type="file" id="jsFileUpload" accept=".js">
-            <button onclick="loadFile()">Load File</button>
+        <div class="header">
+            <div class="title" id="title"></div>
+            <div class="subtitle">Advanced JavaScript Code Obfuscation Tool</div>
         </div>
 
-        <label for="jsInput">Atau, Masukkan Kode JavaScript Asli di Sini:</label>
-        <textarea id="jsInput" placeholder="console.log('Halo dunia!'); function myFunction() { /* ... */ }"></textarea>
+        <div class="section">
+            <div class="section-title">📁 FILE UPLOAD</div>
+            <div class="file-input-container">
+                <input type="file" id="fileInput" class="file-input" accept=".js" />
+                <label for="fileInput" class="file-input-label">SELECT JAVASCRIPT FILE (.js)</label>
+            </div>
+            <div id="fileInfo" class="file-info"></div>
+        </div>
 
-        <button onclick="obfuscateCode()">Obfuscate!</button>
-        <button onclick="copyToClipboard()">Copy Obfuscated Code</button>
-        <button onclick="downloadObfuscatedFile()">Download Obfuscated File</button>
+        <div class="section">
+            <div class="section-title">⚙️ OBFUSCATION CONTROLS</div>
+            <div class="controls">
+                <button id="obfuscateBtn" class="button" disabled>OBFUSCATE CODE</button>
+                <button id="clearBtn" class="button">CLEAR ALL</button>
+                <button id="downloadBtn" class="button" disabled>DOWNLOAD OBFUSCATED FILE</button>
+            </div>
+            <div id="loading" class="loading">
+                <div class="loading-text">PROCESSING... OBFUSCATING CODE...</div>
+            </div>
+            <div id="status" class="status"></div>
+        </div>
 
+        <div class="section">
+            <div class="section-title">📊 STATISTICS</div>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="originalSize">0</div>
+                    <div class="stat-label">Original Size (bytes)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="obfuscatedSize">0</div>
+                    <div class="stat-label">Obfuscated Size (bytes)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="compressionRatio">0%</div>
+                    <div class="stat-label">Size Change</div>
+                </div>
+            </div>
+        </div>
 
-        <label for="obfuscatedOutput" style="margin-top: 20px;">Kode JavaScript yang Sudah Diobfuscate:</label>
-        <textarea id="obfuscatedOutput" readonly placeholder="Hasil obfuscation akan muncul di sini..."></textarea>
-
-        <div class="note">
-            <p><strong>Catatan Penting, Bro:</strong></p>
-            <ul>
-                <li>Pastikan file <code>javascript-obfuscator.min.js</code> berada di folder yang sama dengan file HTML ini. Ini solusi untuk error "JavaScriptObfuscator is not defined".</li>
-                <li>Obfuscation <strong>bukan enkripsi</strong>. Kode yang diobfuscate masih bisa di-reverse engineer (walaupun lebih susah). Jangan pernah menyimpan informasi sangat sensitif (misalnya kunci API, password) langsung di JavaScript klien.</li>
-                <li>Beberapa fitur obfuscator bisa bikin kode lo lebih besar atau sedikit lebih lambat. Tes dulu ya!</li>
-            </ul>
+        <div class="section">
+            <div class="section-title">💻 OBFUSCATED OUTPUT</div>
+            <div class="textarea-container">
+                <textarea 
+                    id="outputCode" 
+                    class="code-textarea" 
+                    placeholder="// Obfuscated JavaScript code will appear here...
+// Upload a .js file and click 'OBFUSCATE CODE' to begin
+// 
+// > SYSTEM READY
+// > AWAITING INPUT..."
+                    readonly
+                ></textarea>
+            </div>
         </div>
     </div>
 
-    <script src="javascript-obfuscator.min.js"></script> 
-
     <script>
-        document.addEventListener('DOMContentLoaded', () => {
-            const jsInput = document.getElementById('jsInput');
-            const jsFileUpload = document.getElementById('jsFileUpload');
-            const obfuscatedOutput = document.getElementById('obfuscatedOutput');
+        // Typing animation for title
+        const titleText = "JavaScript Obfuscator - Hacker Edition";
+        const titleElement = document.getElementById('title');
+        let titleIndex = 0;
 
-            // Event listener untuk saat file dipilih
-            jsFileUpload.addEventListener('change', () => {
-                if (jsFileUpload.files.length > 0) {
-                    console.log(`File dipilih: ${jsFileUpload.files[0].name}`);
-                    // Optionally, clear the textarea if a file is selected
-                    jsInput.value = '';
-                    obfuscatedOutput.value = '';
-                }
-            });
-        });
+        function typeTitle() {
+            if (titleIndex < titleText.length) {
+                titleElement.textContent = titleText.slice(0, titleIndex + 1);
+                titleIndex++;
+                setTimeout(typeTitle, 100);
+            } else {
+                titleElement.innerHTML = titleText + '<span class="cursor">_</span>';
+            }
+        }
 
-        function loadFile() {
-            const jsFileUpload = document.getElementById('jsFileUpload');
-            const jsInput = document.getElementById('jsInput');
-            const obfuscatedOutput = document.getElementById('obfuscatedOutput');
+        // Start typing animation
+        typeTitle();
 
-            if (jsFileUpload.files.length === 0) {
-                alert('Pilih file .js dulu, bre!');
+        // DOM elements
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const obfuscateBtn = document.getElementById('obfuscateBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const outputCode = document.getElementById('outputCode');
+        const status = document.getElementById('status');
+        const loading = document.getElementById('loading');
+        const originalSize = document.getElementById('originalSize');
+        const obfuscatedSize = document.getElementById('obfuscatedSize');
+        const compressionRatio = document.getElementById('compressionRatio');
+
+        let currentFile = null;
+        let originalCode = '';
+        let obfuscatedCode = '';
+
+        // File input handler
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            if (!file) {
+                hideFileInfo();
                 return;
             }
 
-            const file = jsFileUpload.files[0];
-            const reader = new FileReader();
+            if (!file.name.endsWith('.js')) {
+                showStatus('ERROR: Only JavaScript (.js) files are allowed!', 'error');
+                hideFileInfo();
+                return;
+            }
 
+            currentFile = file;
+            showFileInfo(file);
+            readFile(file);
+        });
+
+        function readFile(file) {
+            const reader = new FileReader();
+            
             reader.onload = function(e) {
-                jsInput.value = e.target.result;
-                obfuscatedOutput.value = 'File berhasil dimuat. Sekarang klik Obfuscate!';
-                console.log('File berhasil dimuat ke textarea.');
+                originalCode = e.target.result;
+                obfuscateBtn.disabled = false;
+                updateStats(originalCode.length, 0);
+                showStatus('File loaded successfully! Ready to obfuscate.', 'success');
             };
 
-            reader.onerror = function(e) {
-                alert('Gagal membaca file: ' + e.target.error.name);
-                console.error('Error membaca file:', e.target.error);
+            reader.onerror = function() {
+                showStatus('ERROR: Failed to read file!', 'error');
+                obfuscateBtn.disabled = true;
             };
 
             reader.readAsText(file);
         }
 
-        function obfuscateCode() {
-            const jsInput = document.getElementById('jsInput').value;
-            const obfuscatedOutput = document.getElementById('obfuscatedOutput');
+        function showFileInfo(file) {
+            fileInfo.innerHTML = `
+                <strong>File:</strong> ${file.name}<br>
+                <strong>Size:</strong> ${formatBytes(file.size)}<br>
+                <strong>Type:</strong> ${file.type || 'application/javascript'}
+            `;
+            fileInfo.style.display = 'block';
+        }
 
-            if (jsInput.trim() === '') {
-                obfuscatedOutput.value = 'Bro, masukin atau load dulu dong kode JS-nya!';
+        function hideFileInfo() {
+            fileInfo.style.display = 'none';
+            obfuscateBtn.disabled = true;
+            currentFile = null;
+            originalCode = '';
+        }
+
+        // Obfuscate button handler
+        obfuscateBtn.addEventListener('click', function() {
+            if (!originalCode) {
+                showStatus('ERROR: No code to obfuscate!', 'error');
                 return;
             }
 
-            try {
-                // Pastikan JavaScriptObfuscator sudah terdefinisi
-                if (typeof JavaScriptObfuscator === 'undefined') {
-                    obfuscatedOutput.value = 'Error: JavaScriptObfuscator library belum dimuat. Pastikan file javascript-obfuscator.min.js ada di folder yang sama dengan HTML ini.';
-                    console.error('JavaScriptObfuscator is not defined. Make sure the library is loaded.');
-                    return;
+            showLoading(true);
+            obfuscateBtn.disabled = true;
+
+            // Use setTimeout to allow UI to update
+            setTimeout(() => {
+                try {
+                    // Configure obfuscation options
+                    const obfuscationOptions = {
+                        compact: true,
+                        controlFlowFlattening: true,
+                        controlFlowFlatteningThreshold: 0.75,
+                        deadCodeInjection: true,
+                        deadCodeInjectionThreshold: 0.4,
+                        debugProtection: true,
+                        debugProtectionInterval: 2000,
+                        disableConsoleOutput: true,
+                        identifierNamesGenerator: 'hexadecimal',
+                        log: false,
+                        numbersToExpressions: true,
+                        renameGlobals: false,
+                        selfDefending: true,
+                        simplify: true,
+                        splitStrings: true,
+                        splitStringsChunkLength: 10,
+                        stringArray: true,
+                        stringArrayCallsTransform: true,
+                        stringArrayEncoding: ['base64'],
+                        stringArrayIndexShift: true,
+                        stringArrayRotate: true,
+                        stringArrayShuffle: true,
+                        stringArrayWrappersCount: 2,
+                        stringArrayWrappersChainedCalls: true,
+                        stringArrayWrappersParametersMaxCount: 4,
+                        stringArrayWrappersType: 'function',
+                        stringArrayThreshold: 0.75,
+                        transformObjectKeys: true,
+                        unicodeEscapeSequence: false
+                    };
+
+                    // Obfuscate the code
+                    const obfuscationResult = JavaScriptObfuscator.obfuscate(originalCode, obfuscationOptions);
+                    obfuscatedCode = obfuscationResult.getObfuscatedCode();
+
+                    // Display result
+                    outputCode.value = obfuscatedCode;
+                    downloadBtn.disabled = false;
+                    
+                    // Update statistics
+                    updateStats(originalCode.length, obfuscatedCode.length);
+                    
+                    showStatus('Code obfuscated successfully! Ready for download.', 'success');
+                    
+                } catch (error) {
+                    console.error('Obfuscation error:', error);
+                    showStatus(`ERROR: Obfuscation failed - ${error.message}`, 'error');
+                    outputCode.value = '';
+                    downloadBtn.disabled = true;
+                } finally {
+                    showLoading(false);
+                    obfuscateBtn.disabled = false;
                 }
+            }, 100);
+        });
 
-                const options = {
-                    compact: true,
-                    controlFlowFlattening: true,
-                    controlFlowFlatteningThreshold: 0.75,
-                    deadCodeInjection: true,
-                    deadCodeInjectionThreshold: 0.4,
-                    debugProtection: true,
-                    debugProtectionInterval: true,
-                    disableConsoleOutput: true,
-                    identifierNamesGenerator: 'hexadecimal',
-                    log: false,
-                    numbersToExpressions: true,
-                    renameGlobals: false,
-                    selfDefending: true,
-                    simplify: true,
-                    splitStrings: true,
-                    splitStringsChunkLength: 10,
-                    stringArray: true,
-                    stringArrayEncoding: ['base64'],
-                    stringArrayIndexShift: true,
-                    stringArrayRotate: true,
-                    stringArrayShuffle: true,
-                    stringArrayWrappersCount: 5,
-                    stringArrayWrappersType: 'variable',
-                    stringArrayThreshold: 0.75,
-                    transformObjectKeys: true,
-                    unicodeEscapeSequence: true
-                };
+        // Clear button handler
+        clearBtn.addEventListener('click', function() {
+            fileInput.value = '';
+            outputCode.value = '';
+            hideFileInfo();
+            hideStatus();
+            downloadBtn.disabled = true;
+            obfuscatedCode = '';
+            originalCode = '';
+            updateStats(0, 0);
+            showStatus('All data cleared!', 'success');
+            setTimeout(hideStatus, 2000);
+        });
 
-                const obfuscationResult = JavaScriptObfuscator.obfuscate(
-                    jsInput,
-                    options
-                );
-
-                obfuscatedOutput.value = obfuscationResult.getObfuscatedCode();
-                console.log('Kode berhasil diobfuscate, bro!');
-
-            } catch (error) {
-                obfuscatedOutput.value = 'Ada error nih pas obfuscate: ' + error.message;
-                console.error('Error during obfuscation:', error);
-            }
-        }
-
-        function copyToClipboard() {
-            const obfuscatedOutput = document.getElementById('obfuscatedOutput');
-            obfuscatedOutput.select();
-            obfuscatedOutput.setSelectionRange(0, 99999);
-
-            try {
-                document.execCommand('copy');
-                alert('Kode obfuscated berhasil dicopy ke clipboard, bre!');
-            } catch (err) {
-                console.error('Gagal copy ke clipboard:', err);
-                alert('Gagal copy ke clipboard. Coba copy manual aja, bro.');
-            }
-        }
-
-        function downloadObfuscatedFile() {
-            const obfuscatedCode = document.getElementById('obfuscatedOutput').value;
-            if (obfuscatedCode.trim() === '' || obfuscatedCode.includes('hasil obfuscation akan muncul di sini') || obfuscatedCode.includes('Ada error nih')) {
-                alert('Obfuscate dulu kodenya, bro, baru bisa di-download!');
+        // Download button handler
+        downloadBtn.addEventListener('click', function() {
+            if (!obfuscatedCode) {
+                showStatus('ERROR: No obfuscated code to download!', 'error');
                 return;
             }
 
-            const filename = 'obfuscated_script.js';
             const blob = new Blob([obfuscatedCode], { type: 'application/javascript' });
             const url = URL.createObjectURL(blob);
-
             const a = document.createElement('a');
+            
+            const originalName = currentFile ? currentFile.name : 'obfuscated.js';
+            const fileName = originalName.replace('.js', '_obfuscated.js');
+            
             a.href = url;
-            a.download = filename;
+            a.download = fileName;
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
-            alert('File obfuscated berhasil di-download, bre!');
-        }
-    </script>
 
+            showStatus(`File downloaded: ${fileName}`, 'success');
+        });
+
+        // Utility functions
+        function showStatus(message, type) {
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+        }
+
+        function hideStatus() {
+            status.style.display = 'none';
+        }
+
+        function showLoading(show) {
+            loading.style.display = show ? 'block' : 'none';
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function updateStats(originalBytes, obfuscatedBytes) {
+            originalSize.textContent = formatBytes(originalBytes);
+            obfuscatedSize.textContent = formatBytes(obfuscatedBytes);
+            
+            if (originalBytes > 0 && obfuscatedBytes > 0) {
+                const ratio = ((obfuscatedBytes - originalBytes) / originalBytes * 100);
+                compressionRatio.textContent = (ratio > 0 ? '+' : '') + ratio.toFixed(1) + '%';
+                compressionRatio.style.color = ratio > 0 ? '#ff6600' : '#00ff00';
+            } else {
+                compressionRatio.textContent = '0%';
+                compressionRatio.style.color = '#00ff00';
+            }
+        }
+
+        // Initialize
+        updateStats(0, 0);
+        
+        // Add some console styling for the hacker theme
+        console.log('%c🔒 JavaScript Obfuscator - Hacker Edition 🔒', 'color: #00ff00; font-size: 16px; font-weight: bold; background: #000; padding: 10px;');
+        console.log('%cSystem initialized successfully...', 'color: #00ff00; font-family: monospace;');
+        console.log('%cReady for code obfuscation operations.', 'color: #00ff00; font-family: monospace;');
+    </script>
 </body>
 </html>
