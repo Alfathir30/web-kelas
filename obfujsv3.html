@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MARVEL GANTENG - Elegant JS Obfuscator</title>
+    <title>MARVEL GANTENG - Dual JS Processor</title>
     <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.0.2/dist/index.browser.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/js-beautify@1.14.9/js/lib/beautify.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap');
 
@@ -23,7 +24,7 @@
             position: relative;
         }
 
-        /* Elegant background particles */
+        /* Animated background particles */
         body::before {
             content: '';
             position: fixed;
@@ -46,7 +47,6 @@
             100% { transform: translate(-50px, -50px) rotate(360deg); }
         }
 
-        /* Elegant gradient overlay */
         body::after {
             content: '';
             position: fixed;
@@ -160,6 +160,77 @@
             100% { opacity: 1; transform: scale(1.02); }
         }
 
+        /* Mode Toggle Switch */
+        .mode-toggle {
+            display: flex;
+            justify-content: center;
+            margin-bottom: 50px;
+            position: relative;
+        }
+
+        .toggle-container {
+            background: rgba(0, 0, 0, 0.4);
+            border-radius: 50px;
+            padding: 8px;
+            display: flex;
+            position: relative;
+            border: 2px solid rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .toggle-option {
+            padding: 16px 32px;
+            border-radius: 40px;
+            cursor: pointer;
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+            font-weight: 500;
+            font-size: 16px;
+            position: relative;
+            z-index: 2;
+            color: #a0a0a0;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .toggle-option.active {
+            color: #ffffff;
+            background: linear-gradient(135deg, rgba(255, 255, 255, 0.15) 0%, rgba(255, 255, 255, 0.08) 100%);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .toggle-option:hover:not(.active) {
+            color: #ffffff;
+            background: rgba(255, 255, 255, 0.05);
+        }
+
+        /* Mode Sections */
+        .mode-section {
+            opacity: 0;
+            transform: translateX(100px);
+            transition: all 0.6s cubic-bezier(0.4, 0, 0.2, 1);
+            position: absolute;
+            width: 100%;
+            pointer-events: none;
+        }
+
+        .mode-section.active {
+            opacity: 1;
+            transform: translateX(0);
+            position: relative;
+            pointer-events: all;
+        }
+
+        .mode-section.slide-out-left {
+            transform: translateX(-100px);
+            opacity: 0;
+        }
+
+        .mode-section.slide-out-right {
+            transform: translateX(100px);
+            opacity: 0;
+        }
+
         .section {
             margin-bottom: 50px;
             padding: 40px;
@@ -233,6 +304,8 @@
             transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
             z-index: 1;
             overflow: hidden;
+            width: 100%;
+            text-align: center;
         }
 
         .file-input-container::before {
@@ -383,6 +456,26 @@
             border-color: rgba(255, 255, 255, 0.1);
         }
 
+        .button.primary {
+            background: linear-gradient(135deg, #4f46e5 0%, #3730a3 100%);
+            border-color: #4f46e5;
+        }
+
+        .button.primary:hover {
+            background: linear-gradient(135deg, #5b52e8 0%, #4338ca 100%);
+            border-color: #5b52e8;
+        }
+
+        .button.secondary {
+            background: linear-gradient(135deg, #059669 0%, #047857 100%);
+            border-color: #059669;
+        }
+
+        .button.secondary:hover {
+            background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+            border-color: #10b981;
+        }
+
         .controls {
             display: flex;
             gap: 15px;
@@ -516,7 +609,6 @@
             z-index: 1;
         }
 
-        /* Toast notification */
         .toast {
             position: fixed;
             top: 30px;
@@ -578,7 +670,6 @@
             }
         }
 
-        /* Elegant scrollbar */
         ::-webkit-scrollbar {
             width: 8px;
         }
@@ -619,6 +710,11 @@
             .stats {
                 grid-template-columns: 1fr;
             }
+
+            .toggle-option {
+                padding: 12px 20px;
+                font-size: 14px;
+            }
         }
     </style>
 </head>
@@ -626,103 +722,189 @@
     <div class="container">
         <div class="header">
             <div class="title" id="title"></div>
-            <div class="subtitle">✨ Advanced Multi-Language Obfuscation System ✨</div>
+            <div class="subtitle">Dual Mode JavaScript Processor</div>
         </div>
 
-        <div class="section">
-            <div class="section-title">📁 File Upload System</div>
-            <div class="file-input-container">
-                <input type="file" id="fileInput" class="file-input" accept=".js" />
-                <label for="fileInput" class="file-input-label">🎯 Select JavaScript File (.js)</label>
-            </div>
-            <div id="fileInfo" class="file-info"></div>
-        </div>
-
-        <div class="section">
-            <div class="section-title">⚡ Obfuscation Control Center</div>
-            <div class="controls">
-                <button id="obfuscateBtn" class="button" disabled>🚀 Execute Obfuscation</button>
-                <button id="clearBtn" class="button">🗑️ Clear All</button>
-                <button id="downloadBtn" class="button" disabled>💾 Download</button>
-                <button id="copyBtn" class="button" disabled>📋 Copy to Clipboard</button>
-            </div>
-            <div id="loading" class="loading">
-                <div class="loading-text">⚡ Processing... Injecting MARVEL GANTENG Signatures... ⚡</div>
-            </div>
-            <div id="status" class="status"></div>
-        </div>
-
-        <div class="section">
-            <div class="section-title">📊 Obfuscation Statistics</div>
-            <div class="stats">
-                <div class="stat-item">
-                    <div class="stat-value" id="originalSize">0</div>
-                    <div class="stat-label">Original Bytes</div>
+        <!-- Mode Toggle -->
+        <div class="mode-toggle">
+            <div class="toggle-container">
+                <div class="toggle-option active" id="obfuscateToggle">
+                    Obfuscate Mode
                 </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="obfuscatedSize">0</div>
-                    <div class="stat-label">Obfuscated Bytes</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="compressionRatio">0%</div>
-                    <div class="stat-label">Size Change</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="marvelCount">0</div>
-                    <div class="stat-label">Marvel Signatures</div>
+                <div class="toggle-option" id="deobfuscateToggle">
+                    Deobfuscate Mode
                 </div>
             </div>
         </div>
 
-        <div class="section">
-            <div class="section-title">💻 Obfuscated Output Terminal</div>
-            <div class="textarea-container">
-                <textarea 
-                    id="outputCode" 
-                    class="code-textarea" 
-                    placeholder="// ⚡ MARVEL GANTENG OBFUSCATOR TERMINAL ⚡
+        <!-- Obfuscate Mode -->
+        <div class="mode-section active" id="obfuscateMode">
+            <div class="section">
+                <div class="section-title">File Upload System</div>
+                <div class="file-input-container">
+                    <input type="file" id="obfuscateFileInput" class="file-input" accept=".js" />
+                    <label for="obfuscateFileInput" class="file-input-label">Select JavaScript File (.js) to Obfuscate</label>
+                </div>
+                <div id="obfuscateFileInfo" class="file-info"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Obfuscation Control Center</div>
+                <div class="controls">
+                    <button id="obfuscateBtn" class="button primary" disabled>Execute Obfuscation</button>
+                    <button id="obfuscateClearBtn" class="button">Clear All</button>
+                    <button id="obfuscateDownloadBtn" class="button" disabled>Download</button>
+                    <button id="obfuscateCopyBtn" class="button" disabled>Copy to Clipboard</button>
+                </div>
+                <div id="obfuscateLoading" class="loading">
+                    <div class="loading-text">Processing... Injecting MARVEL GANTENG Signatures...</div>
+                </div>
+                <div id="obfuscateStatus" class="status"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Obfuscation Statistics</div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="obfuscateOriginalSize">0</div>
+                        <div class="stat-label">Original Bytes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="obfuscateProcessedSize">0</div>
+                        <div class="stat-label">Obfuscated Bytes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="obfuscateCompressionRatio">0%</div>
+                        <div class="stat-label">Size Change</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="obfuscateMarvelCount">0</div>
+                        <div class="stat-label">Marvel Signatures</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Obfuscated Output Terminal</div>
+                <div class="textarea-container">
+                    <textarea 
+                        id="obfuscateOutputCode" 
+                        class="code-textarea" 
+                        placeholder="// MARVEL GANTENG OBFUSCATOR TERMINAL
 // 
 // > SYSTEM STATUS: READY
-// > MULTI-LANGUAGE VARIABLE GENERATOR: STANDBY
+// > ENGLISH-ONLY VARIABLE GENERATOR: STANDBY
 // > RESERVED NAMES PROTECTION: ACTIVE
 // > MARVEL GANTENG SIGNATURE INJECTOR: ARMED
 // 
 // Upload a JavaScript file to begin advanced obfuscation
 // 
 // FEATURES ENABLED:
-// ✓ Control Flow Flattening
-// ✓ Dead Code Injection
-// ✓ String Array Encoding
-// ✓ Self-Defending Code
-// ✓ Compact Mode
-// ✓ Multi-Language Variable Names
-// ✓ Reserved Names Protection
-// ✓ MARVEL GANTENG Signature Injection
+// - Control Flow Flattening
+// - Dead Code Injection
+// - String Array Encoding
+// - Self-Defending Code
+// - Compact Mode
+// - English-Only Variable Names
+// - Reserved Names Protection
+// - MARVEL GANTENG Signature Injection
 //
 // >> READY FOR OPERATION <<"
-                    readonly
-                ></textarea>
+                        readonly
+                    ></textarea>
+                </div>
+            </div>
+        </div>
+
+        <!-- Deobfuscate Mode -->
+        <div class="mode-section" id="deobfuscateMode">
+            <div class="section">
+                <div class="section-title">File Upload System</div>
+                <div class="file-input-container">
+                    <input type="file" id="deobfuscateFileInput" class="file-input" accept=".js" />
+                    <label for="deobfuscateFileInput" class="file-input-label">Select Obfuscated JavaScript File (.js) to Deobfuscate</label>
+                </div>
+                <div id="deobfuscateFileInfo" class="file-info"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Deobfuscation Control Center</div>
+                <div class="controls">
+                    <button id="deobfuscateBtn" class="button secondary" disabled>Execute Deobfuscation</button>
+                    <button id="deobfuscateClearBtn" class="button">Clear All</button>
+                    <button id="deobfuscateDownloadBtn" class="button" disabled>Download</button>
+                    <button id="deobfuscateCopyBtn" class="button" disabled>Copy to Clipboard</button>
+                </div>
+                <div id="deobfuscateLoading" class="loading">
+                    <div class="loading-text">Processing... Beautifying and Cleaning Code...</div>
+                </div>
+                <div id="deobfuscateStatus" class="status"></div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Deobfuscation Statistics</div>
+                <div class="stats">
+                    <div class="stat-item">
+                        <div class="stat-value" id="deobfuscateOriginalSize">0</div>
+                        <div class="stat-label">Obfuscated Bytes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="deobfuscateProcessedSize">0</div>
+                        <div class="stat-label">Cleaned Bytes</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="deobfuscateCompressionRatio">0%</div>
+                        <div class="stat-label">Size Change</div>
+                    </div>
+                    <div class="stat-item">
+                        <div class="stat-value" id="deobfuscateMarvelCount">0</div>
+                        <div class="stat-label">Signatures Removed</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <div class="section-title">Deobfuscated Output Terminal</div>
+                <div class="textarea-container">
+                    <textarea 
+                        id="deobfuscateOutputCode" 
+                        class="code-textarea" 
+                        placeholder="// MARVEL GANTENG DEOBFUSCATOR TERMINAL
+// 
+// > SYSTEM STATUS: READY
+// > CODE BEAUTIFIER: STANDBY
+// > SIGNATURE CLEANER: ACTIVE
+// > FORMAT OPTIMIZER: ARMED
+// 
+// Upload an obfuscated JavaScript file to begin deobfuscation
+// 
+// FEATURES ENABLED:
+// - Code Beautification
+// - Signature Removal
+// - Format Optimization
+// - Comment Cleaning
+// - Variable Renaming
+// - Structure Recovery
+// - MARVEL GANTENG Signature Detection
+//
+// >> READY FOR OPERATION <<"
+                        readonly
+                    ></textarea>
+                </div>
             </div>
         </div>
     </div>
 
     <div class="marvel-signature">
-        ✨ Powered by MARVEL GANTENG ✨
+        Powered by MARVEL GANTENG
     </div>
 
     <script>
-        // Multi-language character sets for variable names
-        const languageChars = {
-            arabic: ['ع', 'ر', 'ب', 'ي', 'ة', 'ل', 'م', 'ن', 'ت', 'س', 'ك', 'د', 'ج', 'ح', 'خ'],
-            russian: ['р', 'у', 'с', 'с', 'к', 'и', 'й', 'я', 'з', 'ы', 'к', 'о', 'д', 'ф', 'н'],
-            chinese: ['漢', '字', '中', '文', '語', '言', '代', '碼', '程', '序', '函', '數', '變', '量', '類'],
-            japanese: ['日', '本', '語', 'コ', 'ー', 'ド', 'プ', 'ロ', 'グ', 'ラ', 'ム', '関', '数', '変', '数'],
-            korean: ['한', '국', '어', '코', '드', '프', '로', '그', '램', '언', '어', '함', '수', '변', '수'],
-            hindi: ['ह', 'ि', 'न', 'द', 'ी', 'भ', 'ा', 'ष', 'क', 'ो', 'ड', 'प', 'र', 'ग', 'म'],
-            emoji: ['🤖', '🔥', '⚡', '🚀', '💻', '🎯', '🔒', '⭐', '💎', '🌟', '🎮', '🔑', '🛡️', '⚔️', '🏆'],
-            greek: ['α', 'β', 'γ', 'δ', 'ε', 'ζ', 'η', 'θ', 'ι', 'κ', 'λ', 'μ', 'ν', 'ξ', 'ο'],
-            hebrew: ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'ן', 'נ'],
-            cyrillic: ['Ѐ', 'Ё', 'Ђ', 'Ѓ', 'Є', 'Ѕ', 'І', 'Ї', 'Ј', 'Љ', 'Њ', 'Ћ', 'Ќ', 'Ѝ', 'Ў']
+        // English-only character sets for variable names
+        const englishChars = {
+            lowercase: ['a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j', 'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z'],
+            uppercase: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'],
+            numbers: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
         };
 
         // Reserved names that should not be obfuscated
@@ -734,96 +916,88 @@
             'Boolean', 'RegExp', 'Error', 'Promise', 'async', 'await'
         ];
 
-        // Generate random multi-language variable name
-        function generateMultiLangVarName() {
-            const languages = Object.keys(languageChars);
-            const selectedLangs = [];
-            const numLangs = Math.floor(Math.random() * 3) + 1; // 1-3 languages
-            
-            for (let i = 0; i < numLangs; i++) {
-                const lang = languages[Math.floor(Math.random() * languages.length)];
-                if (!selectedLangs.includes(lang)) {
-                    selectedLangs.push(lang);
-                }
-            }
-            
+        // Current mode state
+        let currentMode = 'obfuscate';
+        let obfuscateData = {
+            file: null,
+            originalCode: '',
+            processedCode: '',
+            signatureCount: 0
+        };
+        let deobfuscateData = {
+            file: null,
+            originalCode: '',
+            processedCode: '',
+            signatureCount: 0
+        };
+
+        // Generate random English-only variable name
+        function generateEnglishVarName() {
             let varName = '_';
-            selectedLangs.forEach(lang => {
-                const chars = languageChars[lang];
-                const numChars = Math.floor(Math.random() * 3) + 2; // 2-4 chars per language
-                for (let i = 0; i < numChars; i++) {
-                    varName += chars[Math.floor(Math.random() * chars.length)];
-                }
-            });
             
-            // Add some random alphanumeric for compatibility
-            const alphaNum = 'abcdefghijklmnopqrstuvwxyz0123456789';
-            for (let i = 0; i < Math.floor(Math.random() * 3) + 1; i++) {
-                varName += alphaNum[Math.floor(Math.random() * alphaNum.length)];
+            const startChars = [...englishChars.lowercase, ...englishChars.uppercase];
+            varName += startChars[Math.floor(Math.random() * startChars.length)];
+            
+            const allChars = [...englishChars.lowercase, ...englishChars.uppercase, ...englishChars.numbers];
+            const nameLength = Math.floor(Math.random() * 8) + 4;
+            
+            for (let i = 0; i < nameLength; i++) {
+                varName += allChars[Math.floor(Math.random() * allChars.length)];
             }
             
             return varName;
         }
 
-        // Custom identifier names generator
+        // Custom identifier names generator (English only)
         function customIdentifierNamesGenerator() {
             const names = [];
             for (let i = 0; i < 1500; i++) {
-                names.push(generateMultiLangVarName());
+                names.push(generateEnglishVarName());
             }
             return names;
         }
 
-        // Inject MARVEL GANTENG signatures into code
+        // Inject MARVEL GANTENG signatures into code (English only)
         function injectMarvelSignatures(code) {
             const signatures = [
                 '/* MARVEL GANTENG WAS HERE */',
                 '// Obfuscated by MARVEL GANTENG',
                 '"MARVEL GANTENG RULES"',
-                '/* ✨ MARVEL GANTENG ELEGANT MODE ✨ */',
+                '/* MARVEL GANTENG ELEGANT MODE */',
                 '// MARVEL GANTENG - THE LEGEND',
                 '"POWERED_BY_MARVEL_GANTENG"',
                 '/* MARVEL GANTENG SIGNATURE INJECTION */',
-                '// 🚀 MARVEL GANTENG OBFUSCATOR 🚀',
+                '// MARVEL GANTENG OBFUSCATOR',
                 '"MARVEL_GANTENG_PROTECTED"',
                 '/* MARVEL GANTENG ADVANCED OBFUSCATION */',
-                '// ⚡ MARVEL GANTENG SYSTEM ⚡',
+                '// MARVEL GANTENG SYSTEM',
                 '"MARVEL_GANTENG_SIGNATURE"'
             ];
             
-            let modifiedCode = code;
+            const lines = code.split('\n');
             let injectionCount = 0;
-            const minInjections = 3;
-            const maxInjections = 8;
-            const targetInjections = Math.floor(Math.random() * (maxInjections - minInjections + 1)) + minInjections;
+            const targetInjections = Math.floor(Math.random() * 6) + 3;
             
-            // Split code into lines for injection
-            const lines = modifiedCode.split('\n');
             const injectionPoints = [];
-            
-            // Generate random injection points
             for (let i = 0; i < targetInjections; i++) {
                 injectionPoints.push(Math.floor(Math.random() * lines.length));
             }
             
-            // Sort injection points in reverse order to maintain line numbers
             injectionPoints.sort((a, b) => b - a);
             
-            // Inject signatures
             injectionPoints.forEach(point => {
                 const signature = signatures[Math.floor(Math.random() * signatures.length)];
                 lines.splice(point, 0, signature);
                 injectionCount++;
             });
             
-            // Also inject some hidden MARVEL GANTENG variables and functions
             const hiddenElements = [
-                `var ${generateMultiLangVarName()} = "MARVEL GANTENG";`,
-                `const ${generateMultiLangVarName()} = atob("TUFSVKVM") + " " + atob("R0FOVEVORA==");`,
-                `let ${generateMultiLangVarName()} = ["M","A","R","V","E","L"," ","G","A","N","T","E","N","G"].join("");`,
-                `function ${generateMultiLangVarName()}() { return "MARVEL GANTENG"; }`,
-                `var ${generateMultiLangVarName()} = (function() { return "MARVEL GANTENG"; })();`,
-                `const ${generateMultiLangVarName()} = String.fromCharCode(77,65,82,86,69,76,32,71,65,78,84,69,78,71);`
+                `var ${generateEnglishVarName()} = "MARVEL GANTENG";`,
+                `const ${generateEnglishVarName()} = atob("TUFSVKVM") + " " + atob("R0FOVEVORA==");`,
+                `let ${generateEnglishVarName()} = ["M","A","R","V","E","L"," ","G","A","N","T","E","N","G"].join("");`,
+                `function ${generateEnglishVarName()}() { return "MARVEL GANTENG"; }`,
+                `var ${generateEnglishVarName()} = (function() { return "MARVEL GANTENG"; })();`,
+                `const ${generateEnglishVarName()} = String.fromCharCode(77,65,82,86,69,76,32,71,65,78,84,69,78,71);`
             ];
             
             hiddenElements.forEach(element => {
@@ -835,6 +1009,40 @@
             return {
                 code: lines.join('\n'),
                 count: injectionCount
+            };
+        }
+
+        // Remove MARVEL GANTENG signatures from code
+        function removeMarvelSignatures(code) {
+            let cleanedCode = code;
+            let removedCount = 0;
+            
+            const signaturePatterns = [
+                /\/\* MARVEL GANTENG.*?\*\//g,
+                /\/\/ .*MARVEL GANTENG.*/g,
+                /"MARVEL[_\s]GANTENG[^"]*"/g,
+                /var\s+\w+\s*=\s*"MARVEL GANTENG";/g,
+                /const\s+\w+\s*=\s*atob$$"TUFSVKVM"$$.*?;/g,
+                /let\s+\w+\s*=\s*\["M","A","R","V","E","L".*?\];/g,
+                /function\s+\w+$$$$\s*{\s*return\s*"MARVEL GANTENG";\s*}/g,
+                /var\s+\w+\s*=\s*$$function\($$\s*{\s*return\s*"MARVEL GANTENG";\s*}\)$$$$;/g,
+                /const\s+\w+\s*=\s*String\.fromCharCode$$77,65,82,86,69,76,32,71,65,78,84,69,78,71$$;/g
+            ];
+            
+            signaturePatterns.forEach(pattern => {
+                const matches = cleanedCode.match(pattern);
+                if (matches) {
+                    removedCount += matches.length;
+                    cleanedCode = cleanedCode.replace(pattern, '');
+                }
+            });
+            
+            // Clean up empty lines
+            cleanedCode = cleanedCode.replace(/\n\s*\n/g, '\n').trim();
+            
+            return {
+                code: cleanedCode,
+                count: removedCount
             };
         }
 
@@ -852,8 +1060,44 @@
             }, 3000);
         }
 
+        // Mode switching functionality
+        function switchMode(mode) {
+            if (currentMode === mode) return;
+            
+            const obfuscateToggle = document.getElementById('obfuscateToggle');
+            const deobfuscateToggle = document.getElementById('deobfuscateToggle');
+            const obfuscateMode = document.getElementById('obfuscateMode');
+            const deobfuscateMode = document.getElementById('deobfuscateMode');
+            
+            // Update toggle buttons
+            if (mode === 'obfuscate') {
+                obfuscateToggle.classList.add('active');
+                deobfuscateToggle.classList.remove('active');
+            } else {
+                deobfuscateToggle.classList.add('active');
+                obfuscateToggle.classList.remove('active');
+            }
+            
+            // Animate mode sections
+            if (currentMode === 'obfuscate') {
+                obfuscateMode.classList.add('slide-out-left');
+                setTimeout(() => {
+                    obfuscateMode.classList.remove('active', 'slide-out-left');
+                    deobfuscateMode.classList.add('active');
+                }, 300);
+            } else {
+                deobfuscateMode.classList.add('slide-out-right');
+                setTimeout(() => {
+                    deobfuscateMode.classList.remove('active', 'slide-out-right');
+                    obfuscateMode.classList.add('active');
+                }, 300);
+            }
+            
+            currentMode = mode;
+        }
+
         // Elegant typing animation for title
-        const titleText = "MARVEL GANTENG - Elegant JS Obfuscator";
+        const titleText = "MARVEL GANTENG - Dual JS Processor";
         const titleElement = document.getElementById('title');
         let titleIndex = 0;
 
@@ -867,102 +1111,117 @@
             }
         }
 
-        // Start typing animation
-        typeTitle();
+        // Utility functions
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
 
-        // DOM elements
-        const fileInput = document.getElementById('fileInput');
-        const fileInfo = document.getElementById('fileInfo');
-        const obfuscateBtn = document.getElementById('obfuscateBtn');
-        const clearBtn = document.getElementById('clearBtn');
-        const downloadBtn = document.getElementById('downloadBtn');
-        const copyBtn = document.getElementById('copyBtn');
-        const outputCode = document.getElementById('outputCode');
-        const status = document.getElementById('status');
-        const loading = document.getElementById('loading');
-        const originalSize = document.getElementById('originalSize');
-        const obfuscatedSize = document.getElementById('obfuscatedSize');
-        const compressionRatio = document.getElementById('compressionRatio');
-        const marvelCount = document.getElementById('marvelCount');
-
-        let currentFile = null;
-        let originalCode = '';
-        let obfuscatedCode = '';
-        let marvelSignatureCount = 0;
-
-        // File input handler
-        fileInput.addEventListener('change', function(e) {
-            const file = e.target.files[0];
+        function updateStats(mode, originalBytes, processedBytes, signatures) {
+            const prefix = mode === 'obfuscate' ? 'obfuscate' : 'deobfuscate';
             
+            document.getElementById(`${prefix}OriginalSize`).textContent = formatBytes(originalBytes);
+            document.getElementById(`${prefix}ProcessedSize`).textContent = formatBytes(processedBytes);
+            document.getElementById(`${prefix}MarvelCount`).textContent = signatures;
+            
+            if (originalBytes > 0 && processedBytes > 0) {
+                const ratio = ((processedBytes - originalBytes) / originalBytes * 100);
+                const ratioElement = document.getElementById(`${prefix}CompressionRatio`);
+                ratioElement.textContent = (ratio > 0 ? '+' : '') + ratio.toFixed(1) + '%';
+                ratioElement.style.color = ratio > 0 ? '#ef4444' : '#22c55e';
+            } else {
+                document.getElementById(`${prefix}CompressionRatio`).textContent = '0%';
+            }
+        }
+
+        function showStatus(mode, message, type) {
+            const statusElement = document.getElementById(`${mode}Status`);
+            statusElement.textContent = message;
+            statusElement.className = `status ${type}`;
+            statusElement.style.display = 'block';
+        }
+
+        function hideStatus(mode) {
+            document.getElementById(`${mode}Status`).style.display = 'none';
+        }
+
+        function showLoading(mode, show) {
+            document.getElementById(`${mode}Loading`).style.display = show ? 'block' : 'none';
+        }
+
+        function showFileInfo(mode, file) {
+            const fileInfoElement = document.getElementById(`${mode}FileInfo`);
+            const modeText = mode === 'obfuscate' ? 'MARVEL GANTENG processing' : 'deobfuscation processing';
+            
+            fileInfoElement.innerHTML = `
+                <strong>File:</strong> ${file.name}<br>
+                <strong>Size:</strong> ${formatBytes(file.size)}<br>
+                <strong>Type:</strong> ${file.type || 'application/javascript'}<br>
+                <strong>Status:</strong> Ready for ${modeText}
+            `;
+            fileInfoElement.style.display = 'block';
+        }
+
+        function hideFileInfo(mode) {
+            document.getElementById(`${mode}FileInfo`).style.display = 'none';
+        }
+
+        // File handling functions
+        function handleFileChange(mode, file) {
             if (!file) {
-                hideFileInfo();
+                hideFileInfo(mode);
                 return;
             }
 
             if (!file.name.endsWith('.js')) {
-                showToast('❌ Only JavaScript files are accepted', 'error');
-                hideFileInfo();
-                fileInput.value = '';
+                showToast('Only JavaScript files are accepted', 'error');
+                hideFileInfo(mode);
+                document.getElementById(`${mode}FileInput`).value = '';
                 return;
             }
 
-            currentFile = file;
-            showFileInfo(file);
-            readFile(file);
-        });
+            const data = mode === 'obfuscate' ? obfuscateData : deobfuscateData;
+            data.file = file;
+            showFileInfo(mode, file);
+            readFile(mode, file);
+        }
 
-        function readFile(file) {
+        function readFile(mode, file) {
             const reader = new FileReader();
+            const data = mode === 'obfuscate' ? obfuscateData : deobfuscateData;
             
             reader.onload = function(e) {
-                originalCode = e.target.result;
-                obfuscateBtn.disabled = false;
-                updateStats(originalCode.length, 0, 0);
-                showStatus('✅ File loaded successfully! Ready for MARVEL GANTENG obfuscation.', 'success');
+                data.originalCode = e.target.result;
+                document.getElementById(`${mode}Btn`).disabled = false;
+                updateStats(mode, data.originalCode.length, 0, 0);
+                showStatus(mode, `File loaded successfully! Ready for ${mode === 'obfuscate' ? 'MARVEL GANTENG obfuscation' : 'deobfuscation'}.`, 'success');
             };
 
             reader.onerror = function() {
-                showStatus('❌ ERROR: Failed to read file!', 'error');
-                obfuscateBtn.disabled = true;
+                showStatus(mode, 'ERROR: Failed to read file!', 'error');
+                document.getElementById(`${mode}Btn`).disabled = true;
             };
 
             reader.readAsText(file);
         }
 
-        function showFileInfo(file) {
-            fileInfo.innerHTML = `
-                <strong>📄 File:</strong> ${file.name}<br>
-                <strong>📏 Size:</strong> ${formatBytes(file.size)}<br>
-                <strong>🔧 Type:</strong> ${file.type || 'application/javascript'}<br>
-                <strong>⚡ Status:</strong> Ready for MARVEL GANTENG processing
-            `;
-            fileInfo.style.display = 'block';
-        }
-
-        function hideFileInfo() {
-            fileInfo.style.display = 'none';
-            obfuscateBtn.disabled = true;
-            currentFile = null;
-            originalCode = '';
-        }
-
-        // Obfuscate button handler
-        obfuscateBtn.addEventListener('click', function() {
-            if (!originalCode) {
-                showStatus('❌ ERROR: No code to obfuscate!', 'error');
+        // Process functions
+        async function processObfuscate() {
+            if (!obfuscateData.originalCode) {
+                showStatus('obfuscate', 'ERROR: No code to obfuscate!', 'error');
                 return;
             }
 
-            showLoading(true);
-            obfuscateBtn.disabled = true;
+            showLoading('obfuscate', true);
+            document.getElementById('obfuscateBtn').disabled = true;
 
-            // Use setTimeout to allow UI to update
             setTimeout(() => {
                 try {
-                    // Generate custom identifier names
                     const customNames = customIdentifierNamesGenerator();
                     
-                    // Advanced obfuscation options with MARVEL GANTENG enhancements
                     const obfuscationOptions = {
                         compact: true,
                         controlFlowFlattening: true,
@@ -971,13 +1230,13 @@
                         deadCodeInjectionThreshold: 0.5,
                         debugProtection: true,
                         debugProtectionInterval: 2000,
-                        disableConsoleOutput: false, // Keep console for debugging
+                        disableConsoleOutput: false,
                         identifierNamesGenerator: 'mangled',
                         identifiersDictionary: customNames,
                         log: false,
                         numbersToExpressions: true,
-                        renameGlobals: false, // Don't rename globals to preserve functionality
-                        reservedNames: reservedNames, // Protect important identifiers
+                        renameGlobals: false,
+                        reservedNames: reservedNames,
                         selfDefending: true,
                         simplify: true,
                         splitStrings: true,
@@ -998,70 +1257,115 @@
                         seed: Math.floor(Math.random() * 1000000)
                     };
 
-                    // Obfuscate the code
-                    const obfuscationResult = JavaScriptObfuscator.obfuscate(originalCode, obfuscationOptions);
+                    const obfuscationResult = JavaScriptObfuscator.obfuscate(obfuscateData.originalCode, obfuscationOptions);
                     let tempObfuscatedCode = obfuscationResult.getObfuscatedCode();
 
-                    // Inject MARVEL GANTENG signatures
                     const injectionResult = injectMarvelSignatures(tempObfuscatedCode);
-                    obfuscatedCode = injectionResult.code;
-                    marvelSignatureCount = injectionResult.count;
+                    obfuscateData.processedCode = injectionResult.code;
+                    obfuscateData.signatureCount = injectionResult.count;
 
-                    // Display result
-                    outputCode.value = obfuscatedCode;
-                    downloadBtn.disabled = false;
-                    copyBtn.disabled = false;
+                    document.getElementById('obfuscateOutputCode').value = obfuscateData.processedCode;
+                    document.getElementById('obfuscateDownloadBtn').disabled = false;
+                    document.getElementById('obfuscateCopyBtn').disabled = false;
                     
-                    // Update statistics
-                    updateStats(originalCode.length, obfuscatedCode.length, marvelSignatureCount);
+                    updateStats('obfuscate', obfuscateData.originalCode.length, obfuscateData.processedCode.length, obfuscateData.signatureCount);
                     
-                    showStatus(`✨ Code obfuscated successfully with ${marvelSignatureCount} MARVEL GANTENG signatures! Protected identifiers preserved.`, 'success');
-                    showToast('✅ Obfuscation completed successfully!', 'success');
+                    showStatus('obfuscate', `Code obfuscated successfully with ${obfuscateData.signatureCount} MARVEL GANTENG signatures! Protected identifiers preserved.`, 'success');
+                    showToast('Obfuscation completed successfully!', 'success');
                     
                 } catch (error) {
                     console.error('Obfuscation error:', error);
-                    showStatus(`❌ ERROR: Obfuscation failed - ${error.message}`, 'error');
-                    showToast('❌ Obfuscation failed!', 'error');
-                    outputCode.value = '';
-                    downloadBtn.disabled = true;
-                    copyBtn.disabled = true;
-                    marvelSignatureCount = 0;
+                    showStatus('obfuscate', `ERROR: Obfuscation failed - ${error.message}`, 'error');
+                    showToast('Obfuscation failed!', 'error');
+                    document.getElementById('obfuscateOutputCode').value = '';
+                    document.getElementById('obfuscateDownloadBtn').disabled = true;
+                    document.getElementById('obfuscateCopyBtn').disabled = true;
+                    obfuscateData.signatureCount = 0;
                 } finally {
-                    showLoading(false);
-                    obfuscateBtn.disabled = false;
+                    showLoading('obfuscate', false);
+                    document.getElementById('obfuscateBtn').disabled = false;
                 }
             }, 300);
-        });
+        }
 
-        // Clear button handler
-        clearBtn.addEventListener('click', function() {
-            fileInput.value = '';
-            outputCode.value = '';
-            hideFileInfo();
-            hideStatus();
-            downloadBtn.disabled = true;
-            copyBtn.disabled = true;
-            obfuscatedCode = '';
-            originalCode = '';
-            marvelSignatureCount = 0;
-            updateStats(0, 0, 0);
-            showStatus('🗑️ All data cleared! MARVEL GANTENG system reset.', 'success');
-            setTimeout(hideStatus, 3000);
-        });
-
-        // Download button handler
-        downloadBtn.addEventListener('click', function() {
-            if (!obfuscatedCode) {
-                showStatus('❌ ERROR: No obfuscated code to download!', 'error');
+        async function processDeobfuscate() {
+            if (!deobfuscateData.originalCode) {
+                showStatus('deobfuscate', 'ERROR: No code to deobfuscate!', 'error');
                 return;
             }
 
-            const blob = new Blob([obfuscatedCode], { type: 'application/javascript' });
+            showLoading('deobfuscate', true);
+            document.getElementById('deobfuscateBtn').disabled = true;
+
+            setTimeout(() => {
+                try {
+                    // Remove MARVEL GANTENG signatures
+                    const cleaningResult = removeMarvelSignatures(deobfuscateData.originalCode);
+                    
+                    // Beautify the code
+                    const beautifiedCode = js_beautify(cleaningResult.code, {
+                        indent_size: 2,
+                        indent_char: ' ',
+                        max_preserve_newlines: 2,
+                        preserve_newlines: true,
+                        keep_array_indentation: false,
+                        break_chained_methods: false,
+                        indent_scripts: 'normal',
+                        brace_style: 'collapse',
+                        space_before_conditional: true,
+                        unescape_strings: false,
+                        jslint_happy: false,
+                        end_with_newline: true,
+                        wrap_line_length: 120,
+                        indent_inner_html: false,
+                        comma_first: false,
+                        e4x: false,
+                        indent_empty_lines: false
+                    });
+
+                    deobfuscateData.processedCode = beautifiedCode;
+                    deobfuscateData.signatureCount = cleaningResult.count;
+
+                    document.getElementById('deobfuscateOutputCode').value = deobfuscateData.processedCode;
+                    document.getElementById('deobfuscateDownloadBtn').disabled = false;
+                    document.getElementById('deobfuscateCopyBtn').disabled = false;
+                    
+                    updateStats('deobfuscate', deobfuscateData.originalCode.length, deobfuscateData.processedCode.length, deobfuscateData.signatureCount);
+                    
+                    showStatus('deobfuscate', `Code deobfuscated successfully! Removed ${deobfuscateData.signatureCount} MARVEL GANTENG signatures and beautified the code.`, 'success');
+                    showToast('Deobfuscation completed successfully!', 'success');
+                    
+                } catch (error) {
+                    console.error('Deobfuscation error:', error);
+                    showStatus('deobfuscate', `ERROR: Deobfuscation failed - ${error.message}`, 'error');
+                    showToast('Deobfuscation failed!', 'error');
+                    document.getElementById('deobfuscateOutputCode').value = '';
+                    document.getElementById('deobfuscateDownloadBtn').disabled = true;
+                    document.getElementById('deobfuscateCopyBtn').disabled = true;
+                    deobfuscateData.signatureCount = 0;
+                } finally {
+                    showLoading('deobfuscate', false);
+                    document.getElementById('deobfuscateBtn').disabled = false;
+                }
+            }, 300);
+        }
+
+        // Download and copy functions
+        function downloadFile(mode) {
+            const data = mode === 'obfuscate' ? obfuscateData : deobfuscateData;
+            
+            if (!data.processedCode) {
+                showStatus(mode, `ERROR: No ${mode === 'obfuscate' ? 'obfuscated' : 'deobfuscated'} code to download!`, 'error');
+                return;
+            }
+
+            const blob = new Blob([data.processedCode], { type: 'application/javascript' });
             const url = URL.createObjectURL(blob);
             const a = document.createElement('a');
             
-            const originalName = currentFile ? currentFile.name : 'obfuscated.js';
-            const fileName = originalName.replace('.js', '_MARVEL_GANTENG_obfuscated.js');
+            const originalName = data.file ? data.file.name : 'processed.js';
+            const suffix = mode === 'obfuscate' ? '_MARVEL_GANTENG_obfuscated.js' : '_deobfuscated.js';
+            const fileName = originalName.replace('.js', suffix);
             
             a.href = url;
             a.download = fileName;
@@ -1070,79 +1374,84 @@
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
 
-            showStatus(`💾 File downloaded: ${fileName} with ${marvelSignatureCount} MARVEL GANTENG signatures!`, 'success');
-            showToast('💾 File downloaded successfully!', 'success');
-        });
+            showStatus(mode, `File downloaded: ${fileName}`, 'success');
+            showToast('File downloaded successfully!', 'success');
+        }
 
-        // Copy to clipboard button handler
-        copyBtn.addEventListener('click', async function() {
-            if (!obfuscatedCode) {
-                showStatus('❌ ERROR: No obfuscated code to copy!', 'error');
+        async function copyToClipboard(mode) {
+            const data = mode === 'obfuscate' ? obfuscateData : deobfuscateData;
+            
+            if (!data.processedCode) {
+                showStatus(mode, `ERROR: No ${mode === 'obfuscate' ? 'obfuscated' : 'deobfuscated'} code to copy!`, 'error');
                 return;
             }
 
             try {
-                await navigator.clipboard.writeText(obfuscatedCode);
-                showStatus('📋 Code copied to clipboard successfully!', 'success');
-                showToast('📋 Copied to clipboard!', 'success');
+                await navigator.clipboard.writeText(data.processedCode);
+                showStatus(mode, 'Code copied to clipboard successfully!', 'success');
+                showToast('Copied to clipboard!', 'success');
             } catch (error) {
-                // Fallback for older browsers
-                outputCode.select();
+                const outputElement = document.getElementById(`${mode}OutputCode`);
+                outputElement.select();
                 document.execCommand('copy');
-                showStatus('📋 Code copied to clipboard (fallback method)!', 'success');
-                showToast('📋 Copied to clipboard!', 'success');
+                showStatus(mode, 'Code copied to clipboard (fallback method)!', 'success');
+                showToast('Copied to clipboard!', 'success');
             }
-        });
-
-        // Utility functions
-        function showStatus(message, type) {
-            status.textContent = message;
-            status.className = `status ${type}`;
-            status.style.display = 'block';
         }
 
-        function hideStatus() {
-            status.style.display = 'none';
-        }
-
-        function showLoading(show) {
-            loading.style.display = show ? 'block' : 'none';
-        }
-
-        function formatBytes(bytes) {
-            if (bytes === 0) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-
-        function updateStats(originalBytes, obfuscatedBytes, signatures) {
-            originalSize.textContent = formatBytes(originalBytes);
-            obfuscatedSize.textContent = formatBytes(obfuscatedBytes);
-            marvelCount.textContent = signatures;
+        function clearAll(mode) {
+            const data = mode === 'obfuscate' ? obfuscateData : deobfuscateData;
             
-            if (originalBytes > 0 && obfuscatedBytes > 0) {
-                const ratio = ((obfuscatedBytes - originalBytes) / originalBytes * 100);
-                compressionRatio.textContent = (ratio > 0 ? '+' : '') + ratio.toFixed(1) + '%';
-                compressionRatio.style.color = ratio > 0 ? '#ef4444' : '#22c55e';
-            } else {
-                compressionRatio.textContent = '0%';
-                compressionRatio.style.color = '#ffffff';
-            }
+            document.getElementById(`${mode}FileInput`).value = '';
+            document.getElementById(`${mode}OutputCode`).value = '';
+            hideFileInfo(mode);
+            hideStatus(mode);
+            document.getElementById(`${mode}DownloadBtn`).disabled = true;
+            document.getElementById(`${mode}CopyBtn`).disabled = true;
+            
+            data.file = null;
+            data.originalCode = '';
+            data.processedCode = '';
+            data.signatureCount = 0;
+            
+            updateStats(mode, 0, 0, 0);
+            showStatus(mode, `All data cleared! MARVEL GANTENG ${mode} system reset.`, 'success');
+            setTimeout(() => hideStatus(mode), 3000);
         }
 
-        // Initialize
-        updateStats(0, 0, 0);
-        
-        // Console styling for the elegant theme
-        console.log('%c✨ MARVEL GANTENG - ELEGANT JAVASCRIPT OBFUSCATOR ✨', 'color: #ffffff; font-size: 18px; font-weight: bold; background: linear-gradient(135deg, #1a1a1a, #0a0a0a); padding: 15px; border-radius: 8px;');
-        console.log('%c>> System initialized successfully...', 'color: #e0e0e0; font-family: Inter, sans-serif; font-size: 14px;');
-        console.log('%c>> Multi-language variable generator: ACTIVE', 'color: #a0a0a0; font-family: Inter, sans-serif; font-size: 13px;');
-        console.log('%c>> Reserved names protection: ENABLED', 'color: #a0a0a0; font-family: Inter, sans-serif; font-size: 13px;');
-        console.log('%c>> MARVEL GANTENG signature injection: ARMED', 'color: #a0a0a0; font-family: Inter, sans-serif; font-size: 13px;');
-        console.log('%c>> Ready for elegant obfuscation operations.', 'color: #e0e0e0; font-family: Inter, sans-serif; font-size: 14px;');
-        console.log('%c>> MARVEL GANTENG - Elegance in Code! ✨', 'color: #ffffff; font-family: Inter, sans-serif; font-size: 16px; font-weight: bold;');
-    </script>
-</body>
-</html>
+        // Event listeners
+        document.addEventListener('DOMContentLoaded', function() {
+            // Start typing animation
+            typeTitle();
+
+            // Mode toggle event listeners
+            document.getElementById('obfuscateToggle').addEventListener('click', () => switchMode('obfuscate'));
+            document.getElementById('deobfuscateToggle').addEventListener('click', () => switchMode('deobfuscate'));
+
+            // Obfuscate mode event listeners
+            document.getElementById('obfuscateFileInput').addEventListener('change', (e) => handleFileChange('obfuscate', e.target.files[0]));
+            document.getElementById('obfuscateBtn').addEventListener('click', processObfuscate);
+            document.getElementById('obfuscateClearBtn').addEventListener('click', () => clearAll('obfuscate'));
+            document.getElementById('obfuscateDownloadBtn').addEventListener('click', () => downloadFile('obfuscate'));
+            document.getElementById('obfuscateCopyBtn').addEventListener('click', () => copyToClipboard('obfuscate'));
+
+            // Deobfuscate mode event listeners
+            document.getElementById('deobfuscateFileInput').addEventListener('change', (e) => handleFileChange('deobfuscate', e.target.files[0]));
+            document.getElementById('deobfuscateBtn').addEventListener('click', processDeobfuscate);
+            document.getElementById('deobfuscateClearBtn').addEventListener('click', () => clearAll('deobfuscate'));
+            document.getElementById('deobfuscateDownloadBtn').addEventListener('click', () => downloadFile('deobfuscate'));
+            document.getElementById('deobfuscateCopyBtn').addEventListener('click', () => copyToClipboard('deobfuscate'));
+
+            // Initialize stats
+            updateStats('obfuscate', 0, 0, 0);
+            updateStats('deobfuscate', 0, 0, 0);
+            
+            // Console styling
+            console.log('%cMARVEL GANTENG - DUAL JAVASCRIPT PROCESSOR', 'color: #ffffff; font-size: 18px; font-weight: bold; background: linear-gradient(135deg, #1a1a1a, #0a0a0a); padding: 15px; border-radius: 8px;');
+            console.log('%c>> Dual system initialized successfully...', 'color: #e0e0e0; font-family: Inter, sans-serif; font-size: 14px;');
+            console.log('%c>> Obfuscation mode: READY', 'color: #4f46e5; font-family: Inter, sans-serif; font-size: 13px;');
+            console.log('%c>> Deobfuscation mode: READY', 'color: #059669; font-family: Inter, sans-serif; font-size: 13px;');
+            console.log('%c>> English-only variable generator: ACTIVE', 'color: #a0a0a0; font-family: Inter, sans-serif; font-size: 13px;');
+            console.log('%c>> MARVEL GANTENG signature system: ARMED', 'color: #a0a0a0; font-family: Inter, sans-serif; font-size: 13px;');
+            console.log('%c>> Ready for dual operations.', 'color: #e0e0e0; font-family: Inter, sans-serif; font-size: 14px;');
+            console.log('%c>> MARVEL GANTENG - Dual Power Unleashed!', 'color: #ffffff; font-family: Inter, sans
