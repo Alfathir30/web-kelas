@@ -89,7 +89,7 @@
             color: white;
             padding: 8px 12px;
             border: none;
-            border-radius: 6px;
+            border-radius: 6mm;
             cursor: pointer;
             margin-right: 15px;
             transition: background-color 0.3s ease;
@@ -152,7 +152,7 @@
             color: white;
             padding: 12px 20px;
             border: none;
-            border-radius: 8px;
+            border-radius: 8mm;
             cursor: pointer;
             font-size: 1rem;
             font-weight: 500;
@@ -200,7 +200,7 @@
 
         .message {
             padding: 10px 15px;
-            border-radius: 8px;
+            border-radius: 8mm;
             margin-top: 15px;
             font-size: 0.95em;
             font-weight: 500;
@@ -266,7 +266,7 @@
             background-color: #333;
             color: #fff;
             text-align: center;
-            border-radius: 8px;
+            border-radius: 8mm;
             padding: 16px;
             position: fixed;
             z-index: 1;
@@ -322,7 +322,7 @@
             align-items: center;
             gap: 10px;
             padding: 8px;
-            border-radius: 6px;
+            border-radius: 6mm;
             background-color: var(--textarea-bg);
             border: 1px solid var(--border-color);
         }
@@ -581,7 +581,9 @@
 
 
         // --- KONFIGURASI PROTEKSI ---
-        const INITIAL_ALLOWED_DEVICE_ID_PLACEHOLDER = "YOUR_DEVICE_ID_WILL_BE_SET_HERE_BY_PYTHON_SCRIPT";
+        // IP_DEFAULT_PLACEHOLDER ini akan menjadi nilai awal ALLOWED_DEVICE_ID di validator.py
+        // yang akan diganti oleh script Python itu sendiri saat pertama kali dijalankan.
+        const IP_DEFAULT_PLACEHOLDER = "0.0.0.0";
         
         // --- MAPPING BASE64 KE KATA MARVEL (KONSISTEN) ---
         const BASE64_CHARS_ORIGINAL = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
@@ -630,13 +632,13 @@
         }
 
         function showMessage(element, message, type) {
-            element.textContent = message;
+            element.innerHTML = message; // Use innerHTML for rich content
             element.className = `message ${type} show`;
         }
 
         function hideMessage(element) {
             element.classList.remove('show');
-            element.textContent = '';
+            element.innerHTML = ''; // Clear content when hidden
         }
 
         function showLoading(message = "Sedang memproses...") {
@@ -664,7 +666,7 @@
             const compressed = pako.deflate(binaryString, { level: 9 });
             return btoa(String.fromCharCode.apply(null, compressed));
         }
-        
+
         // --- RANDOM SHUFFLE FUNCTION (untuk memastikan konsistensi seed antara JS dan Python) ---
         let _currentSeed = SHUFFLE_SEED;
         function getNextPseudoRandom() {
@@ -673,7 +675,7 @@
         }
 
         function seededShuffle(array) {
-            _currentSeed = SHUFFLE_SEED; 
+            _currentSeed = SHUFFLE_SEED;
             let currentIndex = array.length, randomIndex;
 
             while (currentIndex !== 0) {
@@ -686,7 +688,7 @@
 
         // --- ENCODING LOGIC (SUDAH DISINKRONKAN dengan Zlib) ---
         function encodeFileContent(content) {
-            if (!content) return ''; 
+            if (!content) return '';
 
             // Menggunakan encodeURIComponent untuk menangani karakter non-ASCII dengan benar
             const base64Encoded = btoa(unescape(encodeURIComponent(content)));
@@ -713,53 +715,55 @@
                 if (specificDateInput.value) {
                     expiryDate = new Date(specificDateInput.value);
                     // Set time to end of day for specific date, for consistency
-                    expiryDate.setHours(23, 59, 59, 999); 
+                    expiryDate.setHours(23, 59, 59, 999);
                 }
             } else if (expireRelativeRadio.checked) {
                 const duration = parseInt(relativeDurationInput.value);
                 const unit = relativeUnitSelect.value;
                 if (!isNaN(duration) && duration > 0) {
-                    expiryDate = new Date(); 
+                    expiryDate = new Date();
                     if (unit === 'hours') {
                         expiryDate.setHours(expiryDate.getHours() + duration);
                     } else if (unit === 'days') {
                         expiryDate.setDate(expiryDate.getDate() + duration);
-                        expiryDate.setHours(23, 59, 59, 999); 
+                        expiryDate.setHours(23, 59, 59, 999);
                     } else if (unit === 'months') {
                         expiryDate.setMonth(expiryDate.getMonth() + duration);
-                        expiryDate.setHours(23, 59, 59, 999); 
+                        expiryDate.setHours(expiryDate.getHours(), 59, 59, 999); // Akhir bulan
                     }
                 }
             } else if (expireNeverRadio.checked) {
-                expiryDate = new Date("9999-12-31T23:59:59"); 
+                expiryDate = new Date("9999-12-31T23:59:59"); // Represent "never expire"
             }
 
             if (expiryDate) {
-                return expiryDate.toISOString().slice(0, 19); 
+                // Return ISO string up to seconds, compatible with Python's fromisoformat
+                return expiryDate.toISOString().slice(0, 19);
             }
-            return null; 
+            return null;
         }
 
         function updateExpiryDisplay() {
             const calculatedDate = calculateExpiryDate();
             if (expireNeverRadio.checked) {
-                showMessage(expireDateDisplay, "Mode: Tidak akan kedaluwarsa (Selamanya)", "success");
+                showMessage(expireDateDisplay, "Mode: **Tidak akan kedaluwarsa** (Selamanya)", "success");
             } else if (calculatedDate) {
-                showMessage(expireDateDisplay, `Tanggal kedaluwarsa yang dihitung: ${new Date(calculatedDate).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'medium' })} WIB`, "success");
+                showMessage(expireDateDisplay, `Tanggal kedaluwarsa yang dihitung: **${new Date(calculatedDate).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'medium' })} WIB**`, "success");
             } else {
                 hideMessage(expireDateDisplay);
             }
         }
 
         // --- PROTECTION LOGIC (Hanya untuk cek di sisi browser, tidak relevan untuk auto-registrasi di Python) ---
+        // Sebenarnya ini tidak digunakan lagi karena validasi di Python. Tapi disisakan sebagai placeholder.
         function checkProtectionStatus(licenseKey, uploadedContentChecksum, actualExpireDateStr) {
             const today = new Date();
             const errors = [];
             let isValid = true;
-            let currentFileContent = originalContentArea.value; 
+            let currentFileContent = originalContentArea.value;
             let currentFileChecksum = simpleHash(currentFileContent);
 
-            if (!licenseKey) { 
+            if (!licenseKey) {
                 errors.push("License Key harus diisi, Bro!");
                 isValid = false;
             }
@@ -768,12 +772,12 @@
                 // No date check in browser if set to never expire
             } else {
                 const EXPIRED_DATE_OBJ_CHECK = new Date(actualExpireDateStr);
-                if (today > EXPIRED_DATE_OBJ_CHECK) { 
+                if (today > EXPIRED_DATE_OBJ_CHECK) {
                     errors.push("Waduh, masa berlaku license sudah expired, bre! Tanggal sekarang: " + today.toLocaleDateString() + ", Expired: " + EXPIRED_DATE_OBJ_CHECK.toLocaleDateString());
                     isValid = false;
                 }
             }
-            
+
             if (uploadedContentChecksum && uploadedContentChecksum !== currentFileChecksum) {
                 errors.push("DETECTED: File telah dimodifikasi! Checksum tidak cocok, bre! Ini peringatan keras!");
             }
@@ -784,19 +788,25 @@
         // --- UI UPDATE FUNCTIONS ---
         function updateButtonStates() {
             const hasOriginalContent = originalContentArea.value.trim() !== '';
-            const hasEncodedOutput = encodedOutput.value.trim() !== ''; 
-            const isLicenseKeyProvided = licenseKeyInput.value.trim() !== ''; 
+            const hasEncodedOutput = encodedOutput.value.trim() !== '';
+            const isLicenseKeyProvided = licenseKeyInput.value.trim() !== '';
 
             encodeButton.disabled = !(hasOriginalContent && isLicenseKeyProvided);
             obfuscateJsButton.disabled = !(hasOriginalContent && currentFileExtension === '.js'); // Only enable for .js
             copyOutputButton.disabled = !hasEncodedOutput;
-            // saveOutputButton.disabled = !hasEncodedOutput; // saveOutputButton will be removed/changed
             generateScriptButton.disabled = !hasEncodedOutput;
 
             specificDateInput.disabled = !expireSpecificDateRadio.checked;
             relativeDurationInput.disabled = !expireRelativeRadio.checked;
             relativeUnitSelect.disabled = !expireRelativeRadio.checked;
-            
+
+            // Enable/disable obfuscation options based on file type
+            const isJsFile = currentFileExtension === '.js';
+            document.querySelectorAll('.obfuscation-options input, .obfuscation-options select').forEach(el => {
+                el.disabled = !isJsFile;
+            });
+
+
             updateExpiryDisplay();
 
             // Updated warning message for execution
@@ -820,7 +830,7 @@
 
             // New info message
             if (hasEncodedOutput && currentEncodedMarvelString) {
-                showMessage(infoMessage, "Sekarang, klik 'Generate Python Validator & Encrypted Data' untuk mendapatkan file yang siap pakai. Baca petunjuk penggunaannya!", "info");
+                showMessage(infoMessage, "Sekarang, klik **'Generate Python Validator & Encrypted Data'** untuk mendapatkan file yang siap pakai. Baca petunjuk penggunaannya!", "info");
             } else {
                 hideMessage(infoMessage);
             }
@@ -835,26 +845,23 @@
                 charWordPairs.push([BASE64_CHARS_ORIGINAL[i], marvelWordsOriginal[i]]);
             }
 
-            const shuffledPairs = seededShuffle([...charWordPairs]); 
+            const shuffledPairs = seededShuffle([...charWordPairs]);
             const shuffledBase64Chars = shuffledPairs.map(pair => pair[0]);
             const shuffledMarvelWords = shuffledPairs.map(pair => pair[1]);
 
             const pythonShuffledBase64Chars = `[${shuffledBase64Chars.map(s => `'${s}'`).join(', ')}]`;
             const pythonShuffledMarvelWords = `[${shuffledMarvelWords.map(s => `'${s}'`).join(', ')}]`;
-            
-            const deviceIdPlaceholder = INITIAL_ALLOWED_DEVICE_ID_PLACEHOLDER;
 
             const expiredDateConfigPython = expireNeverRadio.checked ?
                                             `EXPIRED_DATE_STR = "NEVER_EXPIRE"` :
                                             `EXPIRED_DATE_STR = "${finalExpireDateStr}"`;
 
-            // Nama file data terenkripsi akan diambil dari argumen command line
-            const pythonScript = 
+            const pythonScript =
                 '"""\n' +
                 'Ini adalah Python Validator untuk file terproteksi (Marvel Edition v4.0 Pro).\n' +
                 `Dibuat pada ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })} WIB.\n` +
-                'Script ini bertanggung jawab untuk memvalidasi License Key, HWID, Expire Date,\n' +
-                'dan mendekode konten terenkripsi dari file eksternal.\n' +
+                'Script ini bertanggung jawab untuk memvalidasi License Key, HWID (berdasarkan IP),\n' +
+                'Expire Date, dan mendekode konten terenkripsi dari file eksternal.\n' +
                 '"""\n' +
                 '\n' +
                 'import base64\n' +
@@ -866,12 +873,13 @@
                 'import re\n' +
                 'import traceback \n' +
                 'import zlib \n' +
-                'import random \n' + 
+                'import random \n' +
                 '\n' +
                 '# --- KONFIGURASI PROTEKSI ---\n' +
                 `VALID_LICENSE_KEY = "${customLicenseKey}" \n` +
-                `${expiredDateConfigPython}\n` + 
-                `ALLOWED_DEVICE_ID = "${deviceIdPlaceholder}" \n` +
+                `${expiredDateConfigPython}\n` +
+                `# Awalnya IP default (0.0.0.0), akan diganti oleh script saat pertama kali dijalankan.\n` +
+                `ALLOWED_DEVICE_ID = "${IP_DEFAULT_PLACEHOLDER}"\n` + // Menggunakan IP_DEFAULT_PLACEHOLDER
                 '\n' +
                 '# --- Data untuk Merekonstruksi Tabel Dekode ---\n' +
                 `_SHUFFLED_BASE64_CHARS = ${pythonShuffledBase64Chars}\n` +
@@ -880,63 +888,66 @@
                 '\n' +
                 '# --- FUNGSI UTILITY INTERNAL ---\n' +
                 'def get_current_device_id_python():\n' +
-                '    """Mengambil informasi unik dari device saat ini."""\n' +
-                '    parts = []\n' +
+                '    """Mengambil IP Address lokal sebagai Device ID."""\n' +
                 '    try:\n' +
-                '        parts.append(f"OS:{platform.system()}")\n' +
-                '        parts.append(f"Node:{socket.gethostname()}") \n' +
-                '        parts.append(f"Machine:{platform.machine()}") \n' +
-                '        parts.append(f"Processor:{platform.processor()}") \n' +
+                '        s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)\n' +
+                '        s.connect(("8.8.8.8", 80)) # IP Google DNS atau IP publik lainnya\n' +
+                '        ip_address = s.getsockname()[0]\n' +
+                '        s.close()\n' +
+                '        return ip_address\n' +
                 '    except Exception as e:\n' +
-                '        parts.append(f"ErrorGettingDeviceID:{e}")\n' +
-                '    return "|".join(parts)\n' +
+                '        # Fallback kalau gagal ambil IP Address utama (misal tidak ada koneksi eksternal)\n' +
+                '        try:\n' +
+                '            return socket.gethostbyname(socket.gethostname())\n' +
+                '        except:\n' +
+                '            return f"ERROR_GETTING_IP:{e}"\n' +
                 '\n' +
-                'def update_script_with_device_id(script_path, new_device_id, placeholder):\n' +
+                'def update_script_with_device_id(script_path, new_device_id):\n' +
                 '    """\n' +
-                '    Menulis ulang file script untuk memasukkan Device ID yang baru ditemukan.\n' +
+                '    Menulis ulang file script untuk memasukkan Device ID (IP) yang baru ditemukan.\n' +
                 '    """\n' +
                 '    try:\n' +
                 '        with open(script_path, \'r\', encoding=\'utf-8\') as f:\n' +
                 '            content = f.read()\n' +
                 '        \n' +
-                `        search_pattern_str = 'ALLOWED_DEVICE_ID = \\"' + placeholder + '\\"'\n` +
-                `        escaped_search_pattern = re.escape(search_pattern_str)\n` +
-                `        pattern = re.compile(escaped_search_pattern)\n` +
+                `        # Cari baris yang mengandung ALLOWED_DEVICE_ID dan ganti nilainya\n` +
+                `        # Menggunakan regex untuk mencari 'ALLOWED_DEVICE_ID = "nilai_apapun"'\n` +
+                `        pattern = r'ALLOWED_DEVICE_ID\\s*=\\s*".*?"'\n` +
+                `        replacement = f'ALLOWED_DEVICE_ID = "{new_device_id}"'\n` +
                 '\n' +
-                '        if pattern.search(content):\n' +
-                `            new_content = pattern.sub('ALLOWED_DEVICE_ID = \\"' + new_device_id + '\\"', content);\n` +
+                '        if re.search(pattern, content):\n' +
+                '            new_content = re.sub(pattern, replacement, content, 1);\n' +
                 '            \n' +
                 '            with open(script_path, \'w\', encoding=\'utf-8\') as f:\n' +
                 '                f.write(new_content)\n' +
-                '            # print("INFO: Device ID berhasil direkam dan disimpan ke script untuk proteksi.")\n' +
                 '            return True\n' +
                 '        else:\n' +
-                '            print("WARNING: Placeholder Device ID tidak ditemukan di script. File mungkin sudah dimodifikasi atau rusak.")\n' +
+                '            print("WARNING: ' + "ALLOWED_DEVICE_ID' tidak ditemukan di script. File mungkin sudah dimodifikasi atau rusak.", file=sys.stderr)\n' +
                 '            return False\n' +
                 '    except Exception as e:\n' +
-                '        print(f"ERROR: Gagal menyimpan Device ID ke script: {e}")\n' +
-                '        print("Pastikan script memiliki izin tulis di lokasinya.")\n' +
-                '        # print(f"Detail error: {e}")\n' +
+                '        print(f"ERROR: Gagal menyimpan Device ID ke script: {e}", file=sys.stderr)\n' +
+                '        print("Pastikan script memiliki izin tulis di lokasinya.", file=sys.stderr)\n' +
                 '        return False\n' +
                 '\n' +
-                'def check_protection_python(user_license_key, current_script_path, device_id_placeholder_from_js):\n' +
-                '    current_device = get_current_device_id_python()\n' +
+                'def check_protection_python(user_license_key, current_script_path):\n' +
+                '    current_device_id = get_current_device_id_python()\n' +
                 '    \n' +
                 '    global ALLOWED_DEVICE_ID \n' +
                 '    \n' +
-                '    if ALLOWED_DEVICE_ID == device_id_placeholder_from_js:\n' +
-                '        # print("\\n=======================================================")\n' +
-                '        # print("          *** PROSES REGISTRASI DEVICE ***")\n' +
-                '        # print("=======================================================")\n' +
-                '        # print("Ini adalah pertama kali script dijalankan di device ini.")\n' +
-                '        # print(f"DEVICE ID YANG AKAN DIREKAM: >>> {current_device} <<<")\n' +
-                '        # print("Merekam Device ID ini untuk proteksi di masa depan...")\n' +
+                `    # Cek apakah ini pertama kali dijalankan (IP masih default ${IP_DEFAULT_PLACEHOLDER})\n` +
+                `    if ALLOWED_DEVICE_ID == "${IP_DEFAULT_PLACEHOLDER}":\n` +
+                '        print("\\n=======================================================")\n' +
+                '        print("          *** PROSES REGISTRASI DEVICE ***")\n' +
+                '        print("=======================================================")\n' +
+                '        print("Ini adalah pertama kali script dijalankan di device ini.")\n' +
+                `        print(f"IP ADDRESS YANG AKAN DIREKAM: >>> {current_device_id} <<<")\n` +
+                '        print("Merekam IP Address ini untuk proteksi di masa depan...")\n' +
                 '        \n' +
-                '        if update_script_with_device_id(current_script_path, current_device, device_id_placeholder_from_js):\n' +
-                '            ALLOWED_DEVICE_ID = current_device\n' +
-                '            # print("Registrasi Device ID berhasil! Script akan melanjutkan eksekusi.")\n' +
+                '        if update_script_with_device_id(current_script_path, current_device_id):\n' +
+                '            ALLOWED_DEVICE_ID = current_device_id\n' +
+                '            print("Registrasi IP Address berhasil! Script akan melanjutkan eksekusi.")\n' +
                 '        else:\n' +
-                '            # print("\\nERROR: Gagal melakukan registrasi device otomatis. Script tidak dapat dilanjutkan.")\n' +
+                '            print("\\nERROR: Gagal melakukan registrasi IP Address otomatis. Script tidak dapat dilanjutkan.", file=sys.stderr)\n' +
                 '            return False \n' +
                 '    \n' +
                 '    today = datetime.datetime.now()\n' +
@@ -954,27 +965,30 @@
                 '        except ValueError:\n' +
                 '            errors.append("Format tanggal kedaluwarsa tidak valid.")\n' +
                 '\n' +
-                '    if current_device != ALLOWED_DEVICE_ID:\n' +
-                '        errors.append(f"Device tidak dikenali atau tidak diizinkan.")\n' +
+                '    # Cek IP Address yang terdaftar vs IP Address saat ini\n' +
+                '    if current_device_id != ALLOWED_DEVICE_ID:\n' +
+                '        errors.append(f"IP Address tidak dikenali atau telah berubah. IP Terdaftar: {ALLOWED_DEVICE_ID}, IP Saat Ini: {current_device_id}")\n' +
                 '    \n' +
                 '    if errors:\n' +
-                '        # print("\\n--- Proteksi Gagal ---")\n' +
                 '        for error in errors:\n' +
                 '            print(f"ERROR_PROTECTION: {error}", file=sys.stderr)\n' +
-                '        # print("----------------------")\n' +
                 '        return False\n' +
                 '    return True\n' +
                 '\n' +
                 'def reconstruct_decode_table():\n' +
                 '    """Merekonstruksi DECODE_TABLE dari data yang diacak."""\n' +
                 '    random.seed(_SHUFFLE_SEED) \n' +
-                '    decode_table = {word: char for char, word in zip(_SHUFFLED_BASE64_CHARS, _SHUFFLED_MARVEL_WORDS)}\n' +
+                '    # Ciptakan list (char, word) pairs untuk shuffling, lalu pisahkan\n' +
+                '    pairs = list(zip(_SHUFFLED_BASE64_CHARS, _SHUFFLED_MARVEL_WORDS))\n' +
+                '    random.shuffle(pairs) # Shuffle di Python juga pake seed yang sama\n' +
+                '    # Pastikan tabel dekode dibuat dari hasil shuffle ini, word -> char\n' +
+                '    decode_table = {word: char for char, word in pairs}\n' +
                 '    return decode_table\n' +
                 '\n' +
                 'def decode_marvel_string_from_list(marvel_word_list, decode_table_ref):\n' +
                 '    base64_chars = []\n' +
                 '    for word in marvel_word_list:\n' +
-                '        if not word: \n' +
+                '        if not word: # Skip empty strings\n' +
                 '            continue\n' +
                 '        if word in decode_table_ref: \n' +
                 '            base64_chars.append(decode_table_ref[word])\n' +
@@ -988,11 +1002,11 @@
                 '        compressed_bytes = base64.b64decode(zlib_compressed_base64_str)\n' +
                 '        decompressed_bytes = zlib.decompress(compressed_bytes)\n' +
                 '        \n' +
+                '        # Base64 decode lagi hasil dekompresi Zlib\n' +
                 '        base64_str_from_zlib = decompressed_bytes.decode(\'utf-8\')\n' +
-                '\n' +
                 '        decoded_original_bytes = base64.b64decode(base64_str_from_zlib)\n' +
-                '        original_content = decoded_original_bytes.decode(\'utf-8\')\n' +
-                '        \n' +
+                '        original_content = decoded_original_bytes.decode(\'utf-8\') # Asumsi konten asli adalah UTF-8\n' +
+                '\n' +
                 '        return original_content\n' +
                 '\n' +
                 '    except zlib.error as e:\n' +
@@ -1003,12 +1017,12 @@
                 '        return None\n' +
                 '    except Exception as e:\n' +
                 '        print(f"ERROR_DECODE: Kesalahan tidak terduga: {e}", file=sys.stderr)\n' +
-                '        # traceback.print_exc(file=sys.stderr)\n' +
+                '        traceback.print_exc()\n' + // Cetak traceback untuk debugging
                 '        return None\n' +
                 '\n' +
                 '\n' +
                 'def main():\n' +
-                '    if len(sys.argv) < 3:\n' +
+                '    if len(sys.argv) < 3: # Argument pertama adalah nama script itu sendiri\n' +
                 '        print("Usage: python validator.py <license_key> <path_to_encrypted_file>", file=sys.stderr)\n' +
                 '        sys.exit(1)\n' +
                 '\n' +
@@ -1016,8 +1030,11 @@
                 '    encrypted_file_path = sys.argv[2]\n' +
                 '    current_script_path = os.path.abspath(sys.argv[0])\n' +
                 '\n' +
-                `    if not check_protection_python(user_license_key, current_script_path, "${INITIAL_ALLOWED_DEVICE_ID_PLACEHOLDER}"):\n` +
+                '    print("\\n--- Memulai Validasi Proteksi ---")\n' +
+                '    if not check_protection_python(user_license_key, current_script_path):\n' +
+                '        print("\\nValidasi proteksi GAGAL. Program dihentikan.", file=sys.stderr)\n' +
                 '        sys.exit(1)\n' +
+                '    print("Validasi proteksi BERHASIL. Melanjutkan dekode file...")\n' +
                 '\n' +
                 '    try:\n' +
                 '        with open(encrypted_file_path, \'r\', encoding=\'utf-8\') as f:\n' +
@@ -1031,23 +1048,25 @@
                 '            sys.exit(1)\n' +
                 '\n' +
                 '        original_content = decode_marvel_string_from_list(_ENCODED_MARVEL_WORD_LIST, DECODE_TABLE_RECONSTRUCTED)\n' +
-                '        if original_content is None:\n' + 
+                '        if original_content is None:\n' +
                 '            print("ERROR_DECODE: Dekode gagal.", file=sys.stderr)\n' +
                 '            sys.exit(1)\n' +
                 '\n' +
                 '        # Cetak konten asli ke stdout agar bisa ditangkap oleh program lain\n' +
-                '        print(original_content)\n' +
+                '        sys.stdout.buffer.write(original_content.encode(\'utf-8\')) # Pastikan output biner untuk konten apapun\n' +
+                '        sys.stdout.flush() # Penting untuk memastikan data tercetak segera\n' +
                 '\n' +
                 '    except FileNotFoundError:\n' +
                 '        print(f"ERROR: File terenkripsi tidak ditemukan: {encrypted_file_path}", file=sys.stderr)\n' +
                 '        sys.exit(1)\n' +
                 '    except Exception as e:\n' +
                 '        print(f"ERROR: Kesalahan saat membaca atau mendekode file terenkripsi: {e}", file=sys.stderr)\n' +
-                '        # traceback.print_exc(file=sys.stderr)\n' +
+                '        traceback.print_exc()\n' +
                 '        sys.exit(1)\n' +
                 '\n' +
                 'if __name__ == "__main__":\n' +
-                '    main()\n';
+                '    main()\n' +
+                '"""\n'
             return pythonScript;
         }
 
@@ -1075,39 +1094,15 @@
                 splitStrings: splitStrings.checked,
                 transformObjectKeys: transformObjectKeys.value === 'true', // Boolean
                 renameGlobals: renameGlobals.checked,
-                selfDefending: selfDefending.checked,
-                // Tambahkan opsi lain sesuai kebutuhan dari dokumentasi library
-                numbersToExpressions: true, // Mengubah angka menjadi ekspresi (0x1 -> !+[]-~[])
-                simplifyProperties: true, // Menyederhanakan akses properti
-                rotateStringArray: true, // Memutar array string
-                debugProtection: false, // Jangan diaktifkan kalau nggak mau pusing nge-debug
-                // debugProtectionInterval: false,
-                sourceMap: false // Tidak perlu source map untuk obfuscasi penuh
+                selfDefending: selfDefending.checked
             };
 
-            console.log("Obfuscation Options:", options);
-
             try {
-                const result = await new Promise((resolve, reject) => {
-                    // Kasih sedikit delay biar loading message muncul dan JavaScriptObfuscator benar-benar siap
-                    setTimeout(() => { 
-                        if (typeof JavaScriptObfuscator === 'undefined') {
-                            reject(new Error('JavaScriptObfuscator is not defined even after a delay. Ini serius.')); 
-                            return;
-                        }
-                        try {
-                            const obfuscatedCode = JavaScriptObfuscator.obfuscate(code, options).get
-Code();
-                            resolve(obfuscatedCode);
-                        } catch (e) {
-                            reject(e); // Tangkap error dari obfuscate() itu sendiri
-                        }
-                    }, 50); 
-                });
-                return result;
+                const obfuscationResult = JavaScriptObfuscator.obfuscate(code, options);
+                return obfuscationResult.getObfuscatedCode();
             } catch (e) {
-                console.error("Error during JavaScript obfuscation:", e);
-                showToast(`Gagal obfuscate JavaScript: ${e.message}`, 'error');
+                showToast(`Gagal obfuscate JS: ${e.message}`, 'error');
+                console.error('Obfuscation error:', e);
                 return null;
             }
         }
@@ -1115,73 +1110,43 @@ Code();
 
         // --- EVENT LISTENERS ---
         fileInput.addEventListener('change', (event) => {
-            const file = event.target.files[0]; 
-            
-            console.log("File dipilih:", file);
-
+            const file = event.target.files[0];
             if (file) {
-                const reader = new FileReader();
-
                 currentFileName = file.name;
-                const lastDotIndex = file.name.lastIndexOf('.');
-                if (lastDotIndex > 0) {
-                    currentFileExtension = file.name.substring(lastDotIndex).toLowerCase();
-                } else {
-                    currentFileExtension = ''; 
-                }
-                
-                fileNameSpan.textContent = file.name;
+                currentFileExtension = '.' + file.name.split('.').pop().toLowerCase(); // Get extension with dot
+                fileNameSpan.textContent = currentFileName;
                 fileSizeSpan.textContent = `${(file.size / 1024).toFixed(2)} KB`;
                 fileInfoDiv.classList.remove('hidden');
 
-                showLoading('Membaca file...');
-                
+                const reader = new FileReader();
                 reader.onload = (e) => {
-                    const content = e.target.result;
-                    originalContentArea.value = content; 
-                    originalFileChecksum = simpleHash(content); 
-                    hideLoading();
-                    showToast('File berhasil dibaca dan checksum dihitung!', 'success');
-                    encodedOutput.value = ''; 
-                    currentEncodedMarvelString = ''; 
-                    hideMessage(licenseErrorDiv);
-                    updateButtonStates(); 
-                };
-
-                reader.onerror = (e) => {
-                    hideLoading();
-                    console.error('Error saat membaca file:', e); 
-                    originalContentArea.value = 'Gagal membaca file, bro. Coba lagi deh.';
-                    originalFileChecksum = '';
-                    showToast('Gagal membaca file!', 'error');
-                    encodedOutput.value = '';
-                    currentEncodedMarvelString = ''; 
-                    hideMessage(licenseErrorDiv);
-                    hideMessage(executionWarningMessage);
-                    hideMessage(obfuscationWarningMessage);
+                    originalContentArea.value = e.target.result;
+                    originalFileChecksum = simpleHash(e.target.result); // Calculate checksum for uploaded file
+                    fileContentDisplay.textContent = `File loaded. Checksum: ${originalFileChecksum}`;
+                    fileContentDisplay.className = 'message success show';
                     updateButtonStates();
                 };
-
-                reader.readAsText(file); 
+                reader.onerror = () => {
+                    originalContentArea.value = '';
+                    fileContentDisplay.textContent = 'Gagal membaca file.';
+                    fileContentDisplay.className = 'message error show';
+                    updateButtonStates();
+                };
+                reader.readAsText(file);
             } else {
-                fileInfoDiv.classList.add('hidden');
-                originalContentArea.value = '';
-                encodedOutput.value = '';
                 currentFileName = '';
                 currentFileExtension = '';
+                originalContentArea.value = '';
                 originalFileChecksum = '';
-                currentEncodedMarvelString = ''; 
-                hideMessage(licenseErrorDiv);
-                hideMessage(executionWarningMessage);
-                hideMessage(obfuscationWarningMessage);
+                fileInfoDiv.classList.add('hidden');
+                hideMessage(fileContentDisplay);
                 updateButtonStates();
-                console.log("Tidak ada file yang dipilih.");
             }
         });
 
         licenseKeyInput.addEventListener('input', updateButtonStates);
-        originalContentArea.addEventListener('input', updateButtonStates); 
-        
+        originalContentArea.addEventListener('input', updateButtonStates);
+
         // Event listeners for expiration options
         expireSpecificDateRadio.addEventListener('change', updateButtonStates);
         specificDateInput.addEventListener('change', updateButtonStates);
@@ -1190,309 +1155,221 @@ Code();
         relativeUnitSelect.addEventListener('change', updateButtonStates);
         expireNeverRadio.addEventListener('change', updateButtonStates);
 
-        // Event listeners for obfuscation options (re-check button states)
-        document.querySelectorAll('.obfuscation-option input, .obfuscation-option select').forEach(element => {
-            element.addEventListener('change', updateButtonStates);
-        });
 
+        // Encode & Proteksi File Button Handler
+        encodeButton.addEventListener('click', async () => {
+            showLoading("Memproses enkripsi & proteksi...");
+            encodedOutput.value = ''; // Clear previous output
+            currentEncodedMarvelString = ''; // Reset
+            hideMessage(infoMessage);
 
-        encodeButton.addEventListener('click', async () => { 
-            const licenseKey = licenseKeyInput.value.trim(); 
-            let fileContent = originalContentArea.value; // Bisa di-obfuscate dulu jika JS
-
-            if (!fileContent) {
-                showToast('Bro, upload file dulu dong atau paste isinya!', 'warning');
-                return;
-            }
-
+            const licenseKey = licenseKeyInput.value.trim();
             if (!licenseKey) {
-                showMessage(licenseErrorDiv, "License Key harus diisi!", "error");
-                showToast('License Key kosong, bre!', 'error');
-                return;
-            }
-
-            const calculatedExpireDateStr = calculateExpiryDate();
-            if (!calculatedExpireDateStr && !expireNeverRadio.checked) {
-                showMessage(licenseErrorDiv, "Pilih atau masukkan tanggal kedaluwarsa yang valid!", "error");
-                showToast('Tanggal kedaluwarsa belum diatur dengan benar!', 'error');
-                return;
-            }
-
-            hideMessage(licenseErrorDiv); 
-            hideMessage(infoMessage); // Hide info message if re-encoding
-
-            showLoading('Mengecek proteksi dan meng-encode...');
-
-            const { isValid, errors } = checkProtectionStatus(licenseKey, originalFileChecksum, calculatedExpireDateStr);
-
-            if (!isValid) {
+                showMessage(licenseErrorDiv, "License Key tidak boleh kosong, Bro!", "error");
                 hideLoading();
-                let errorMessage = "Gagal memproses karena masalah proteksi:\\n\\n";
-                errors.forEach(err => {
-                    errorMessage += "- " + err + "\\n";
-                    if (err.includes("expired")) alert("WADUH! LICENSE SUDAH EXPIRED!");
-                });
-                showMessage(licenseErrorDiv, errorMessage, "error");
-                encodedOutput.value = "Error: Proteksi Gagal! Lihat pesan di atas.";
-                showToast('Proteksi gagal, bro!', 'error');
-                updateButtonStates();
+                return;
+            } else {
+                hideMessage(licenseErrorDiv);
+            }
+
+            const fileContent = originalContentArea.value;
+            if (!fileContent) {
+                showToast('Tidak ada konten file untuk diproses!', 'error');
+                hideLoading();
                 return;
             }
-
-            if (errors.length > 0) {
-                 let warningMessage = "Peringatan:\\n\\n";
-                 errors.forEach(err => {
-                    if (err.includes("Checksum tidak cocok")) {
-                         warningMessage += "- " + err + "\\n";
-                    }
-                 });
-                 if (warningMessage !== "Peringatan:\\n\\n") {
-                     showMessage(licenseErrorDiv, warningMessage, "warning");
-                 }
-            }
-
-            // Jika file JS, lakukan obfuscation dulu sebelum encode
-            if (currentFileExtension === '.js') {
-                showLoading('Meng-obfuscate JavaScript...');
-                const obfuscatedJs = await obfuscateJavaScript(fileContent);
-                if (obfuscatedJs) {
-                    fileContent = obfuscatedJs; // Gunakan kode JS yang sudah di-obfuscate
-                    showToast('JavaScript berhasil di-obfuscate!', 'success');
-                } else {
-                    hideLoading();
-                    showToast('Gagal obfuscate JavaScript, proses proteksi dibatalkan.', 'error');
-                    return;
-                }
-            }
-
 
             try {
-                const encoded = encodeFileContent(fileContent);
-                encodedOutput.value = encoded;
-                currentEncodedMarvelString = encoded; 
-                hideLoading();
-                showToast('File berhasil di-encode dan proteksi lolos!', 'success');
+                let contentToEncode = fileContent;
+
+                // Jika file JS, lakukan obfuscation terlebih dahulu
+                if (currentFileExtension === '.js') {
+                    showLoading("Melakukan obfuscation JavaScript...");
+                    const obfuscatedCode = await obfuscateJavaScript(fileContent);
+                    if (obfuscatedCode) {
+                        contentToEncode = obfuscatedCode;
+                        showToast('JavaScript berhasil di-obfuscate!', 'success');
+                    } else {
+                        showToast('Gagal obfuscate JavaScript. Proses enkripsi dilanjutkan dengan kode asli.', 'warning');
+                        // Lanjutkan dengan kode asli jika obfuscation gagal
+                    }
+                }
+
+                showLoading("Melakukan enkripsi Marvel Words...");
+                currentEncodedMarvelString = encodeFileContent(contentToEncode);
+                encodedOutput.value = currentEncodedMarvelString;
+                showToast('File berhasil di-encode dan diproteksi!', 'success');
             } catch (error) {
-                hideLoading();
-                console.error('Error saat encoding:', error);
-                encodedOutput.value = 'Waduh, ada error saat encoding: ' + error.message;
-                showToast('Gagal encode file, bro!', 'error');
+                console.error("Encoding error:", error);
+                showToast(`Gagal encode file: ${error.message}`, 'error');
             } finally {
+                hideLoading();
                 updateButtonStates();
             }
         });
 
-        // New Button: Obfuscate JS Saja
+        // Obfuscate JS Saja Button Handler
         obfuscateJsButton.addEventListener('click', async () => {
-            const fileContent = originalContentArea.value;
+            showLoading("Melakukan obfuscation JavaScript saja...");
+            encodedOutput.value = ''; // Clear previous output
+            currentEncodedMarvelString = ''; // Reset
+            hideMessage(infoMessage);
 
-            if (!fileContent || currentFileExtension !== '.js') {
-                showToast('Pilih file JavaScript (.js) dulu, bro!', 'warning');
+            const fileContent = originalContentArea.value;
+            if (currentFileExtension !== '.js') {
+                showToast('Fitur ini hanya untuk file JavaScript (.js)!', 'error');
+                hideLoading();
+                return;
+            }
+            if (!fileContent) {
+                showToast('Tidak ada konten JavaScript untuk di-obfuscate!', 'error');
+                hideLoading();
                 return;
             }
 
-            showLoading('Meng-obfuscate JavaScript saja...');
-            const obfuscatedJs = await obfuscateJavaScript(fileContent);
-
-            if (obfuscatedJs) {
-                encodedOutput.value = obfuscatedJs;
-                currentEncodedMarvelString = ''; // Reset karena ini hanya obfuscate, bukan encode proteksi
+            try {
+                const obfuscatedCode = await obfuscateJavaScript(fileContent);
+                if (obfuscatedCode) {
+                    encodedOutput.value = obfuscatedCode;
+                    showToast('JavaScript berhasil di-obfuscate!', 'success');
+                    // Karena ini hanya obfuscate, currentEncodedMarvelString tidak diisi
+                    // dan generateScriptButton tidak akan aktif (kecuali nanti diubah logikanya)
+                } else {
+                    showToast('Gagal obfuscate JavaScript.', 'error');
+                }
+            } catch (error) {
+                console.error("Obfuscation only error:", error);
+                showToast(`Gagal obfuscate JS: ${error.message}`, 'error');
+            } finally {
                 hideLoading();
-                showToast('JavaScript berhasil di-obfuscate saja!', 'success');
-            } else {
-                encodedOutput.value = 'Gagal obfuscate JavaScript.';
-                hideLoading();
-                showToast('Gagal obfuscate JavaScript!', 'error');
+                // Update button states, obfuscateJsButton will be disabled if output is not encoded marvel string
+                updateButtonStates(); 
+                // Force enable copy if obfuscation was successful
+                if (encodedOutput.value) copyOutputButton.disabled = false;
             }
-            updateButtonStates();
         });
 
 
         copyOutputButton.addEventListener('click', () => {
-            if (!encodedOutput.value) {
-                showToast('Belum ada hasil yang bisa disalin, bre!', 'warning');
-                return;
-            }
             encodedOutput.select();
-            encodedOutput.setSelectionRange(0, 99999);
+            encodedOutput.setSelectionRange(0, 99999); // For mobile devices
             try {
-                navigator.clipboard.writeText(encodedOutput.value)
-                    .then(() => showToast('Hasil udah disalin ke clipboard, mantap!', 'success'))
-                    .catch(err => {
-                        console.error('Gagal menyalin teks:', err);
-                        showToast('Gagal nyalin teks. Browser lo kayaknya gak support Clipboard API nih.', 'error');
-                    });
-            } catch (err) {
-                console.error('Browser tidak support Clipboard API:', err);
                 document.execCommand('copy');
-                showToast('Hasil udah disalin (metode lama), bro!', 'success');
+                showToast('Hasil output berhasil disalin!', 'success');
+            } catch (err) {
+                showToast('Gagal menyalin. Silakan salin manual.', 'error');
+                console.error('Failed to copy: ', err);
             }
         });
 
-        // Removed saveOutputButton logic, it's now integrated into generateScriptButton or can be manually copied.
+        generateScriptButton.addEventListener('click', () => {
+            showLoading("Mengenerate validator Python...");
+            const licenseKey = licenseKeyInput.value.trim();
+            const finalExpireDate = calculateExpiryDate();
 
-        generateScriptButton.addEventListener('click', async () => { // Make it async
+            if (!licenseKey) {
+                showToast('License Key harus diisi!', 'error');
+                hideLoading();
+                return;
+            }
+            if (!finalExpireDate && !expireNeverRadio.checked) {
+                showToast('Tanggal kedaluwarsa belum diatur atau tidak valid!', 'error');
+                hideLoading();
+                return;
+            }
             if (!currentEncodedMarvelString) {
-                showToast('Encode dulu filenya, bro, baru bisa generate script!', 'warning');
-                return;
+                 showToast('Silakan encode & proteksi file terlebih dahulu!', 'error');
+                 hideLoading();
+                 return;
             }
 
-            const customLicenseKey = licenseKeyInput.value.trim(); 
-            const finalExpireDateStr = calculateExpiryDate();
+            try {
+                // Generate Python validator script
+                const pythonValidatorContent = generatePythonValidatorScript(licenseKey, finalExpireDate);
 
-            if (!finalExpireDateStr && !expireNeverRadio.checked) {
-                showToast('Pilih atau masukkan tanggal kedaluwarsa yang valid sebelum generate script!', 'error');
-                return;
+                // Create and download validator.py
+                const validatorBlob = new Blob([pythonValidatorContent], { type: 'text/plain' });
+                const validatorUrl = URL.createObjectURL(validatorBlob);
+                const validatorA = document.createElement('a');
+                validatorA.href = validatorUrl;
+                validatorA.download = 'validator.py';
+                document.body.appendChild(validatorA);
+                validatorA.click();
+                document.body.removeChild(validatorA);
+                URL.revokeObjectURL(validatorUrl);
+
+                // Create and download encrypted data file
+                const encryptedDataFileName = `${currentFileName || 'encrypted_data'}.enc`; // Use original file name
+                const encryptedDataBlob = new Blob([currentEncodedMarvelString], { type: 'text/plain' });
+                const encryptedDataUrl = URL.createObjectURL(encryptedDataBlob);
+                const encryptedDataA = document.createElement('a');
+                encryptedDataA.href = encryptedDataUrl;
+                encryptedDataA.download = encryptedDataFileName;
+                document.body.appendChild(encryptedDataA);
+                encryptedDataA.click();
+                document.body.removeChild(encryptedDataA);
+                URL.revokeObjectURL(encryptedDataUrl);
+
+                showToast('File `validator.py` dan `encrypted_data.enc` berhasil di-generate!', 'success');
+
+                // Clear input and output after successful generation
+                resetAll();
+
+            } catch (error) {
+                console.error("Generate script error:", error);
+                showToast(`Gagal mengenerate script: ${error.message}`, 'error');
+            } finally {
+                hideLoading();
             }
-
-            showLoading('Menciptakan file-file proteksi...');
-            
-            // 1. Generate Python Validator Script
-            const pythonValidatorContent = generatePythonValidatorScript(customLicenseKey, finalExpireDateStr);
-            const pythonBlob = new Blob([pythonValidatorContent], { type: 'text/plain;charset=utf-8' });
-            
-            const pythonFileName = 'validator.py';
-            const aPython = document.createElement('a');
-            aPython.href = URL.createObjectURL(pythonBlob);
-            aPython.download = pythonFileName;
-            document.body.appendChild(aPython);
-            aPython.click();
-            document.body.removeChild(aPython);
-            URL.revokeObjectURL(aPython.href);
-
-            // 2. Generate Encrypted Data File
-            // Nama file data terenkripsi akan mengikuti nama asli dengan ekstensi .enc
-            let encryptedDataFileName = currentFileName;
-            if (encryptedDataFileName.includes('.')) {
-                encryptedDataFileName = encryptedDataFileName.substring(0, encryptedDataFileName.lastIndexOf('.')) + '.enc';
-            } else {
-                encryptedDataFileName += '.enc';
-            }
-
-            const encryptedDataBlob = new Blob([currentEncodedMarvelString], { type: 'text/plain;charset=utf-8' });
-            const aEncryptedData = document.createElement('a');
-            aEncryptedData.href = URL.createObjectURL(encryptedDataBlob);
-            aEncryptedData.download = encryptedDataFileName;
-            document.body.appendChild(aEncryptedData);
-            aEncryptedData.click();
-            document.body.removeChild(aEncryptedData);
-            URL.revokeObjectURL(aEncryptedData.href);
-
-            hideLoading();
-            showToast(`Dua file berhasil di-generate: '${pythonFileName}' dan '${encryptedDataFileName}'!`, 'success');
-
-            // Show instructions to the user
-            showMessage(infoMessage, `
-                **BERHASIL!** Dua file terproteksi telah diunduh:<br><br>
-                1. **\`${pythonFileName}\`**: Ini adalah script Python validator Anda.<br>
-                2. **\`${encryptedDataFileName}\`**: Ini adalah file data/kode Anda yang sudah terenkripsi.<br><br>
-                **CARA MENGGUNAKAN:**<br>
-                Letakkan kedua file ini di folder yang sama dengan aplikasi JavaScript/JSON Anda.<br>
-                Kemudian, di script JavaScript Anda (misal: \`app.js\`), Anda perlu memanggil validator Python untuk mendapatkan konten asli:<br><br>
-                \`\`\`javascript
-                // Contoh penggunaan di Node.js (untuk file JS atau JSON)
-                const { execSync } = require('child_process'); // Import untuk menjalankan perintah eksternal
-                const fs = require('fs'); // Import untuk membaca/menulis file
-                
-                const LICENSE_KEY = "${customLicenseKey}"; // Gunakan license key yang sama saat generate
-                const ENCRYPTED_FILE = "${encryptedDataFileName}"; // Nama file terenkripsi yang di-generate
-                const VALIDATOR_SCRIPT = "${pythonFileName}"; // Nama script validator Python
-                
-                try {
-                    // Jalankan validator Python. Outputnya (stdout) adalah konten yang sudah didekode.
-                    // Pastikan Python terinstal di sistem.
-                    const decodedContent = execSync(\`python \${VALIDATOR_SCRIPT} \${LICENSE_KEY} \${ENCRYPTED_FILE}\`, { encoding: 'utf8' });
-                    
-                    // --- PENANGANAN KONTEN ASLI ---
-                    if ("${currentFileExtension}" === '.js') {
-                        // Jika aslinya JavaScript, jalankan kodenya
-                        // HATI-HATI dengan 'eval()', lebih baik disimpan ke file sementara jika memungkinkan
-                        // eval(decodedContent); 
-                        
-                        const tempJsPath = './temp_decoded_app.js';
-                        fs.writeFileSync(tempJsPath, decodedContent);
-                        require(tempJsPath); // Load JS logic
-                        fs.unlinkSync(tempJsPath); // Hapus file sementara
-                        console.log("INFO: Skrip JavaScript terproteksi berhasil dijalankan.");
-
-                    } else if ("${currentFileExtension}" === '.json') {
-                        // Jika aslinya JSON, parse dan gunakan data
-                        const jsonData = JSON.parse(decodedContent);
-                        console.log("INFO: Data JSON terproteksi berhasil didekode:", jsonData);
-                        // Lakukan sesuatu dengan jsonData Anda
-                        
-                    } else {
-                        // Untuk tipe file lain, atau jika Anda ingin melihat isinya
-                        console.log("INFO: Konten terproteksi berhasil didekode:");
-                        console.log(decodedContent);
-                        // Anda bisa menyimpan decodedContent ke file dengan ekstensi aslinya jika perlu
-                        // fs.writeFileSync(\`./decoded_file${currentFileExtension}\`, decodedContent);
-                    }
-
-                } catch (error) {
-                    console.error('ERROR: Proteksi gagal atau Node.js tidak bisa menjalankan validator Python.');
-                    console.error('Pesan dari Validator Python (stderr):', error.stderr ? error.stderr.toString() : 'Tidak ada');
-                    console.error('Detail Error:', error.message);
-                    process.exit(1); // Hentikan aplikasi jika proteksi gagal
-                }
-                
-                // Lanjutkan kode aplikasi utama Anda di sini setelah konten terproteksi dimuat
-                console.log("Aplikasi Anda berjalan setelah proteksi berhasil!");
-                \`\`\`
-                <br>
-                **CATATAN:** User harus memiliki **Python terinstal** di sistem untuk menjalankan validator ini.
-            `, "success");
         });
 
 
-        resetButton.addEventListener('click', () => {
-            fileInput.value = '';
+        resetButton.addEventListener('click', resetAll);
+
+        function resetAll() {
             licenseKeyInput.value = '';
             originalContentArea.value = '';
             encodedOutput.value = '';
-            fileInfoDiv.classList.add('hidden');
+            fileInput.value = ''; // Clear selected file
             currentFileName = '';
             currentFileExtension = '';
             originalFileChecksum = '';
-            currentEncodedMarvelString = ''; 
-            hideMessage(licenseErrorDiv);
-            hideMessage(executionWarningMessage); 
-            hideMessage(obfuscationWarningMessage); 
-            hideMessage(infoMessage); // Hide info message on reset
-            specificDateInput.value = ''; 
+            currentEncodedMarvelString = '';
+            
+            // Reset expiration options to default
+            expireSpecificDateRadio.checked = true;
+            specificDateInput.value = ''; // Clear date input
             relativeDurationInput.value = '1';
             relativeUnitSelect.value = 'days';
-            expireSpecificDateRadio.checked = true; 
             
-            // Reset obfuscation options to default
+            // Reset obfuscation options to default (usually checked)
             compactCode.checked = true;
             controlFlowFlattening.checked = true;
             controlFlowFlatteningProb.value = '0.7';
             stringArray.checked = true;
             stringArrayRotate.checked = true;
-            stringArrayEncoding.value = 'none'; // Default ke none, bisa diubah sesuai preferensi
-            deadCodeInjection.checked = false;
+            stringArrayEncoding.value = 'none';
+            deadCodeInjection.checked = false; // Default off
             deadCodeInjectionProb.value = '0.5';
             identifierNamesGenerator.checked = true;
             unicodeEscapeSequence.value = 'false';
             disableConsoleOutput.checked = true;
-            splitStrings.checked = false;
+            splitStrings.checked = false; // Default off
             transformObjectKeys.value = 'false';
             renameGlobals.checked = true;
             selfDefending.checked = true;
 
-            showToast('Form udah di-reset, siap buat proteksi lagi!', 'info');
-            updateButtonStates();
-        });
+            hideMessage(licenseErrorDiv);
+            hideMessage(fileContentDisplay);
+            hideMessage(executionWarningMessage);
+            hideMessage(obfuscationWarningMessage);
+            hideMessage(infoMessage);
+            fileInfoDiv.classList.add('hidden');
+            updateButtonStates(); // Update button states after reset
+        }
 
-        // Initial state
+        // Initialize button states on load
         updateButtonStates();
-
-        // Set default specific date to tomorrow
-        const tomorrow = new Date();
-        tomorrow.setDate(tomorrow.getDate() + 1);
-        specificDateInput.value = tomorrow.toISOString().split('T')[0];
-        updateExpiryDisplay();
     </script>
 </body>
 </html>
