@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Protektor File (Client-Side) - Basic Encrypt v4.0</title>
+    <title>Enkripsi & Obfuscasi File (Client-Side) - v4.0</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -40,7 +40,7 @@
             border-radius: 12px;
             box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
             width: 100%;
-            max-width: 600px; /* Lebih kecil, karena lebih sederhana */
+            max-width: 700px; /* Sedikit lebih lebar untuk info obfuscation */
             animation: fadeIn 0.8s ease-out;
             margin-top: 50px;
         }
@@ -72,7 +72,7 @@
             color: var(--text-color);
         }
 
-        input[type="file"], input[type="text"], input[type="date"], input[type="number"], select {
+        input[type="file"] {
             display: block;
             width: calc(100% - 20px);
             padding: 10px;
@@ -99,20 +99,10 @@
             background-color: var(--button-hover);
         }
 
-        input[type="file"]:focus, input[type="text"]:focus, input[type="date"]:focus, input[type="number"]:focus, select:focus {
+        input[type="file"]:focus {
             outline: none;
             border-color: var(--primary-color);
             box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.5);
-        }
-
-        select {
-            appearance: none;
-            -webkit-appearance: none;
-            -moz-appearance: none;
-            background-image: url('data:image/svg+xml;utf8,<svg fill="%23e0e0e0" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
-            background-repeat: no-repeat;
-            background-position: right 10px center;
-            padding-right: 30px;
         }
 
         textarea {
@@ -283,18 +273,6 @@
             opacity: 1;
         }
 
-        .expiration-options {
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-
-        .expiration-options div {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
         /* Responsif untuk HP */
         @media (max-width: 768px) {
             body {
@@ -319,52 +297,14 @@
             .button-group {
                 flex-direction: column;
             }
-            .expiration-options div {
-                flex-direction: column;
-                align-items: flex-start;
-            }
-            .expiration-options input, .expiration-options select {
-                width: 100%;
-            }
         }
     </style>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@2.20.0/dist/javascript-obfuscator.min.js"></script>
 </head>
 <body>
     <div class="container">
-        <h1>Protektor File (Client-Side) - Basic Encrypt</h1>
-
-        <div class="form-group">
-            <label for="licenseKeyInput">License Key (Kunci Proteksi Anda):</label>
-            <input type="text" id="licenseKeyInput" placeholder="Masukkan license key yang Anda inginkan (misal: MY-SUPER-KEY)">
-            <div id="licenseError" class="message error hidden"></div>
-        </div>
-
-        <div class="form-group">
-            <label>Pengaturan Tanggal Kedaluwarsa:</label>
-            <div class="expiration-options">
-                <div>
-                    <input type="radio" id="expireSpecificDate" name="expireType" value="specific" checked>
-                    <label for="expireSpecificDate">Tanggal Spesifik:</label>
-                    <input type="date" id="specificDateInput">
-                </div>
-                <div>
-                    <input type="radio" id="expireRelative" name="expireType" value="relative">
-                    <label for="expireRelative">Dari Sekarang:</label>
-                    <input type="number" id="relativeDurationInput" value="1" min="1" style="width: 80px;">
-                    <select id="relativeUnitSelect">
-                        <option value="hours">Jam</option>
-                        <option value="days" selected>Hari</option>
-                        <option value="months">Bulan</option>
-                    </select>
-                </div>
-                <div>
-                    <input type="radio" id="expireNever" name="expireType" value="never">
-                    <label for="expireNever">Tidak Akan Kedaluwarsa (Selamanya)</label>
-                </div>
-            </div>
-            <div id="expireDateDisplay" class="message success hidden"></div>
-        </div>
+        <h1>Enkripsi & Obfuscasi File (Client-Side) - v4.0</h1>
 
         <div class="form-group">
             <label for="fileInput">Pilih File (Semua Tipe):</label>
@@ -376,8 +316,8 @@
         </div>
 
         <div class="form-group">
-            <label for="originalContentArea">Isi File Asli:</label>
-            <textarea id="originalContentArea" placeholder="Isi file yang di-upload atau paste di sini..." readonly></textarea>
+            <label for="originalContentArea">Isi File Asli (atau hasil Obfuscasi jika JS):</label>
+            <textarea id="originalContentArea" placeholder="Isi file yang di-upload akan tampil di sini..." readonly></textarea>
         </div>
 
         <div class="form-group">
@@ -388,9 +328,10 @@
         <div class="button-group">
             <button class="btn" id="encodeButton" disabled>Enkripsi File</button>
             <button class="btn" id="copyOutputButton" disabled>Salin Hasil Enkripsi</button>
-            <button class="btn" id="generateScriptButton" disabled>Generate Python Validator & Encrypted Data</button>
+            <button class="btn" id="generateScriptButton" disabled>Generate Python Decoder & Encrypted Data</button>
             <button class="btn btn-reset" id="resetButton">Reset</button>
         </div>
+        <div id="obfuscationInfo" class="message warning hidden"></div>
         <div id="executionWarningMessage" class="message warning hidden"></div>
         <div id="infoMessage" class="message success hidden"></div>
     </div>
@@ -403,8 +344,6 @@
     <div id="toast" class="toast"></div>
 
     <script>
-        const licenseKeyInput = document.getElementById('licenseKeyInput');
-        const licenseErrorDiv = document.getElementById('licenseError');
         const fileInput = document.getElementById('fileInput');
         const fileNameSpan = document.getElementById('fileName');
         const fileSizeSpan = document.getElementById('fileSize');
@@ -420,15 +359,7 @@
         const fileContentDisplay = document.getElementById('fileContentDisplay');
         const executionWarningMessage = document.getElementById('executionWarningMessage');
         const infoMessage = document.getElementById('infoMessage');
-
-        // Expire Date Elements
-        const expireSpecificDateRadio = document.getElementById('expireSpecificDate');
-        const specificDateInput = document.getElementById('specificDateInput');
-        const expireRelativeRadio = document.getElementById('expireRelative');
-        const relativeDurationInput = document.getElementById('relativeDurationInput');
-        const relativeUnitSelect = document.getElementById('relativeUnitSelect');
-        const expireNeverRadio = document.getElementById('expireNever');
-        const expireDateDisplay = document.getElementById('expireDateDisplay');
+        const obfuscationInfo = document.getElementById('obfuscationInfo');
 
         // --- MAPPING BASE64 KE KATA MARVEL (KONSISTEN) ---
         const BASE64_CHARS_ORIGINAL = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
@@ -455,7 +386,7 @@
 
         let currentFileName = '';
         let currentFileExtension = ''; 
-        let originalFileChecksum = ''; // Not used for validation, just for info
+        let currentContentToEncrypt = ''; // Ini bisa jadi original content atau hasil obfuscation
         let currentEncodedMarvelString = ''; 
 
         // --- UTILITY FUNCTIONS ---
@@ -510,7 +441,7 @@
         }
 
         function seededShuffle(array) {
-            _currentSeed = SHUFFLE_SEED;
+            _currentSeed = SHUFFLE_SEED; // Reset seed for consistent shuffle
             let currentIndex = array.length, randomIndex;
 
             while (currentIndex !== 0) {
@@ -543,123 +474,104 @@
             return encodedWords.join(' ');
         }
 
-        // --- FUNGSI BARU: HITUNG TANGGAL KEDALUWARSA ---
-        function calculateExpiryDate() {
-            let expiryDate = null;
-            if (expireSpecificDateRadio.checked) {
-                if (specificDateInput.value) {
-                    expiryDate = new Date(specificDateInput.value);
-                    expiryDate.setHours(23, 59, 59, 999); // Set to end of day
-                }
-            } else if (expireRelativeRadio.checked) {
-                const duration = parseInt(relativeDurationInput.value);
-                const unit = relativeUnitSelect.value;
-                if (!isNaN(duration) && duration > 0) {
-                    expiryDate = new Date();
-                    if (unit === 'hours') {
-                        expiryDate.setHours(expiryDate.getHours() + duration);
-                    } else if (unit === 'days') {
-                        expiryDate.setDate(expiryDate.getDate() + duration);
-                        expiryDate.setHours(23, 59, 59, 999);
-                    } else if (unit === 'months') {
-                        expiryDate.setMonth(expiryDate.getMonth() + duration);
-                        expiryDate.setHours(23, 59, 59, 999);
-                    }
-                }
-            } else if (expireNeverRadio.checked) {
-                expiryDate = new Date("9999-12-31T23:59:59"); // Represent "never expire"
-            }
+        // --- JS Obfuscation Logic ---
+        function obfuscateJavaScript(code) {
+            if (!code) return '';
 
-            if (expiryDate) {
-                return expiryDate.toISOString().slice(0, 19); // YYYY-MM-DDTHH:MM:SS
-            }
-            return null;
-        }
+            const options = {
+                compact: true,
+                controlFlowFlattening: true,
+                controlFlowFlatteningThreshold: 0.7,
+                deadCodeInjection: false, // Default false, can be enabled
+                deadCodeInjectionThreshold: 0.5,
+                debugProtection: false,
+                debugProtectionInterval: 0,
+                disableConsoleOutput: false,
+                identifierNamesGenerator: 'hexadecimal', // or 'mangled'
+                log: false,
+                numbersToExpressions: true,
+                renameGlobals: false,
+                selfDefending: true,
+                simplifyFactorialExpressions: false,
+                splitStrings: true,
+                splitStringsChunkLength: 10,
+                stringArray: true,
+                stringArrayEncoding: ['base64'], // or 'rc4', 'none'
+                stringArrayIndexShift: true,
+                stringArrayRotate: true,
+                stringArrayShuffle: true,
+                stringArrayThreshold: 0.75,
+                transformObjectKeys: true,
+                unicodeEscapeSequence: false,
+            };
 
-        function updateExpiryDisplay() {
-            const calculatedDate = calculateExpiryDate();
-            if (expireNeverRadio.checked) {
-                showMessage(expireDateDisplay, "Mode: **Tidak akan kedaluwarsa** (Selamanya)", "success");
-            } else if (calculatedDate) {
-                showMessage(expireDateDisplay, `Tanggal kedaluwarsa yang dihitung: **${new Date(calculatedDate).toLocaleString('id-ID', { dateStyle: 'full', timeStyle: 'medium' })} WIB**`, "success");
-            } else {
-                hideMessage(expireDateDisplay);
-            }
+            return JavaScriptObfuscator.obfuscate(code, options).getObfuscatedCode();
         }
 
         // --- UI UPDATE FUNCTIONS ---
         function updateButtonStates() {
-            const hasOriginalContent = originalContentArea.value.trim() !== '';
+            const hasFileContent = originalContentArea.value.trim() !== '';
             const hasEncodedOutput = encodedOutput.value.trim() !== '';
-            const isLicenseKeyProvided = licenseKeyInput.value.trim() !== '';
 
-            encodeButton.disabled = !(hasOriginalContent && isLicenseKeyProvided);
+            encodeButton.disabled = !hasFileContent;
             copyOutputButton.disabled = !hasEncodedOutput;
             generateScriptButton.disabled = !hasEncodedOutput;
 
-            specificDateInput.disabled = !expireSpecificDateRadio.checked;
-            relativeDurationInput.disabled = !expireRelativeRadio.checked;
-            relativeUnitSelect.disabled = !expireRelativeRadio.checked;
-
-            updateExpiryDisplay();
-
             // Updated warning message for execution
             if (currentFileExtension && !['.py', '.js', '.json'].includes(currentFileExtension)) {
-                 showMessage(executionWarningMessage, `Perhatian: File ini awalnya tipe '${currentFileExtension}'. Script proteksi yang dihasilkan akan dalam format Python. Untuk mendekode dan menggunakan kontennya, Anda perlu menambahkan logika penanganan khusus di dalam script Python hasil generate.`, "warning");
+                 showMessage(executionWarningMessage, `Perhatian: File ini awalnya tipe '${currentFileExtension}'. Script dekoder yang dihasilkan akan dalam format Python. Untuk mendekode dan menggunakan kontennya, Anda perlu menambahkan logika penanganan khusus di dalam script Python hasil generate.`, "warning");
             } else if (currentFileExtension === '.js') {
-                 showMessage(executionWarningMessage, `Perhatian: Anda akan meng-generate file Python validator dan file .js yang terenkripsi. Anda perlu memanggil validator Python dari script Node.js atau aplikasi JS Anda.`, "warning");
+                 showMessage(executionWarningMessage, `File JS akan di-*obfuscate* sebelum dienkripsi. Anda perlu memanggil dekoder Python dari script Node.js atau aplikasi JS Anda untuk mendapatkan kembali kode aslinya.`, "warning");
             } else if (currentFileExtension === '.json') {
-                 showMessage(executionWarningMessage, `Perhatian: Anda akan meng-generate file Python validator dan file .json yang terenkripsi. Anda perlu memanggil validator Python dari aplikasi Anda untuk mendapatkan data JSON yang didekode.`, "warning");
+                 showMessage(executionWarningMessage, `Perhatian: Anda akan meng-generate file Python dekoder dan file .json yang terenkripsi. Anda perlu memanggil dekoder Python dari aplikasi Anda untuk mendapatkan data JSON yang didekode.`, "warning");
             }
             else {
                 hideMessage(executionWarningMessage);
             }
 
-            // New info message
+            // Info message after encryption
             if (hasEncodedOutput && currentEncodedMarvelString) {
-                showMessage(infoMessage, "Sekarang, klik **'Generate Python Validator & Encrypted Data'** untuk mendapatkan file yang siap pakai. Baca petunjuk penggunaannya!", "info");
+                showMessage(infoMessage, "Sekarang, klik **'Generate Python Decoder & Encrypted Data'** untuk mendapatkan file yang siap pakai. Baca petunjuk penggunaannya!", "info");
             } else {
                 hideMessage(infoMessage);
             }
+
+            // Obfuscation info message
+            if (currentFileExtension === '.js') {
+                showMessage(obfuscationInfo, "Deteksi: File JavaScript. Akan otomatis di-*obfuscate* sebelum dienkripsi.", "warning");
+            } else {
+                hideMessage(obfuscationInfo);
+            }
         }
 
-        // --- FUNGSI UTAMA: GENERATE PYTHON SCRIPT UNTUK SELF-DECODE ---
-        // Tanpa HWID registration atau IP checking
-        function generatePythonValidatorScript(customLicenseKey, finalExpireDateStr) {
+        // --- FUNGSI UTAMA: GENERATE PYTHON SCRIPT UNTUK DEKODE ---
+        // Tanpa validasi key atau expire date, hanya dekode murni
+        function generatePythonDecoderScript() {
             let charWordPairs = [];
             for (let i = 0; i < BASE64_CHARS_ORIGINAL.length; i++) {
                 charWordPairs.push([BASE64_CHARS_ORIGINAL[i], marvelWordsOriginal[i]]);
             }
 
-            const shuffledPairs = seededShuffle([...charWordPairs]);
+            const shuffledPairs = seededShuffle([...charWordPairs]); // Pastikan array asli tidak berubah
             const shuffledBase64Chars = shuffledPairs.map(pair => pair[0]);
             const shuffledMarvelWords = shuffledPairs.map(pair => pair[1]);
 
             const pythonShuffledBase64Chars = `[${shuffledBase64Chars.map(s => `'${s}'`).join(', ')}]`;
             const pythonShuffledMarvelWords = `[${shuffledMarvelWords.map(s => `'${s}'`).join(', ')}]`;
 
-            const expiredDateConfigPython = expireNeverRadio.checked ?
-                                            `EXPIRED_DATE_STR = "NEVER_EXPIRE"` :
-                                            `EXPIRED_DATE_STR = "${finalExpireDateStr}"`;
-
             const pythonScript =
                 '"""\n' +
-                'Ini adalah Python Validator untuk file terproteksi (Marvel Edition v4.0 Pro).\n' +
+                'Ini adalah Python Decoder untuk file terenkripsi (Marvel Edition v4.0 Pro).\n' +
                 `Dibuat pada ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })} WIB.\n` +
-                'Script ini bertanggung jawab untuk memvalidasi License Key dan Expire Date.\n' +
+                'Script ini hanya berfungsi untuk mendekode file terenkripsi.\n' +
+                'Tidak ada validasi license key atau tanggal kedaluwarsa di sini.\n' +
                 '"""\n' +
                 '\n' +
                 'import base64\n' +
                 'import sys\n' +
-                'import datetime\n' +
-                'import os\n' +
-                'import traceback \n' +
                 'import zlib \n' +
                 'import random \n' +
-                '\n' +
-                '# --- KONFIGURASI PROTEKSI ---\n' +
-                `VALID_LICENSE_KEY = "${customLicenseKey}" \n` +
-                `${expiredDateConfigPython}\n` +
+                'import traceback \n' +
                 '\n' +
                 '# --- Data untuk Merekonstruksi Tabel Dekode ---\n' +
                 `_SHUFFLED_BASE64_CHARS = ${pythonShuffledBase64Chars}\n` +
@@ -667,27 +579,6 @@
                 `_SHUFFLE_SEED = ${SHUFFLE_SEED} \n` +
                 '\n' +
                 '# --- FUNGSI UTILITY INTERNAL ---\n' +
-                'def check_protection_python(user_license_key):\n' + // Removed current_script_path
-                '    today = datetime.datetime.now()\n' +
-                '    errors = []\n' +
-                '\n' +
-                '    if user_license_key != VALID_LICENSE_KEY: \n' +
-                '        errors.append("License Key salah.")\n' +
-                '\n' +
-                '    if EXPIRED_DATE_STR != "NEVER_EXPIRE":\n' +
-                '        try:\n' +
-                '            expired_date = datetime.datetime.fromisoformat(EXPIRED_DATE_STR)\n' +
-                '            if today > expired_date:\n' +
-                '                errors.append(f"Masa berlaku license sudah expired.")\n' +
-                '        except ValueError:\n' +
-                '            errors.append("Format tanggal kedaluwarsa tidak valid.")\n' +
-                '\n' +
-                '    if errors:\n' +
-                '        for error in errors:\n' +
-                '            print(f"ERROR_PROTECTION: {error}", file=sys.stderr)\n' +
-                '        return False\n' +
-                '    return True\n' +
-                '\n' +
                 'def reconstruct_decode_table():\n' +
                 '    """Merekonstruksi DECODE_TABLE dari data yang diacak."""\n' +
                 '    random.seed(_SHUFFLE_SEED) \n' +
@@ -732,19 +623,13 @@
                 '\n' +
                 '\n' +
                 'def main():\n' +
-                '    if len(sys.argv) < 3: \n' +
-                '        print("Usage: python validator.py <license_key> <path_to_encrypted_file>", file=sys.stderr)\n' +
+                '    if len(sys.argv) < 2: \n' +
+                '        print("Usage: python decoder.py <path_to_encrypted_file>", file=sys.stderr)\n' +
                 '        sys.exit(1)\n' +
                 '\n' +
-                '    user_license_key = sys.argv[1]\n' +
-                '    encrypted_file_path = sys.argv[2]\n' +
+                '    encrypted_file_path = sys.argv[1]\n' +
                 '\n' +
-                '    print("\\n--- Memulai Validasi Proteksi ---")\n' +
-                '    if not check_protection_python(user_license_key):\n' + // Removed current_script_path
-                '        print("\\nValidasi proteksi GAGAL. Program dihentikan.", file=sys.stderr)\n' +
-                '        sys.exit(1)\n' +
-                '    print("Validasi proteksi BERHASIL. Melanjutkan dekode file...")\n' +
-                '\n' +
+                '    print("\\n--- Memulai Dekode File ---")\n' +
                 '    try:\n' +
                 '        with open(encrypted_file_path, \'r\', encoding=\'utf-8\') as f:\n' +
                 '            encrypted_marvel_string = f.read().strip()\n' +
@@ -763,6 +648,7 @@
                 '\n' +
                 '        sys.stdout.buffer.write(original_content.encode(\'utf-8\'))\n' +
                 '        sys.stdout.flush()\n' +
+                '        print("\\nDekode BERHASIL. Konten asli dikeluarkan ke stdout.", file=sys.stderr)\n' +
                 '\n' +
                 '    except FileNotFoundError:\n' +
                 '        print(f"ERROR: File terenkripsi tidak ditemukan: {encrypted_file_path}", file=sys.stderr)\n' +
@@ -773,14 +659,13 @@
                 '        sys.exit(1)\n' +
                 '\n' +
                 'if __name__ == "__main__":\n' +
-                '    main()\n' +
-                '"""\n'
+                '    main()\n'
             return pythonScript;
         }
 
 
         // --- EVENT LISTENERS ---
-        fileInput.addEventListener('change', (event) => {
+        fileInput.addEventListener('change', async (event) => {
             const file = event.target.files[0];
             if (file) {
                 currentFileName = file.name;
@@ -790,15 +675,33 @@
                 fileInfoDiv.classList.remove('hidden');
 
                 const reader = new FileReader();
-                reader.onload = (e) => {
-                    originalContentArea.value = e.target.result;
-                    // originalFileChecksum = simpleHash(e.target.result); // Not strictly needed for this simplified version
-                    fileContentDisplay.textContent = `File '${currentFileName}' berhasil dimuat.`;
+                reader.onload = async (e) => {
+                    let fileContent = e.target.result;
+                    
+                    // Cek jika file adalah JavaScript dan lakukan obfuscasi
+                    if (currentFileExtension === '.js') {
+                        showLoading("Melakukan obfuscasi JavaScript...");
+                        try {
+                            fileContent = obfuscateJavaScript(fileContent);
+                            showToast('File JavaScript berhasil di-*obfuscate*.', 'success');
+                        } catch (error) {
+                            console.error("Obfuscation error:", error);
+                            showToast(`Gagal obfuscasi JavaScript: ${error.message}`, 'error');
+                            // Tetap lanjutkan dengan konten asli jika obfuscasi gagal
+                        } finally {
+                            hideLoading();
+                        }
+                    }
+
+                    currentContentToEncrypt = fileContent;
+                    originalContentArea.value = fileContent; // Tampilkan hasil obfuscasi jika JS
+                    fileContentDisplay.textContent = `File '${currentFileName}' berhasil dimuat. Siap untuk dienkripsi.`;
                     fileContentDisplay.className = 'message success show';
                     updateButtonStates();
                 };
                 reader.onerror = () => {
                     originalContentArea.value = '';
+                    currentContentToEncrypt = '';
                     fileContentDisplay.textContent = 'Gagal membaca file.';
                     fileContentDisplay.className = 'message error show';
                     updateButtonStates();
@@ -808,50 +711,30 @@
                 currentFileName = '';
                 currentFileExtension = '';
                 originalContentArea.value = '';
-                // originalFileChecksum = '';
+                currentContentToEncrypt = '';
+                encodedOutput.value = '';
                 fileInfoDiv.classList.add('hidden');
                 hideMessage(fileContentDisplay);
                 updateButtonStates();
             }
         });
 
-        licenseKeyInput.addEventListener('input', updateButtonStates);
         originalContentArea.addEventListener('input', updateButtonStates);
 
-        // Event listeners for expiration options
-        expireSpecificDateRadio.addEventListener('change', updateButtonStates);
-        specificDateInput.addEventListener('change', updateButtonStates);
-        expireRelativeRadio.addEventListener('change', updateButtonStates);
-        relativeDurationInput.addEventListener('input', updateButtonStates);
-        relativeUnitSelect.addEventListener('change', updateButtonStates);
-        expireNeverRadio.addEventListener('change', updateButtonStates);
-
-
-        // Encode & Proteksi File Button Handler
         encodeButton.addEventListener('click', async () => {
             showLoading("Memproses enkripsi...");
             encodedOutput.value = ''; // Clear previous output
             currentEncodedMarvelString = ''; // Reset
             hideMessage(infoMessage);
 
-            const licenseKey = licenseKeyInput.value.trim();
-            if (!licenseKey) {
-                showMessage(licenseErrorDiv, "License Key tidak boleh kosong, Bro!", "error");
-                hideLoading();
-                return;
-            } else {
-                hideMessage(licenseErrorDiv);
-            }
-
-            const fileContent = originalContentArea.value;
-            if (!fileContent) {
+            if (!currentContentToEncrypt) {
                 showToast('Tidak ada konten file untuk dienkripsi!', 'error');
                 hideLoading();
                 return;
             }
 
             try {
-                currentEncodedMarvelString = encodeFileContent(fileContent);
+                currentEncodedMarvelString = encodeFileContent(currentContentToEncrypt);
                 encodedOutput.value = currentEncodedMarvelString;
                 showToast('File berhasil dienkripsi!', 'success');
             } catch (error) {
@@ -876,20 +759,8 @@
         });
 
         generateScriptButton.addEventListener('click', () => {
-            showLoading("Mengenerate validator Python & file terenkripsi...");
-            const licenseKey = licenseKeyInput.value.trim();
-            const finalExpireDate = calculateExpiryDate();
-
-            if (!licenseKey) {
-                showToast('License Key harus diisi!', 'error');
-                hideLoading();
-                return;
-            }
-            if (!finalExpireDate && !expireNeverRadio.checked) {
-                showToast('Tanggal kedaluwarsa belum diatur atau tidak valid!', 'error');
-                hideLoading();
-                return;
-            }
+            showLoading("Mengenerate decoder Python & file terenkripsi...");
+            
             if (!currentEncodedMarvelString) {
                  showToast('Silakan enkripsi file terlebih dahulu!', 'error');
                  hideLoading();
@@ -897,19 +768,19 @@
             }
 
             try {
-                // Generate Python validator script
-                const pythonValidatorContent = generatePythonValidatorScript(licenseKey, finalExpireDate);
+                // Generate Python decoder script
+                const pythonDecoderContent = generatePythonDecoderScript();
 
-                // Create and download validator.py
-                const validatorBlob = new Blob([pythonValidatorContent], { type: 'text/plain' });
-                const validatorUrl = URL.createObjectURL(validatorBlob);
-                const validatorA = document.createElement('a');
-                validatorA.href = validatorUrl;
-                validatorA.download = 'validator.py';
-                document.body.appendChild(validatorA);
-                validatorA.click();
-                document.body.removeChild(validatorA);
-                URL.revokeObjectURL(validatorUrl);
+                // Create and download decoder.py
+                const decoderBlob = new Blob([pythonDecoderContent], { type: 'text/plain' });
+                const decoderUrl = URL.createObjectURL(decoderBlob);
+                const decoderA = document.createElement('a');
+                decoderA.href = decoderUrl;
+                decoderA.download = 'decoder.py';
+                document.body.appendChild(decoderA);
+                decoderA.click();
+                document.body.removeChild(decoderA);
+                URL.revokeObjectURL(decoderUrl);
 
                 // Create and download encrypted data file
                 const encryptedDataFileName = `${currentFileName || 'encrypted_data'}.enc`; // Use original file name
@@ -923,7 +794,7 @@
                 document.body.removeChild(encryptedDataA);
                 URL.revokeObjectURL(encryptedDataUrl);
 
-                showToast('File `validator.py` dan `encrypted_data.enc` berhasil di-generate!', 'success');
+                showToast('File `decoder.py` dan `encrypted_data.enc` berhasil di-generate!', 'success');
 
                 // Clear input and output after successful generation
                 resetAll();
@@ -936,27 +807,19 @@
             }
         });
 
-
         resetButton.addEventListener('click', resetAll);
 
         function resetAll() {
-            licenseKeyInput.value = '';
             originalContentArea.value = '';
             encodedOutput.value = '';
             fileInput.value = ''; // Clear selected file
             currentFileName = '';
             currentFileExtension = '';
-            // originalFileChecksum = ''; // Not used
+            currentContentToEncrypt = '';
             currentEncodedMarvelString = '';
             
-            // Reset expiration options to default
-            expireSpecificDateRadio.checked = true;
-            specificDateInput.value = ''; // Clear date input
-            relativeDurationInput.value = '1';
-            relativeUnitSelect.value = 'days';
-            
-            hideMessage(licenseErrorDiv);
             hideMessage(fileContentDisplay);
+            hideMessage(obfuscationInfo);
             hideMessage(executionWarningMessage);
             hideMessage(infoMessage);
             fileInfoDiv.classList.add('hidden');
