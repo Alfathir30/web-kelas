@@ -34,9 +34,17 @@
             margin-bottom: 15px;
             border: 1px solid #ddd;
             border-radius: 4px;
-            box-sizing: border-box; /* Agar padding tidak menambah lebar */
+            box-sizing: border-box;
             min-height: 200px;
             resize: vertical;
+        }
+        input[type="file"] {
+            margin-bottom: 15px;
+            border: 1px solid #ddd;
+            padding: 8px;
+            border-radius: 4px;
+            width: 100%;
+            box-sizing: border-box;
         }
         button {
             background-color: #007bff;
@@ -47,6 +55,7 @@
             cursor: pointer;
             font-size: 16px;
             margin-right: 10px;
+            transition: background-color 0.2s;
         }
         button:hover {
             background-color: #0056b3;
@@ -55,8 +64,8 @@
             background-color: #e9e9e9;
             padding: 15px;
             border-radius: 4px;
-            white-space: pre-wrap; /* Agar baris baru dan spasi dipertahankan */
-            word-wrap: break-word; /* Agar kata panjang tidak overflow */
+            white-space: pre-wrap;
+            word-wrap: break-word;
             min-height: 100px;
             margin-top: 20px;
             border: 1px dashed #ccc;
@@ -68,19 +77,32 @@
             border-top: 1px solid #eee;
             padding-top: 10px;
         }
+        .file-upload-section {
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px dashed #eee;
+        }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h1>JS Obfuscator Generator (Basic)</h1>
-        <p>Bre, masukin kode JavaScript lo di bawah ini, nanti gue obfuscate biar agak puyeng bacanya!</p>
+        <h1>JS Obfuscator Generator (with Upload)</h1>
+        <p>Halo, bre! Lo bisa masukin kode JS langsung di teks area, atau kalo males, upload aja file .js nya!</p>
 
-        <label for="jsInput">Kode JavaScript Asli:</label>
+        <div class="file-upload-section">
+            <label for="jsFileUpload">Upload File JavaScript (.js):</label>
+            <input type="file" id="jsFileUpload" accept=".js">
+            <button onclick="loadFile()">Load File</button>
+        </div>
+
+        <label for="jsInput">Atau, Masukkan Kode JavaScript Asli di Sini:</label>
         <textarea id="jsInput" placeholder="console.log('Halo dunia!'); function myFunction() { /* ... */ }"></textarea>
 
         <button onclick="obfuscateCode()">Obfuscate!</button>
         <button onclick="copyToClipboard()">Copy Obfuscated Code</button>
+        <button onclick="downloadObfuscatedFile()">Download Obfuscated File</button>
+
 
         <label for="obfuscatedOutput" style="margin-top: 20px;">Kode JavaScript yang Sudah Diobfuscate:</label>
         <textarea id="obfuscatedOutput" readonly placeholder="Hasil obfuscation akan muncul di sini..."></textarea>
@@ -98,36 +120,78 @@
     <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@2.19.0/dist/javascript-obfuscator.min.js"></script>
 
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            const jsInput = document.getElementById('jsInput');
+            const jsFileUpload = document.getElementById('jsFileUpload');
+            const obfuscatedOutput = document.getElementById('obfuscatedOutput');
+
+            // Event listener untuk saat file dipilih
+            jsFileUpload.addEventListener('change', () => {
+                if (jsFileUpload.files.length > 0) {
+                    console.log(`File dipilih: ${jsFileUpload.files[0].name}`);
+                    // Optionally, clear the textarea if a file is selected
+                    jsInput.value = '';
+                    obfuscatedOutput.value = '';
+                }
+            });
+        });
+
+        function loadFile() {
+            const jsFileUpload = document.getElementById('jsFileUpload');
+            const jsInput = document.getElementById('jsInput');
+            const obfuscatedOutput = document.getElementById('obfuscatedOutput');
+
+            if (jsFileUpload.files.length === 0) {
+                alert('Pilih file .js dulu, bre!');
+                return;
+            }
+
+            const file = jsFileUpload.files[0];
+            const reader = new FileReader();
+
+            reader.onload = function(e) {
+                jsInput.value = e.target.result;
+                obfuscatedOutput.value = 'File berhasil dimuat. Sekarang klik Obfuscate!';
+                console.log('File berhasil dimuat ke textarea.');
+            };
+
+            reader.onerror = function(e) {
+                alert('Gagal membaca file: ' + e.target.error.name);
+                console.error('Error membaca file:', e.target.error);
+            };
+
+            reader.readAsText(file);
+        }
+
         function obfuscateCode() {
             const jsInput = document.getElementById('jsInput').value;
             const obfuscatedOutput = document.getElementById('obfuscatedOutput');
 
             if (jsInput.trim() === '') {
-                obfuscatedOutput.value = 'Bro, masukin dulu dong kode JS-nya!';
+                obfuscatedOutput.value = 'Bro, masukin atau load dulu dong kode JS-nya!';
                 return;
             }
 
             try {
-                // Konfigurasi obfuscator (bisa disesuaikan)
                 const options = {
-                    compact: true, // Hapus spasi dan baris baru
-                    controlFlowFlattening: true, // Bikin alur kode jadi muter-muter
+                    compact: true,
+                    controlFlowFlattening: true,
                     controlFlowFlatteningThreshold: 0.75,
-                    deadCodeInjection: true, // Suntikin kode mati
+                    deadCodeInjection: true,
                     deadCodeInjectionThreshold: 0.4,
-                    debugProtection: true, // Susahin debug lewat DevTools
+                    debugProtection: true,
                     debugProtectionInterval: true,
-                    disableConsoleOutput: true, // Matikan console.log (opsional)
-                    identifierNamesGenerator: 'hexadecimal', // Nama variabel jadi hex
+                    disableConsoleOutput: true,
+                    identifierNamesGenerator: 'hexadecimal',
                     log: false,
-                    numbersToExpressions: true, // Angka jadi ekspresi
-                    renameGlobals: false, // Jangan rename global (hati-hati bisa pecah)
-                    selfDefending: true, // Bikin kode berusaha ngelawan kalau diotak-atik
+                    numbersToExpressions: true,
+                    renameGlobals: false,
+                    selfDefending: true,
                     simplify: true,
-                    splitStrings: true, // Pisah-pisah string
+                    splitStrings: true,
                     splitStringsChunkLength: 10,
-                    stringArray: true, // Masukin string ke array
-                    stringArrayEncoding: ['base64'], // Encode array string
+                    stringArray: true,
+                    stringArrayEncoding: ['base64'],
                     stringArrayIndexShift: true,
                     stringArrayRotate: true,
                     stringArrayShuffle: true,
@@ -135,7 +199,7 @@
                     stringArrayWrappersType: 'variable',
                     stringArrayThreshold: 0.75,
                     transformObjectKeys: true,
-                    unicodeEscapeSequence: true // Karakter jadi unicode escape
+                    unicodeEscapeSequence: true
                 };
 
                 const obfuscationResult = JavaScriptObfuscator.obfuscate(
@@ -154,8 +218,8 @@
 
         function copyToClipboard() {
             const obfuscatedOutput = document.getElementById('obfuscatedOutput');
-            obfuscatedOutput.select(); // Pilih teks di textarea
-            obfuscatedOutput.setSelectionRange(0, 99999); // Untuk mobile devices
+            obfuscatedOutput.select();
+            obfuscatedOutput.setSelectionRange(0, 99999);
 
             try {
                 document.execCommand('copy');
@@ -164,6 +228,27 @@
                 console.error('Gagal copy ke clipboard:', err);
                 alert('Gagal copy ke clipboard. Coba copy manual aja, bro.');
             }
+        }
+
+        function downloadObfuscatedFile() {
+            const obfuscatedCode = document.getElementById('obfuscatedOutput').value;
+            if (obfuscatedCode.trim() === '' || obfuscatedCode.includes('hasil obfuscation akan muncul di sini') || obfuscatedCode.includes('Ada error nih')) {
+                alert('Obfuscate dulu kodenya, bro, baru bisa di-download!');
+                return;
+            }
+
+            const filename = 'obfuscated_script.js';
+            const blob = new Blob([obfuscatedCode], { type: 'application/javascript' });
+            const url = URL.createObjectURL(blob);
+
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a); // Diperlukan untuk Firefox
+            a.click();
+            document.body.removeChild(a); // Bersihkan DOM
+            URL.revokeObjectURL(url); // Bersihkan URL objek
+            alert('File obfuscated berhasil di-download, bre!');
         }
     </script>
 
