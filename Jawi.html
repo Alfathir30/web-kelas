@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>HACKER JS DECODER - Advanced JavaScript Deobfuscation Tool</title>
+    <title>JS DECODER MATRIX - Advanced JavaScript Deobfuscation Tool</title>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&display=swap');
-        
         * {
             margin: 0;
             padding: 0;
@@ -14,647 +12,314 @@
         }
 
         body {
-            font-family: 'Courier Prime', 'Consolas', 'Courier New', monospace;
-            background: #000;
-            color: #0f0;
+            background-color: #000000;
+            color: #00FF00;
+            font-family: 'Courier New', monospace;
             min-height: 100vh;
-            overflow-x: hidden;
+            padding: 20px;
             position: relative;
+            overflow-x: auto;
         }
 
-        /* Matrix Background */
-        #matrix-canvas {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0.15;
-            pointer-events: none;
-            z-index: 0;
-        }
-
-        /* Main Container */
         .container {
-            position: relative;
-            z-index: 10;
             max-width: 1200px;
             margin: 0 auto;
-            padding: 20px;
+            position: relative;
+            z-index: 10;
         }
 
-        /* Header */
         .header {
             text-align: center;
             margin-bottom: 40px;
         }
 
         .header h1 {
-            font-size: 3.5rem;
+            font-size: 3rem;
             font-weight: bold;
-            color: #0f0;
-            text-shadow: 0 0 10px #0f0, 0 0 20px #0f0, 0 0 30px #0f0;
             margin-bottom: 10px;
-            letter-spacing: 3px;
+            text-shadow: 0 0 10px #00FF00;
         }
 
-        .header .subtitle {
+        .header p {
             font-size: 1.2rem;
-            color: #0a0;
-            margin-bottom: 20px;
+            opacity: 0.8;
+            margin-bottom: 10px;
         }
 
-        .badges {
-            display: flex;
-            justify-content: center;
-            gap: 10px;
-            flex-wrap: wrap;
-        }
-
-        .badge {
-            background: rgba(0, 255, 0, 0.1);
-            border: 1px solid #0f0;
-            color: #0f0;
-            padding: 5px 15px;
-            border-radius: 20px;
+        .header .status {
             font-size: 0.9rem;
-            font-weight: bold;
+            opacity: 0.6;
         }
 
-        /* Cards */
         .card {
-            background: rgba(0, 20, 0, 0.8);
-            border: 2px solid #0f0;
-            border-radius: 10px;
+            background-color: #1a1a1a;
+            border: 2px solid #00FF00;
+            border-radius: 8px;
             margin-bottom: 30px;
             box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
         }
 
         .card-header {
             padding: 20px;
-            border-bottom: 1px solid #0f0;
+            border-bottom: 1px solid #00FF00;
         }
 
         .card-title {
             font-size: 1.5rem;
             font-weight: bold;
-            color: #0f0;
             display: flex;
             align-items: center;
             gap: 10px;
-            margin-bottom: 5px;
-        }
-
-        .card-description {
-            color: #0a0;
-            font-size: 1rem;
         }
 
         .card-content {
             padding: 20px;
         }
 
-        /* File Upload */
         .upload-area {
-            border: 2px dashed #0f0;
-            border-radius: 10px;
+            border: 2px dashed #00FF00;
+            border-radius: 8px;
             padding: 40px;
             text-align: center;
             transition: all 0.3s ease;
-            cursor: pointer;
-            margin-bottom: 20px;
         }
 
-        .upload-area:hover,
-        .upload-area.drag-active {
-            border-color: #0ff;
-            background: rgba(0, 255, 255, 0.1);
-            box-shadow: 0 0 20px rgba(0, 255, 255, 0.3);
+        .upload-area:hover {
+            background-color: rgba(0, 255, 0, 0.05);
         }
 
-        .upload-icon {
-            font-size: 4rem;
-            margin-bottom: 20px;
-            color: #0f0;
-        }
-
-        .upload-text {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #0f0;
-            margin-bottom: 10px;
-        }
-
-        .upload-subtext {
-            color: #0a0;
-            font-size: 1rem;
-        }
-
-        /* Form Elements */
-        .form-group {
-            margin-bottom: 20px;
-        }
-
-        .label {
-            display: block;
-            color: #0f0;
-            font-weight: bold;
-            margin-bottom: 10px;
+        .upload-btn {
+            background: transparent;
+            border: 2px solid #00FF00;
+            color: #00FF00;
+            padding: 15px 30px;
+            font-family: 'Courier New', monospace;
             font-size: 1.1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .upload-btn:hover {
+            background-color: #00FF00;
+            color: #000000;
+            box-shadow: 0 0 15px #00FF00;
+        }
+
+        .decode-btn {
+            background-color: #00FF00;
+            color: #000000;
+            border: none;
+            padding: 15px 30px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .decode-btn:hover {
+            background-color: #00CC00;
+            box-shadow: 0 0 15px #00FF00;
+        }
+
+        .file-info {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #2a2a2a;
+            border: 1px solid #00FF00;
+            border-radius: 4px;
+        }
+
+        .detection-result {
+            padding: 15px;
+            background-color: #2a2a2a;
+            border: 1px solid #00FF00;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .detection-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .confidence {
+            font-size: 0.9rem;
+        }
+
+        .description {
+            font-size: 0.9rem;
+            opacity: 0.8;
         }
 
         .textarea {
             width: 100%;
-            min-height: 200px;
-            background: #000;
-            border: 2px solid #0f0;
-            color: #0f0;
-            padding: 15px;
-            border-radius: 5px;
-            font-family: inherit;
+            min-height: 400px;
+            background-color: #000000;
+            border: 2px solid #00FF00;
+            color: #00FF00;
+            font-family: 'Courier New', monospace;
             font-size: 0.9rem;
+            padding: 15px;
             resize: vertical;
-            outline: none;
+            border-radius: 4px;
         }
 
         .textarea:focus {
-            border-color: #0ff;
-            box-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
         }
 
-        .textarea.result {
-            min-height: 300px;
-            background: rgba(0, 10, 0, 0.8);
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
         }
 
-        /* Buttons */
-        .btn {
-            background: #0f0;
-            color: #000;
-            border: none;
-            padding: 12px 25px;
-            border-radius: 5px;
-            font-family: inherit;
-            font-weight: bold;
-            font-size: 1rem;
+        .small-btn {
+            background: transparent;
+            border: 1px solid #00FF00;
+            color: #00FF00;
+            padding: 8px 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
             cursor: pointer;
+            border-radius: 4px;
             transition: all 0.3s ease;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            text-transform: uppercase;
         }
 
-        .btn:hover {
-            background: #0ff;
-            box-shadow: 0 0 15px rgba(0, 255, 255, 0.7);
-            transform: translateY(-2px);
+        .small-btn:hover {
+            background-color: #00FF00;
+            color: #000000;
         }
 
-        .btn:disabled {
-            background: #333;
-            color: #666;
-            cursor: not-allowed;
-            transform: none;
-            box-shadow: none;
-        }
-
-        .btn-secondary {
-            background: #00f;
-            color: #fff;
-        }
-
-        .btn-secondary:hover {
-            background: #0af;
-        }
-
-        .btn-danger {
-            background: #f00;
-            color: #fff;
-        }
-
-        .btn-danger:hover {
-            background: #f0a;
-        }
-
-        /* Grid */
-        .grid {
-            display: grid;
-            gap: 20px;
-        }
-
-        .grid-cols-3 {
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-        }
-
-        .grid-cols-2 {
-            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-        }
-
-        /* Analysis Results */
-        .analysis-item {
-            background: rgba(0, 50, 0, 0.5);
-            padding: 15px;
-            border-radius: 5px;
-            border: 1px solid #0f0;
-        }
-
-        .analysis-value {
-            font-size: 1.3rem;
-            font-weight: bold;
-            color: #0ff;
-            margin-top: 5px;
-        }
-
-        .patterns-list {
-            background: #000;
-            border: 1px solid #0f0;
-            border-radius: 5px;
-            padding: 15px;
-            max-height: 150px;
-            overflow-y: auto;
-        }
-
-        .pattern-item {
-            color: #0a0;
-            font-size: 0.9rem;
-            margin-bottom: 5px;
-        }
-
-        .pattern-item:before {
-            content: "→ ";
-            color: #0f0;
-        }
-
-        /* Progress */
-        .progress-container {
-            background: #000;
-            border: 1px solid #0f0;
-            border-radius: 10px;
-            padding: 20px;
+        .processing {
             text-align: center;
-            margin-bottom: 20px;
+            padding: 40px;
+            animation: pulse 2s infinite;
         }
 
-        .progress-text {
-            color: #0f0;
-            font-size: 1.2rem;
-            margin-bottom: 15px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 10px;
+        .error {
+            color: #FF0000;
+            text-align: center;
+            padding: 40px;
         }
 
-        .progress-bar {
-            width: 100%;
-            height: 20px;
-            background: #333;
-            border-radius: 10px;
-            overflow: hidden;
-            margin-bottom: 10px;
-        }
-
-        .progress-fill {
-            height: 100%;
-            background: linear-gradient(90deg, #0f0, #0ff);
-            width: 0%;
-            transition: width 0.3s ease;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.7);
-        }
-
-        .progress-percent {
-            color: #0a0;
-            font-size: 1rem;
-        }
-
-        /* Alerts */
-        .alert {
-            padding: 15px;
-            border-radius: 5px;
-            margin-bottom: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .alert-danger {
-            background: rgba(255, 0, 0, 0.1);
-            border: 1px solid #f00;
-            color: #faa;
-        }
-
-        .alert-info {
-            background: rgba(0, 255, 255, 0.1);
-            border: 1px solid #0ff;
-            color: #aff;
-        }
-
-        /* File Info */
-        .file-info {
-            display: flex;
-            gap: 30px;
-            font-size: 0.9rem;
-            color: #0f0;
-            margin-top: 15px;
-        }
-
-        .file-info strong {
-            color: #0ff;
-        }
-
-        /* Watermark */
         .watermark {
             position: fixed;
             bottom: 20px;
             right: 20px;
-            color: #0a0;
-            font-size: 0.9rem;
-            opacity: 0.7;
-            z-index: 1000;
+            font-size: 0.8rem;
+            opacity: 0.5;
+            z-index: 20;
         }
 
-        /* Animations */
-        .spinner {
-            display: inline-block;
-            width: 20px;
-            height: 20px;
-            border: 2px solid #333;
-            border-top: 2px solid #0f0;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.05;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+            font-size: 12px;
+            line-height: 1;
         }
 
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .pulse {
-            animation: pulse 2s infinite;
+        .matrix-line {
+            white-space: nowrap;
+            animation: pulse 3s infinite;
         }
 
         @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
         }
 
-        /* Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        ::-webkit-scrollbar-track {
-            background: #000;
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: #0f0;
-            border-radius: 4px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: #0ff;
-        }
-
-        /* Responsive */
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 2.5rem;
-            }
-            
-            .container {
-                padding: 15px;
-            }
-            
-            .upload-area {
-                padding: 30px 20px;
-            }
-            
-            .grid-cols-3,
-            .grid-cols-2 {
-                grid-template-columns: 1fr;
-            }
-        }
-
-        /* Hidden */
         .hidden {
             display: none;
         }
 
-        /* Button Groups */
-        .btn-group {
-            display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
-            margin-top: 20px;
-        }
-
-        /* Results Section */
-        .results-section {
-            margin-top: 30px;
-        }
-
-        .result-header {
-            display: flex;
-            justify-content: between;
-            align-items: center;
-            margin-bottom: 10px;
-        }
-
-        .result-title {
-            color: #0f0;
-            font-weight: bold;
-            font-size: 1.1rem;
-        }
-
-        .download-btn {
-            background: #0f0;
-            color: #000;
-            border: none;
-            padding: 8px 15px;
-            border-radius: 3px;
-            font-size: 0.9rem;
-            cursor: pointer;
-            font-weight: bold;
-        }
-
-        .download-btn:hover {
-            background: #0ff;
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            body {
+                padding: 10px;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Matrix Background Canvas -->
-    <canvas id="matrix-canvas"></canvas>
+    <!-- Matrix Background -->
+    <div class="matrix-bg" id="matrixBg"></div>
 
-    <!-- Main Container -->
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>🔓 HACKER JS DECODER</h1>
-            <div class="subtitle">Advanced JavaScript Deobfuscation & Decoding Tool</div>
-            <div class="badges">
-                <span class="badge">JSFuck</span>
-                <span class="badge">AAencode</span>
-                <span class="badge">JJencode</span>
-                <span class="badge">Base64</span>
-                <span class="badge">Hexadecimal</span>
-                <span class="badge">Unicode</span>
-            </div>
+            <h1>⚡ JS DECODER MATRIX ⚡</h1>
+            <p>&gt; ADVANCED JAVASCRIPT DEOBFUSCATION TOOL &lt;</p>
+            <div class="status">[SYSTEM READY] - [ENCRYPTION DETECTION ACTIVE] - [CLIENT-SIDE PROCESSING]</div>
         </div>
 
-        <!-- Input Section -->
+        <!-- File Upload -->
         <div class="card">
             <div class="card-header">
                 <div class="card-title">
-                    📁 INPUT SOURCE
-                </div>
-                <div class="card-description">Upload .js file or paste JavaScript code for analysis</div>
-            </div>
-            <div class="card-content">
-                <!-- File Upload -->
-                <div class="upload-area" id="uploadArea">
-                    <input type="file" id="fileInput" accept=".js" style="display: none;">
-                    <div class="upload-icon">📄</div>
-                    <div class="upload-text">UPLOAD JS FILE</div>
-                    <div class="upload-subtext">Supports files up to 100MB • Drag & Drop or Click</div>
-                </div>
-
-                <!-- Manual Input -->
-                <div class="form-group">
-                    <label class="label">OR PASTE CODE MANUALLY:</label>
-                    <textarea 
-                        id="inputTextarea" 
-                        class="textarea" 
-                        placeholder="Paste your JavaScript code here..."
-                    ></textarea>
-                </div>
-
-                <!-- File Info -->
-                <div id="fileInfo" class="file-info hidden"></div>
-            </div>
-        </div>
-
-        <!-- Loading -->
-        <div id="loadingSection" class="progress-container hidden">
-            <div class="progress-text">
-                <span class="spinner"></span>
-                <span id="operationText">ANALYZING...</span>
-            </div>
-            <div class="progress-bar">
-                <div id="progressFill" class="progress-fill"></div>
-            </div>
-            <div class="progress-percent">
-                <span id="progressPercent">0</span>% COMPLETE
-            </div>
-        </div>
-
-        <!-- Analysis Results -->
-        <div id="analysisSection" class="card hidden">
-            <div class="card-header">
-                <div class="card-title">
-                    🛡️ ANALYSIS RESULTS
+                    📄 FILE UPLOAD PROTOCOL
                 </div>
             </div>
             <div class="card-content">
-                <div class="grid grid-cols-3">
-                    <div class="analysis-item">
-                        <div class="label">ENCODING TYPE:</div>
-                        <div id="encodingType" class="analysis-value">-</div>
-                    </div>
-                    <div class="analysis-item">
-                        <div class="label">CONFIDENCE:</div>
-                        <div id="confidence" class="analysis-value">-</div>
-                    </div>
-                    <div class="analysis-item">
-                        <div class="label">ENTROPY:</div>
-                        <div id="entropy" class="analysis-value">-</div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label class="label">DETECTED PATTERNS:</label>
-                    <div id="patternsList" class="patterns-list"></div>
-                </div>
-
-                <div id="suspiciousAlert" class="alert alert-danger hidden">
-                    <span>⚠️</span>
-                    <div>
-                        <strong>SUSPICIOUS PATTERNS DETECTED:</strong>
-                        <span id="suspiciousPatterns"></span>
-                    </div>
-                </div>
-
-                <div class="btn-group">
-                    <button id="decodeBtn" class="btn hidden">
-                        🔓 DECODE
+                <div class="upload-area">
+                    <input type="file" id="fileInput" accept=".js" class="hidden">
+                    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                        📤 SELECT TARGET FILE (.js)
                     </button>
-                    <button id="deobfuscateBtn" class="btn btn-secondary">
-                        🔄 DEOBFUSCATE
-                    </button>
+                    <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.7;">
+                        &gt; MAX SIZE: 20MB | SUPPORTED: .js files only
+                    </p>
+                    <div id="fileInfo" class="file-info hidden"></div>
                 </div>
             </div>
         </div>
 
-        <!-- Results -->
-        <div id="resultsSection" class="card hidden">
+        <!-- Detection Results -->
+        <div id="detectionCard" class="card hidden">
             <div class="card-header">
-                <div class="card-title">
-                    💻 DECODED RESULTS
-                </div>
+                <div class="card-title">🔍 ENCRYPTION ANALYSIS RESULTS</div>
             </div>
             <div class="card-content">
-                <!-- Decoded Content -->
-                <div id="decodedSection" class="results-section hidden">
-                    <div class="result-header">
-                        <div class="result-title">DECODED CONTENT:</div>
-                        <button id="downloadDecoded" class="download-btn">📥 DOWNLOAD</button>
-                    </div>
-                    <textarea id="decodedContent" class="textarea result" readonly></textarea>
-                </div>
-
-                <!-- Final Content -->
-                <div id="finalSection" class="results-section hidden">
-                    <div class="result-header">
-                        <div class="result-title">FINAL READABLE CODE:</div>
-                        <button id="downloadFinal" class="download-btn">📥 DOWNLOAD</button>
-                    </div>
-                    <textarea id="finalContent" class="textarea result" readonly></textarea>
-                </div>
+                <div id="detectionContent"></div>
             </div>
         </div>
 
-        <!-- Info -->
-        <div class="card">
+        <!-- Decoded Result -->
+        <div id="resultCard" class="card hidden">
             <div class="card-header">
-                <div class="card-title">
-                    👁️ SUPPORTED FORMATS
+                <div class="card-title" style="justify-content: space-between;">
+                    <span>💻 DECODED OUTPUT</span>
+                    <div class="button-group">
+                        <button class="small-btn" onclick="copyToClipboard()">📋 COPY</button>
+                        <button class="small-btn" onclick="downloadResult()">💾 DOWNLOAD</button>
+                    </div>
                 </div>
             </div>
             <div class="card-content">
-                <div class="grid grid-cols-2">
-                    <div>
-                        <div class="label">ENCODING TYPES:</div>
-                        <div class="patterns-list">
-                            <div class="pattern-item">Base64 Encoding</div>
-                            <div class="pattern-item">Hexadecimal Encoding</div>
-                            <div class="pattern-item">Unicode Escape Sequences</div>
-                            <div class="pattern-item">Custom String Encoding</div>
-                            <div class="pattern-item">URI Component Encoding</div>
-                        </div>
-                    </div>
-                    <div>
-                        <div class="label">OBFUSCATION TYPES:</div>
-                        <div class="patterns-list">
-                            <div class="pattern-item">JSFuck ([]()!+ only)</div>
-                            <div class="pattern-item">AAencode (Japanese chars)</div>
-                            <div class="pattern-item">JJencode (Special patterns)</div>
-                            <div class="pattern-item">Standard JS Obfuscation</div>
-                            <div class="pattern-item">Variable Name Mangling</div>
-                        </div>
-                    </div>
-                </div>
+                <textarea id="resultTextarea" class="textarea" readonly placeholder="Decoded content will appear here..."></textarea>
             </div>
         </div>
     </div>
@@ -663,37 +328,318 @@
     <div class="watermark">Made by Marvel</div>
 
     <script>
-        // Global variables
-        let currentAnalysis = null;
-        let currentFileName = '';
-        let currentFileSize = 0;
+        let currentFile = null;
+        let fileContent = '';
+        let detectionResults = [];
+        let decodedContent = '';
 
-        // Matrix Rain Effect
-        function initMatrixRain() {
-            const canvas = document.getElementById('matrix-canvas');
-            const ctx = canvas.getContext('2d');
+        // Initialize matrix background
+        function initMatrixBackground() {
+            const matrixBg = document.getElementById('matrixBg');
+            const binaryPattern = '01010101 11001100 10101010 01110111 00110011 10011001 ';
             
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-            
-            const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}".split("");
-            const font_size = 10;
-            const columns = canvas.width / font_size;
-            const drops = [];
-            
-            for (let x = 0; x < columns; x++) {
-                drops[x] = 1;
+            for (let i = 0; i < 50; i++) {
+                const line = document.createElement('div');
+                line.className = 'matrix-line';
+                line.textContent = binaryPattern.repeat(20);
+                matrixBg.appendChild(line);
             }
+        }
+
+        // Detection functions
+        function detectBase64(content) {
+            const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
+            const lines = content.split('\n');
+            let base64Lines = 0;
+
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (trimmed.length > 50 && base64Regex.test(trimmed)) {
+                    base64Lines++;
+                }
+            }
+
+            if (base64Lines > lines.length * 0.3) {
+                return {
+                    type: 'Base64',
+                    confidence: Math.min(95, (base64Lines / lines.length) * 100),
+                    description: 'Base64 encoded content detected'
+                };
+            }
+            return null;
+        }
+
+        function detectHexadecimal(content) {
+            const hexMatches = content.match(/[0-9A-Fa-f]{20,}/g);
+            if (hexMatches && hexMatches.length > 0) {
+                return {
+                    type: 'Hexadecimal',
+                    confidence: 85,
+                    description: 'Hexadecimal encoded content detected'
+                };
+            }
+            return null;
+        }
+
+        function detectStringFromCharCode(content) {
+            const charCodeRegex = /String\.fromCharCode\s*\(/gi;
+            const matches = content.match(charCodeRegex);
+            if (matches && matches.length > 5) {
+                return {
+                    type: 'String.fromCharCode',
+                    confidence: 90,
+                    description: 'String.fromCharCode obfuscation detected'
+                };
+            }
+            return null;
+        }
+
+        function detectEvalAtob(content) {
+            const evalAtobRegex = /eval\s*\(\s*atob\s*\(/gi;
+            const matches = content.match(evalAtobRegex);
+            if (matches && matches.length > 0) {
+                return {
+                    type: 'eval(atob(...))',
+                    confidence: 95,
+                    description: 'eval(atob(...)) obfuscation detected'
+                };
+            }
+            return null;
+        }
+
+        function detectJSFuck(content) {
+            const jsfuckRatio = (content.match(/[\[\]()!+{}]/g) || []).length / content.length;
+            if (jsfuckRatio > 0.8) {
+                return {
+                    type: 'JSFuck',
+                    confidence: 90,
+                    description: 'JSFuck obfuscation detected'
+                };
+            }
+            return null;
+        }
+
+        function detectJJencode(content) {
+            if (content.includes('$=~[];') && content.includes('__={}+""')) {
+                return {
+                    type: 'JJencode',
+                    confidence: 95,
+                    description: 'JJencode obfuscation detected'
+                };
+            }
+            return null;
+        }
+
+        function detectAAencode(content) {
+            const aaencodePattern = /ﾟωﾟﾉ|ﾟΘﾟ|ﾟｰﾟ/;
+            if (aaencodePattern.test(content)) {
+                return {
+                    type: 'AAencode',
+                    confidence: 95,
+                    description: 'AAencode obfuscation detected'
+                };
+            }
+            return null;
+        }
+
+        function detectUTF16(content) {
+            const utf16Regex = /\\u[0-9A-Fa-f]{4}/g;
+            const matches = content.match(utf16Regex);
+            if (matches && matches.length > 10) {
+                return {
+                    type: 'UTF-16',
+                    confidence: 80,
+                    description: 'UTF-16 unicode escapes detected'
+                };
+            }
+            return null;
+        }
+
+        // Decoding functions
+        function decodeBase64(content) {
+            try {
+                return atob(content.replace(/\s/g, ''));
+            } catch {
+                return 'Failed to decode Base64';
+            }
+        }
+
+        function decodeHexadecimal(content) {
+            try {
+                const hex = content.replace(/\s/g, '');
+                let result = '';
+                for (let i = 0; i < hex.length; i += 2) {
+                    result += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+                }
+                return result;
+            } catch {
+                return 'Failed to decode Hexadecimal';
+            }
+        }
+
+        function decodeStringFromCharCode(content) {
+            try {
+                const regex = /String\.fromCharCode\s*$$\s*([^)]+)\s*$$/gi;
+                let decoded = content;
+                let match;
+
+                while ((match = regex.exec(content)) !== null) {
+                    const numbers = match[1].split(',').map(n => parseInt(n.trim()));
+                    const chars = numbers.map(n => String.fromCharCode(n)).join('');
+                    decoded = decoded.replace(match[0], chars);
+                }
+
+                return decoded;
+            } catch {
+                return 'Failed to decode String.fromCharCode';
+            }
+        }
+
+        function decodeEvalAtob(content) {
+            try {
+                const regex = /eval\s*$$\s*atob\s*\(\s*["']([^"']+)["']\s*$$\s*\)/gi;
+                let decoded = content;
+                let match;
+
+                while ((match = regex.exec(content)) !== null) {
+                    const base64Content = match[1];
+                    const decodedBase64 = atob(base64Content);
+                    decoded = decoded.replace(match[0], decodedBase64);
+                }
+
+                return decoded;
+            } catch {
+                return 'Failed to decode eval(atob(...))';
+            }
+        }
+
+        function decodeUTF16(content) {
+            try {
+                return content.replace(/\\u([0-9A-Fa-f]{4})/g, (match, hex) => {
+                    return String.fromCharCode(parseInt(hex, 16));
+                });
+            } catch {
+                return 'Failed to decode UTF-16';
+            }
+        }
+
+        // File handling
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 20 * 1024 * 1024) {
+                alert('File size exceeds 20MB limit');
+                return;
+            }
+
+            if (!file.name.endsWith('.js')) {
+                alert('Please select a JavaScript (.js) file');
+                return;
+            }
+
+            currentFile = file;
             
-            function draw() {
-                ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-                
-                ctx.fillStyle = '#0F0';
-                ctx.font = font_size + 'px monospace';
-                
-                for (let i = 0; i < drops.length; i++) {
-                    const text = matrix[Math.floor(Math.random() * matrix.length)];
-                    ctx.fillText(text, i * font_size, drops[i] * font_size);
-                    
-                    if (drops[i]
+            // Show file info
+            const fileInfo = document.getElementById('fileInfo');
+            fileInfo.innerHTML = `
+                <p>&gt; FILE LOADED: ${file.name}</p>
+                <p>&gt; SIZE: ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+            `;
+            fileInfo.classList.remove('hidden');
+
+            // Show processing
+            const detectionCard = document.getElementById('detectionCard');
+            const detectionContent = document.getElementById('detectionContent');
+            detectionContent.innerHTML = '<div class="processing">&gt; SCANNING FOR OBFUSCATION PATTERNS...</div>';
+            detectionCard.classList.remove('hidden');
+
+            // Read file
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                fileContent = e.target.result;
+                analyzeFile();
+            };
+            reader.readAsText(file);
+        });
+
+        function analyzeFile() {
+            detectionResults = [];
+
+            const detectors = [
+                detectBase64,
+                detectHexadecimal,
+                detectStringFromCharCode,
+                detectEvalAtob,
+                detectJSFuck,
+                detectJJencode,
+                detectAAencode,
+                detectUTF16
+            ];
+
+            detectors.forEach(detector => {
+                const result = detector(fileContent);
+                if (result) detectionResults.push(result);
+            });
+
+            detectionResults.sort((a, b) => b.confidence - a.confidence);
+            displayResults();
+        }
+
+        function displayResults() {
+            const detectionContent = document.getElementById('detectionContent');
+            
+            if (detectionResults.length > 0) {
+                let html = '';
+                detectionResults.forEach(result => {
+                    html += `
+                        <div class="detection-result">
+                            <div class="detection-header">
+                                <span><strong>&gt; ${result.type}</strong></span>
+                                <span class="confidence">CONFIDENCE: ${Math.round(result.confidence)}%</span>
+                            </div>
+                            <div class="description">${result.description}</div>
+                        </div>
+                    `;
+                });
+                html += '<button class="decode-btn" onclick="performDecode()">⚡ DECODE TO ORIGINAL CODE</button>';
+                detectionContent.innerHTML = html;
+            } else {
+                detectionContent.innerHTML = `
+                    <div class="error">
+                        <p>&gt; ENCODING NOT DETECTED</p>
+                        <p style="font-size: 0.9rem; margin-top: 10px;">&gt; MANUAL ANALYSIS REQUIRED</p>
+                    </div>
+                `;
+            }
+        }
+
+        function performDecode() {
+            if (detectionResults.length === 0) return;
+
+            const topResult = detectionResults[0];
+            let decoded = '';
+
+            switch (topResult.type) {
+                case 'Base64':
+                    decoded = decodeBase64(fileContent);
+                    break;
+                case 'Hexadecimal':
+                    decoded = decodeHexadecimal(fileContent);
+                    break;
+                case 'String.fromCharCode':
+                    decoded = decodeStringFromCharCode(fileContent);
+                    break;
+                case 'eval(atob(...))':
+                    decoded = decodeEvalAtob(fileContent);
+                    break;
+                case 'UTF-16':
+                    decoded = decodeUTF16(fileContent);
+                    break;
+                default:
+                    decoded = 'Decoding not implemented for this type';
+            }
+
+            decodedContent = decoded;
+            document.getElementById('resultTextarea').value = decoded;
+            document.ge
