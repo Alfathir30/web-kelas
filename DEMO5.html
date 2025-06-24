@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JS Obfuscator Generator</title>
+    <title>JS Obfuscator Generator (Lokal)</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -87,7 +87,7 @@
 <body>
 
     <div class="container">
-        <h1>JS Obfuscator Generator (with Upload)</h1>
+        <h1>JS Obfuscator Generator (Mode Lokal)</h1>
         <p>Halo, bre! Lo bisa masukin kode JS langsung di teks area, atau kalo males, upload aja file .js nya!</p>
 
         <div class="file-upload-section">
@@ -110,14 +110,14 @@
         <div class="note">
             <p><strong>Catatan Penting, Bro:</strong></p>
             <ul>
-                <li>Ini cuma contoh dasar pake `javascript-obfuscator` versi CDN. Untuk proyek serius, disarankan instal via npm/yarn dan bundling.</li>
+                <li>Pastikan file <code>javascript-obfuscator.min.js</code> berada di folder yang sama dengan file HTML ini. Ini solusi untuk error "JavaScriptObfuscator is not defined".</li>
                 <li>Obfuscation <strong>bukan enkripsi</strong>. Kode yang diobfuscate masih bisa di-reverse engineer (walaupun lebih susah). Jangan pernah menyimpan informasi sangat sensitif (misalnya kunci API, password) langsung di JavaScript klien.</li>
                 <li>Beberapa fitur obfuscator bisa bikin kode lo lebih besar atau sedikit lebih lambat. Tes dulu ya!</li>
             </ul>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@2.19.0/dist/javascript-obfuscator.min.js"></script>
+    <script src="javascript-obfuscator.min.js"></script> 
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
@@ -173,6 +173,13 @@
             }
 
             try {
+                // Pastikan JavaScriptObfuscator sudah terdefinisi
+                if (typeof JavaScriptObfuscator === 'undefined') {
+                    obfuscatedOutput.value = 'Error: JavaScriptObfuscator library belum dimuat. Pastikan file javascript-obfuscator.min.js ada di folder yang sama dengan HTML ini.';
+                    console.error('JavaScriptObfuscator is not defined. Make sure the library is loaded.');
+                    return;
+                }
+
                 const options = {
                     compact: true,
                     controlFlowFlattening: true,
@@ -244,10 +251,10 @@
             const a = document.createElement('a');
             a.href = url;
             a.download = filename;
-            document.body.appendChild(a); // Diperlukan untuk Firefox
+            document.body.appendChild(a);
             a.click();
-            document.body.removeChild(a); // Bersihkan DOM
-            URL.revokeObjectURL(url); // Bersihkan URL objek
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
             alert('File obfuscated berhasil di-download, bre!');
         }
     </script>
