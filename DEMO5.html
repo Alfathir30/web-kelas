@@ -3,8 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Advanced Decryptor by MARVEL GANTENG</title>
+    <title>Advanced Obfuscator by MARVEL GANTENG</title>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@4.0.2/dist/index.browser.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Share+Tech+Mono&family=Orbitron:wght@400;700;900&display=swap');
 
@@ -46,11 +47,11 @@
                     rgba(0, 255, 0, 0.02) 100px,
                     rgba(0, 255, 0, 0.02) 102px
                 ),
-                radial-gradient(circle at 30% 70%, rgba(255, 0, 0, 0.1) 0%, transparent 50%),
-                radial-gradient(circle at 70% 30%, rgba(0, 255, 0, 0.1) 0%, transparent 50%);
+                radial-gradient(circle at 20% 80%, rgba(0, 255, 0, 0.1) 0%, transparent 50%),
+                radial-gradient(circle at 80% 20%, rgba(0, 255, 0, 0.1) 0%, transparent 50%);
             pointer-events: none;
             z-index: 1;
-            animation: scanlines 0.1s linear infinite, decryptorRain 25s linear infinite;
+            animation: scanlines 0.1s linear infinite, matrixRain 20s linear infinite;
         }
 
         @keyframes scanlines {
@@ -58,9 +59,9 @@
             100% { transform: translateY(4px); }
         }
 
-        @keyframes decryptorRain {
-            0% { background-position: 0 0, 0 0, 30% 70%, 70% 30%; }
-            100% { background-position: 0 100px, 100px 0, 35% 75%, 75% 35%; }
+        @keyframes matrixRain {
+            0% { background-position: 0 0, 0 0, 20% 80%, 80% 20%; }
+            100% { background-position: 0 100px, 100px 0, 25% 85%, 85% 25%; }
         }
 
         .container {
@@ -70,31 +71,31 @@
             margin: 0 auto;
             padding: 20px;
             background: rgba(0, 0, 0, 0.95);
-            border: 3px solid #ff0000;
+            border: 3px solid #00ff00;
             border-radius: 20px;
             margin-top: 20px;
             box-shadow: 
-                0 0 50px rgba(255, 0, 0, 0.5),
-                inset 0 0 50px rgba(255, 0, 0, 0.1),
-                0 0 100px rgba(255, 0, 0, 0.2);
+                0 0 50px rgba(0, 255, 0, 0.5),
+                inset 0 0 50px rgba(0, 255, 0, 0.1),
+                0 0 100px rgba(0, 255, 0, 0.2);
             animation: containerPulse 4s ease-in-out infinite alternate;
         }
 
         @keyframes containerPulse {
             0% { 
-                box-shadow: 0 0 50px rgba(255, 0, 0, 0.5), inset 0 0 50px rgba(255, 0, 0, 0.1), 0 0 100px rgba(255, 0, 0, 0.2);
-                border-color: #ff0000;
+                box-shadow: 0 0 50px rgba(0, 255, 0, 0.5), inset 0 0 50px rgba(0, 255, 0, 0.1), 0 0 100px rgba(0, 255, 0, 0.2);
+                border-color: #00ff00;
             }
             100% { 
-                box-shadow: 0 0 80px rgba(255, 0, 0, 0.7), inset 0 0 80px rgba(255, 0, 0, 0.2), 0 0 150px rgba(255, 0, 0, 0.3);
-                border-color: #ff6600;
+                box-shadow: 0 0 80px rgba(0, 255, 0, 0.7), inset 0 0 80px rgba(0, 255, 0, 0.2), 0 0 150px rgba(0, 255, 0, 0.3);
+                border-color: #00ffff;
             }
         }
 
         .header {
             text-align: center;
             margin-bottom: 50px;
-            border-bottom: 4px solid #ff0000;
+            border-bottom: 4px solid #00ff00;
             padding-bottom: 30px;
             position: relative;
             overflow: hidden;
@@ -107,7 +108,7 @@
             left: -100%;
             width: 100%;
             height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(255, 0, 0, 0.1), transparent);
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.1), transparent);
             animation: headerSweep 3s infinite;
         }
 
@@ -121,10 +122,10 @@
             font-size: 3.5rem;
             font-weight: 900;
             text-shadow: 
-                0 0 10px #ff0000,
-                0 0 20px #ff0000,
-                0 0 30px #ff0000,
-                0 0 40px #ff0000;
+                0 0 10px #00ff00,
+                0 0 20px #00ff00,
+                0 0 30px #00ff00,
+                0 0 40px #00ff00;
             margin-bottom: 20px;
             height: 100px;
             display: flex;
@@ -133,7 +134,6 @@
             position: relative;
             z-index: 1;
             animation: titleGlitch 5s infinite;
-            color: #ff0000;
         }
 
         @keyframes titleGlitch {
@@ -142,4 +142,1032 @@
                 filter: hue-rotate(0deg);
             }
             91% { 
-                transform: translate(-
+                transform: translate(-3px, 3px);
+                filter: hue-rotate(90deg);
+            }
+            92% { 
+                transform: translate(3px, -3px);
+                filter: hue-rotate(180deg);
+            }
+            93% { 
+                transform: translate(-3px, -3px);
+                filter: hue-rotate(270deg);
+            }
+            94% { 
+                transform: translate(3px, 3px);
+                filter: hue-rotate(360deg);
+            }
+            95% { 
+                transform: translate(-3px, 3px);
+                filter: hue-rotate(45deg);
+            }
+        }
+
+        .cursor {
+            animation: blink 1s infinite;
+            font-weight: normal;
+        }
+
+        @keyframes blink {
+            0%, 50% { opacity: 1; }
+            51%, 100% { opacity: 0; }
+        }
+
+        .subtitle {
+            font-size: 1.4rem;
+            color: #00cc00;
+            opacity: 0.9;
+            text-shadow: 0 0 8px #00cc00;
+            animation: subtitlePulse 3s infinite;
+            position: relative;
+            z-index: 1;
+        }
+
+        @keyframes subtitlePulse {
+            0%, 100% { opacity: 0.9; transform: scale(1); }
+            50% { opacity: 1; transform: scale(1.02); }
+        }
+
+        .section {
+            margin-bottom: 40px;
+            padding: 30px;
+            border: 3px solid #00ff00;
+            border-radius: 15px;
+            background: rgba(0, 255, 0, 0.05);
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(5px);
+        }
+
+        .section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.1), transparent);
+            animation: sectionSweep 4s infinite;
+        }
+
+        @keyframes sectionSweep {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .section-title {
+            font-size: 1.6rem;
+            margin-bottom: 25px;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            position: relative;
+            z-index: 1;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        .process-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .step {
+            background: linear-gradient(135deg, #111, #222);
+            border: 2px solid #00ff00;
+            border-radius: 10px;
+            padding: 20px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .step:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0, 255, 0, 0.4);
+            border-color: #00ffff;
+        }
+
+        .step-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #00ff00;
+            text-shadow: 0 0 10px #00ff00;
+            margin-bottom: 10px;
+        }
+
+        .step-title {
+            font-size: 1.1rem;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #00ff00;
+        }
+
+        .step-desc {
+            font-size: 0.9rem;
+            color: #00cc00;
+            line-height: 1.4;
+        }
+
+        .file-input-container {
+            position: relative;
+            display: inline-block;
+            cursor: pointer;
+            background: linear-gradient(45deg, #111, #222);
+            border: 4px solid #00ff00;
+            border-radius: 12px;
+            padding: 20px 35px;
+            transition: all 0.3s ease;
+            z-index: 1;
+            overflow: hidden;
+        }
+
+        .file-input-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.2), transparent);
+            transition: left 0.5s;
+        }
+
+        .file-input-container:hover::before {
+            left: 100%;
+        }
+
+        .file-input-container:hover {
+            background: linear-gradient(45deg, rgba(0, 255, 0, 0.1), rgba(0, 255, 0, 0.2));
+            box-shadow: 0 0 30px rgba(0, 255, 0, 0.6);
+            transform: translateY(-5px);
+            border-color: #00ffff;
+        }
+
+        .file-input {
+            position: absolute;
+            opacity: 0;
+            width: 100%;
+            height: 100%;
+            cursor: pointer;
+        }
+
+        .file-input-label {
+            color: #00ff00;
+            font-weight: bold;
+            font-size: 1.2rem;
+            pointer-events: none;
+            text-shadow: 0 0 8px #00ff00;
+            position: relative;
+            z-index: 1;
+        }
+
+        .file-info {
+            margin-top: 20px;
+            padding: 20px;
+            background: linear-gradient(135deg, #111, #222);
+            border-radius: 8px;
+            border-left: 5px solid #00ff00;
+            display: none;
+            position: relative;
+            z-index: 1;
+        }
+
+        .textarea-container {
+            position: relative;
+            z-index: 1;
+        }
+
+        .code-textarea {
+            width: 100%;
+            height: 500px;
+            background: #000;
+            color: #00ff00;
+            border: 4px solid #00ff00;
+            border-radius: 12px;
+            padding: 25px;
+            font-family: 'Share Tech Mono', 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            resize: vertical;
+            outline: none;
+            box-shadow: 
+                inset 0 0 30px rgba(0, 255, 0, 0.2),
+                0 0 20px rgba(0, 255, 0, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .code-textarea:focus {
+            box-shadow: 
+                inset 0 0 40px rgba(0, 255, 0, 0.3),
+                0 0 30px rgba(0, 255, 0, 0.5);
+            border-color: #00ffff;
+        }
+
+        .code-textarea::placeholder {
+            color: #006600;
+            font-style: italic;
+        }
+
+        .button {
+            background: linear-gradient(45deg, #111, #333);
+            color: #00ff00;
+            border: 3px solid #00ff00;
+            padding: 18px 35px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 16px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            margin: 10px;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .button::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.3), transparent);
+            transition: left 0.5s;
+        }
+
+        .button:hover::before {
+            left: 100%;
+        }
+
+        .button:hover {
+            background: linear-gradient(45deg, rgba(0, 255, 0, 0.1), rgba(0, 255, 0, 0.3));
+            box-shadow: 
+                0 0 30px rgba(0, 255, 0, 0.6),
+                inset 0 0 30px rgba(0, 255, 0, 0.1);
+            transform: translateY(-3px);
+            text-shadow: 0 0 15px #00ff00;
+            border-color: #00ffff;
+        }
+
+        .button:active {
+            transform: translateY(-1px);
+        }
+
+        .button:disabled {
+            opacity: 0.4;
+            cursor: not-allowed;
+            transform: none;
+            background: linear-gradient(45deg, #111, #333);
+        }
+
+        .button:disabled:hover {
+            background: linear-gradient(45deg, #111, #333);
+            box-shadow: none;
+            transform: none;
+            text-shadow: none;
+            border-color: #00ff00;
+        }
+
+        .controls {
+            display: flex;
+            gap: 20px;
+            flex-wrap: wrap;
+            justify-content: center;
+            margin-top: 25px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .status {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: 8px;
+            display: none;
+            position: relative;
+            z-index: 1;
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .status.success {
+            background: rgba(0, 255, 0, 0.15);
+            border: 3px solid #00ff00;
+            color: #00ff00;
+            text-shadow: 0 0 8px #00ff00;
+        }
+
+        .status.error {
+            background: rgba(255, 0, 0, 0.15);
+            border: 3px solid #ff0000;
+            color: #ff0000;
+            text-shadow: 0 0 8px #ff0000;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin: 30px 0;
+            position: relative;
+            z-index: 1;
+        }
+
+        .loading-text {
+            color: #00ff00;
+            font-size: 1.4rem;
+            font-weight: bold;
+            text-shadow: 0 0 15px #00ff00;
+            animation: loadingPulse 1.5s infinite;
+        }
+
+        @keyframes loadingPulse {
+            0%, 100% { 
+                opacity: 1; 
+                transform: scale(1);
+                text-shadow: 0 0 15px #00ff00;
+            }
+            50% { 
+                opacity: 0.7; 
+                transform: scale(1.05);
+                text-shadow: 0 0 25px #00ff00;
+            }
+        }
+
+        .stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            margin-top: 30px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-item {
+            background: linear-gradient(135deg, #111, #333);
+            padding: 25px;
+            border-radius: 12px;
+            border: 3px solid #00ff00;
+            text-align: center;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .stat-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(0, 255, 0, 0.1), transparent);
+            animation: statSweep 5s infinite;
+        }
+
+        @keyframes statSweep {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .stat-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 15px 40px rgba(0, 255, 0, 0.4);
+            border-color: #00ffff;
+        }
+
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #00ff00;
+            text-shadow: 0 0 15px #00ff00;
+            margin-bottom: 10px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .stat-label {
+            font-size: 1.1rem;
+            color: #00cc00;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .marvel-signature {
+            position: fixed;
+            bottom: 30px;
+            right: 30px;
+            background: rgba(0, 0, 0, 0.9);
+            border: 3px solid #00ff00;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-size: 14px;
+            color: #00ff00;
+            text-shadow: 0 0 8px #00ff00;
+            z-index: 1000;
+            animation: signatureGlow 4s infinite;
+        }
+
+        @keyframes signatureGlow {
+            0%, 100% { 
+                opacity: 0.8;
+                box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+            }
+            50% { 
+                opacity: 1;
+                box-shadow: 0 0 40px rgba(0, 255, 0, 0.6);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+                margin: 10px;
+            }
+            
+            .title {
+                font-size: 2.5rem;
+            }
+            
+            .controls {
+                justify-content: center;
+            }
+
+            .button {
+                padding: 15px 25px;
+                font-size: 14px;
+            }
+
+            .process-steps {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title" id="title"></div>
+            <div class="subtitle">🔥 ADVANCED MULTI-LAYER ENCRYPTION & OBFUSCATION SYSTEM 🔥</div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">🔧 OBFUSCATION PROCESS PIPELINE</div>
+            <div class="process-steps">
+                <div class="step">
+                    <div class="step-number">1</div>
+                    <div class="step-title">AES ENCRYPTION</div>
+                    <div class="step-desc">Encrypt source code with random AES-256 key</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">2</div>
+                    <div class="step-title">BASE64 ENCODING</div>
+                    <div class="step-desc">Encode encrypted data to Base64 format</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">3</div>
+                    <div class="step-title">EVAL WRAPPER</div>
+                    <div class="step-desc">Wrap in eval(atob(decrypt(...))) structure</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">4</div>
+                    <div class="step-title">ADVANCED OBFUSCATION</div>
+                    <div class="step-desc">Apply multi-language variable names & control flow</div>
+                </div>
+                <div class="step">
+                    <div class="step-number">5</div>
+                    <div class="step-title">SIGNATURE INJECTION</div>
+                    <div class="step-desc">Inject MARVEL GANTENG signatures throughout</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">📁 FILE UPLOAD TERMINAL</div>
+            <div class="file-input-container">
+                <input type="file" id="fileInput" class="file-input" accept=".js" />
+                <label for="fileInput" class="file-input-label">🎯 SELECT JAVASCRIPT TARGET (.js)</label>
+            </div>
+            <div id="fileInfo" class="file-info"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">⚡ OBFUSCATION CONTROL CENTER</div>
+            <div class="controls">
+                <button id="obfuscateBtn" class="button" disabled>🚀 EXECUTE MULTI-LAYER OBFUSCATION</button>
+                <button id="clearBtn" class="button">🗑️ CLEAR ALL SYSTEMS</button>
+                <button id="downloadBtn" class="button" disabled>💾 DOWNLOAD OBFUSCATED PAYLOAD</button>
+            </div>
+            <div id="loading" class="loading">
+                <div class="loading-text">⚡ PROCESSING... ENCRYPTING... OBFUSCATING... INJECTING MARVEL GANTENG... ⚡</div>
+            </div>
+            <div id="status" class="status"></div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">📊 SYSTEM STATISTICS</div>
+            <div class="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="originalSize">0</div>
+                    <div class="stat-label">Original Bytes</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="encryptedSize">0</div>
+                    <div class="stat-label">Encrypted Bytes</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="finalSize">0</div>
+                    <div class="stat-label">Final Obfuscated</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="marvelCount">0</div>
+                    <div class="stat-label">Marvel Signatures</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="encryptionKey">N/A</div>
+                    <div class="stat-label">AES Key Length</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="section">
+            <div class="section-title">💻 OBFUSCATED OUTPUT TERMINAL</div>
+            <div class="textarea-container">
+                <textarea 
+                    id="outputCode" 
+                    class="code-textarea" 
+                    placeholder="// ⚡ MARVEL GANTENG ADVANCED OBFUSCATION TERMINAL ⚡
+// 
+// > SYSTEM STATUS: READY FOR MULTI-LAYER PROCESSING
+// > AES-256 ENCRYPTION ENGINE: STANDBY
+// > BASE64 ENCODER: READY
+// > EVAL WRAPPER GENERATOR: ARMED
+// > ADVANCED OBFUSCATOR: LOADED
+// > MULTI-LANGUAGE VARIABLE GENERATOR: ACTIVE
+// > MARVEL GANTENG SIGNATURE INJECTOR: READY
+// 
+// Upload a JavaScript file to begin advanced obfuscation process
+// 
+// FEATURES ENABLED:
+// ✓ AES-256 Encryption with Random Key
+// ✓ Base64 Encoding Layer
+// ✓ Eval(atob(decrypt())) Wrapper
+// ✓ Control Flow Flattening
+// ✓ Dead Code Injection
+// ✓ String Array Encoding
+// ✓ Self-Defending Code
+// ✓ Multi-Language Variable Names (Arabic, Russian, Japanese, Emoji)
+// ✓ MARVEL GANTENG Signature Injection
+//
+// >> ADVANCED OBFUSCATION SYSTEM READY <<"
+                    readonly
+                ></textarea>
+            </div>
+        </div>
+    </div>
+
+    <div class="marvel-signature">
+        🔥 POWERED BY MARVEL GANTENG 🔥<br>
+        ADVANCED OBFUSCATION SYSTEM
+    </div>
+
+    <script>
+        // Multi-language character sets for advanced variable names
+        const languageChars = {
+            arabic: ['ع', 'ر', 'ب', 'ي', 'ة', 'ل', 'م', 'ن', 'ت', 'س', 'ك', 'د', 'ج', 'ح', 'خ'],
+            chinese: ['漢', '字', '中', '文', '語', '言', '代', '碼', '程', '序', '函', '數', '變', '量', '對'],
+            russian: ['р', 'у', 'с', 'с', 'к', 'и', 'й', 'я', 'з', 'ы', 'к', 'о', 'д', 'ф', 'н'],
+            hindi: ['ह', 'ि', 'न', 'द', 'ी', 'भ', 'ा', 'ष', 'क', 'ो', 'ड', 'प', 'र', 'ग', 'म'],
+            korean: ['한', '국', '어', '코', '드', '프', '로', '그', '램', '언', '어', '함', '수', '변', '수'],
+            japanese: ['日', '本', '語', 'コ', 'ー', 'ド', 'プ', 'ロ', 'グ', 'ラ', 'ム', '関', '数', '変', '数'],
+            emoji: ['🔥', '⚡', '🚀', '💻', '🎯', '🔒', '⭐', '💎', '🌟', '🎮', '🔑', '💀', '👑', '🎪', '🎭'],
+            greek: ['α', 'β', 'γ', 'δ', 'ε', 'ζ', 'η', 'θ', 'ι', 'κ', 'λ', 'μ', 'ν', 'ξ', 'ο'],
+            hebrew: ['א', 'ב', 'ג', 'ד', 'ה', 'ו', 'ז', 'ח', 'ט', 'י', 'כ', 'ל', 'מ', 'ן', 'נ'],
+            cyrillic: ['Ѐ', 'Ё', 'Ђ', 'Ѓ', 'Є', 'Ѕ', 'І', 'Ї', 'Ј', 'Љ', 'Њ', 'Ћ', 'Ќ', 'Ў', 'Џ']
+        };
+
+        // Generate advanced multi-language variable name
+        function generateAdvancedVarName() {
+            const languages = Object.keys(languageChars);
+            const selectedLangs = [];
+            const numLangs = Math.floor(Math.random() * 4) + 2; // 2-5 languages
+            
+            for (let i = 0; i < numLangs; i++) {
+                const lang = languages[Math.floor(Math.random() * languages.length)];
+                if (!selectedLangs.includes(lang)) {
+                    selectedLangs.push(lang);
+                }
+            }
+            
+            let varName = '_';
+            selectedLangs.forEach(lang => {
+                const chars = languageChars[lang];
+                const numChars = Math.floor(Math.random() * 4) + 2; // 2-5 chars per language
+                for (let i = 0; i < numChars; i++) {
+                    varName += chars[Math.floor(Math.random() * chars.length)];
+                }
+            });
+            
+            // Add random alphanumeric for compatibility
+            const alphaNum = 'abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+            for (let i = 0; i < Math.floor(Math.random() * 5) + 2; i++) {
+                varName += alphaNum[Math.floor(Math.random() * alphaNum.length)];
+            }
+            
+            return varName;
+        }
+
+        // Generate custom identifier names for obfuscation
+        function generateCustomIdentifiers() {
+            const identifiers = [];
+            for (let i = 0; i < 2000; i++) {
+                identifiers.push(generateAdvancedVarName());
+            }
+            return identifiers;
+        }
+
+        // Generate random AES key
+        function generateRandomKey() {
+            return CryptoJS.lib.WordArray.random(256/8).toString();
+        }
+
+        // AES encryption function
+        function encryptCode(code, key) {
+            return CryptoJS.AES.encrypt(code, key).toString();
+        }
+
+        // Create wrapper code with decrypt function
+        function createWrapperCode(encryptedCode, key) {
+            const marvelSignatures = [
+                '/* MARVEL GANTENG ENCRYPTION LAYER */',
+                '// Encrypted by MARVEL GANTENG Advanced System',
+                '/* 🔥 MARVEL GANTENG MULTI-LAYER PROTECTION 🔥 */',
+                '// MARVEL GANTENG - ADVANCED OBFUSCATION MASTER'
+            ];
+            
+            const randomSignature = marvelSignatures[Math.floor(Math.random() * marvelSignatures.length)];
+            
+            return `
+${randomSignature}
+(function() {
+    var _marvelGantengKey = "${key}";
+    var _marvelGantengEncrypted = "${encryptedCode}";
+    
+    function _marvelGantengDecrypt(encrypted, key) {
+        try {
+            var CryptoJS = window.CryptoJS || require('crypto-js');
+            var bytes = CryptoJS.AES.decrypt(encrypted, key);
+            return bytes.toString(CryptoJS.enc.Utf8);
+        } catch(e) {
+            return "";
+        }
+    }
+    
+    var _marvelGantengDecrypted = _marvelGantengDecrypt(_marvelGantengEncrypted, _marvelGantengKey);
+    
+    if (_marvelGantengDecrypted) {
+        eval(_marvelGantengDecrypted);
+    }
+})();
+/* MARVEL GANTENG SIGNATURE - ADVANCED PROTECTION ACTIVE */
+            `.trim();
+        }
+
+        // Inject MARVEL GANTENG signatures into obfuscated code
+        function injectMarvelSignatures(code) {
+            const signatures = [
+                '/* MARVEL GANTENG OBFUSCATION LAYER */\n',
+                '// Protected by MARVEL GANTENG Advanced System\n',
+                '/* 🔥 MARVEL GANTENG MULTI-LAYER SECURITY 🔥 */\n',
+                '// MARVEL GANTENG - THE OBFUSCATION LEGEND\n',
+                '/* MARVEL GANTENG SIGNATURE INJECTION ACTIVE */\n',
+                '// 🚀 MARVEL GANTENG ADVANCED PROTECTION 🚀\n',
+                '/* ENCRYPTED AND OBFUSCATED BY MARVEL GANTENG */\n',
+                '// MARVEL GANTENG RULES THE OBFUSCATION WORLD\n'
+            ];
+            
+            let modifiedCode = code;
+            let injectionCount = 0;
+            const minInjections = 5;
+            const maxInjections = 12;
+            const targetInjections = Math.floor(Math.random() * (maxInjections - minInjections + 1)) + minInjections;
+            
+            const lines = modifiedCode.split('\n');
+            const injectionPoints = [];
+            
+            for (let i = 0; i < targetInjections; i++) {
+                injectionPoints.push(Math.floor(Math.random() * lines.length));
+            }
+            
+            injectionPoints.sort((a, b) => b - a);
+            
+            injectionPoints.forEach(point => {
+                const signature = signatures[Math.floor(Math.random() * signatures.length)];
+                lines.splice(point, 0, signature.trim());
+                injectionCount++;
+            });
+            
+            // Add hidden MARVEL GANTENG variables
+            const hiddenVars = [
+                `var _marvelGanteng${Math.random().toString(36).substr(2, 9)} = "MARVEL GANTENG ADVANCED";`,
+                `const _mg${Math.random().toString(36).substr(2, 7)} = atob("TUFSVKVM") + " " + atob("R0FOVEVORA==");`,
+                `let _signature${Math.random().toString(36).substr(2, 8)} = ["M","A","R","V","E","L"," ","G","A","N","T","E","N","G"].join("");`,
+                `var _protection${Math.random().toString(36).substr(2, 6)} = "MARVEL_GANTENG_PROTECTION_ACTIVE";`
+            ];
+            
+            hiddenVars.forEach(hiddenVar => {
+                const randomLine = Math.floor(Math.random() * lines.length);
+                lines.splice(randomLine, 0, hiddenVar);
+                injectionCount++;
+            });
+            
+            return {
+                code: lines.join('\n'),
+                count: injectionCount
+            };
+        }
+
+        // Typing animation for title
+        const titleText = "OBFUSCATOR BY MARVEL GANTENG";
+        const titleElement = document.getElementById('title');
+        let titleIndex = 0;
+
+        function typeTitle() {
+            if (titleIndex < titleText.length) {
+                titleElement.textContent = titleText.slice(0, titleIndex + 1);
+                titleIndex++;
+                setTimeout(typeTitle, 100);
+            } else {
+                titleElement.innerHTML = titleText + '<span class="cursor">_</span>';
+            }
+        }
+
+        // Start typing animation
+        typeTitle();
+
+        // DOM elements
+        const fileInput = document.getElementById('fileInput');
+        const fileInfo = document.getElementById('fileInfo');
+        const obfuscateBtn = document.getElementById('obfuscateBtn');
+        const clearBtn = document.getElementById('clearBtn');
+        const downloadBtn = document.getElementById('downloadBtn');
+        const outputCode = document.getElementById('outputCode');
+        const status = document.getElementById('status');
+        const loading = document.getElementById('loading');
+        const originalSize = document.getElementById('originalSize');
+        const encryptedSize = document.getElementById('encryptedSize');
+        const finalSize = document.getElementById('finalSize');
+        const marvelCount = document.getElementById('marvelCount');
+        const encryptionKey = document.getElementById('encryptionKey');
+
+        let currentFile = null;
+        let originalCode = '';
+        let finalObfuscatedCode = '';
+        let marvelSignatureCount = 0;
+        let currentEncryptionKey = '';
+
+        // File input handler
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            
+            if (!file) {
+                hideFileInfo();
+                return;
+            }
+
+            if (!file.name.endsWith('.js')) {
+                showStatus('❌ ERROR: Only JavaScript (.js) files are accepted by MARVEL GANTENG system!', 'error');
+                hideFileInfo();
+                return;
+            }
+
+            currentFile = file;
+            showFileInfo(file);
+            readFile(file);
+        });
+
+        function readFile(file) {
+            const reader = new FileReader();
+            
+            reader.onload = function(e) {
+                originalCode = e.target.result;
+                obfuscateBtn.disabled = false;
+                updateStats(originalCode.length, 0, 0, 0, 'N/A');
+                showStatus('✅ File loaded successfully! Ready for MARVEL GANTENG multi-layer processing.', 'success');
+            };
+
+            reader.onerror = function() {
+                showStatus('❌ ERROR: Failed to read file!', 'error');
+                obfuscateBtn.disabled = true;
+            };
+
+            reader.readAsText(file);
+        }
+
+        function showFileInfo(file) {
+            fileInfo.innerHTML = `
+                <strong>📄 Target File:</strong> ${file.name}<br>
+                <strong>📏 File Size:</strong> ${formatBytes(file.size)}<br>
+                <strong>🔧 File Type:</strong> ${file.type || 'application/javascript'}<br>
+                <strong>⚡ System Status:</strong> Ready for MARVEL GANTENG advanced processing<br>
+                <strong>🔒 Security Level:</strong> Multi-layer encryption + obfuscation
+            `;
+            fileInfo.style.display = 'block';
+        }
+
+        function hideFileInfo() {
+            fileInfo.style.display = 'none';
+            obfuscateBtn.disabled = true;
+            currentFile = null;
+            originalCode = '';
+        }
+
+        // Main obfuscation process
+        obfuscateBtn.addEventListener('click', function() {
+            if (!originalCode) {
+                showStatus('❌ ERROR: No code to process!', 'error');
+                return;
+            }
+
+            showLoading(true);
+            obfuscateBtn.disabled = true;
+
+            setTimeout(() => {
+                try {
+                    // Step 1: Generate random AES key
+                    currentEncryptionKey = generateRandomKey();
+                    
+                    // Step 2: Encrypt the original code
+                    const encryptedCode = encryptCode(originalCode, currentEncryptionKey);
+                    
+                    // Step 3: Create wrapper code with decrypt function
+                    const wrapperCode = createWrapperCode(encryptedCode, currentEncryptionKey);
+                    
+                    // Step 4: Generate custom identifiers
+                    const customIdentifiers = generateCustomIdentifiers();
+                    
+                    // Step 5: Advanced obfuscation options
+                    const obfuscationOptions = {
+                        compact: true,
+                        controlFlowFlattening: true,
+                        controlFlowFlatteningThreshold: 0.9,
+                        deadCodeInjection: true,
+                        deadCodeInjectionThreshold: 0.6,
+                        debugProtection: true,
+                        debugProtectionInterval: 1500,
+                        disableConsoleOutput: true,
+                        identifierNamesGenerator: 'mangled',
+                        identifiersDictionary: customIdentifiers,
+                        log: false,
+                        numbersToExpressions: true,
+                        renameGlobals: true,
+                        selfDefending: true,
+                        simplify: true,
+                        splitStrings: true,
+                        splitStringsChunkLength: 6,
+                        stringArray: true,
+                        stringArrayCallsTransform: true,
+                        stringArrayEncoding: ['base64', 'rc4'],
+                        stringArrayIndexShift: true,
+                        stringArrayRotate: true,
+                        stringArrayShuffle: true,
+                        stringArrayWrappersCount: 4,
+                        stringArrayWrappersChainedCalls: true,
+                        stringArrayWrappersParametersMaxCount: 6,
+                        stringArrayWrappersType: 'function',
+                        stringArrayThreshold: 0.9,
+                        transformObjectKeys: true,
+                        unicodeEscapeSequence: false,
+                        seed: Math.floor(Math.random() * 1000000)
+                    };
+
+                    // Step 6: Obfuscate the wrapper code
+                    const obfuscationResult = JavaScriptObfuscator.obfuscate(wrapperCode, obfuscationOptions);
+                    let tempObfuscatedCode = obfuscationResult.getObfuscatedCode();
+
+                    // Step 7: Inject MARVEL GANTENG signatures
+                    const injectionResult = injectMarvelSignatures(tempObfuscatedCode);
+                    finalObfuscatedCode = injectionResult.code;
+                    marvelSignatureCount = injectionResult.count;
+
+                    // Display result
+                    outputCode.value = finalObfuscatedCode;
+                    downloadBtn.disabled = false;
+                    
+                    // Update statistics
+                    updateStats(
+                        originalCode.length, 
+                        encryptedCode.length, 
+                        finalObfuscatedCode.length, 
+                        marvelSignatureCount,
+                        `${currentEncryptionKey.length * 4} bits`
+                    );
+                    
+                    showStatus(`🔥 MARVEL GANTENG multi-layer obfuscation completed! ${marvelSignatureCount} signatures injected with AES-256 encryption.`, 'success');
+                    
+                } catch (error) {
+                    console.error('Obfuscation error:', error);
+                    showStatus(`❌ ERROR: MARVEL GANTENG processing failed - ${error.message}`, 'error');
+                    outputCode.value = '';
+                    downloadBtn.disabled = true;
+                    marvelSignatureCount = 0;
+                } finally {
+                    showLoading(false);
+                    obfuscateBtn.disabled = false;
+                }
+            }, 300);
+        });
+
+        // Clear button handler
+        clearBtn.addEventListener('click', function() {
+            fileInput.value = '';
+            outputCode.value = '';
+            hideFileInfo();
+            hideStatus();
+            downloadBtn.disabled = true;
+            finalObfuscatedCode = '';
+            originalCode = '';
+            marvelSignatureCount = 0;
+            currentEncryptionKey = '';
+            updateStats(0, 0, 0, 0, 'N/A');
+            showStatus('🗑️ All systems cleared! MARVEL GANTENG ready for new operation.', 'success');
+            setTimeout(hideStatus, 3000);
+        });
+
+        // Download button handler
+        downloadBtn.addEventListener('click', function() {
+            if (!finalObfuscatedCode) {
+                showStatus('❌ ERROR: No obfuscated code to download!', 'error');
+                return;
+            }
+
+            const blob = new Blob([finalObfuscatedCode], { type: 'application/javascript' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            
+            const originalName = currentFile ? currentFile.name : 'obfuscated.js';
+            const fileName = originalName.replace('.js', '_MARVEL_GANTENG_ENCRYPTED_OBFUSCATED.js');
+            
+            a.href = url;
+            a.download = fileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+
+            showStatus(`💾 MARVEL GANTENG payload downloaded: ${fileName} with ${marvelSignatureCount} signatures and AES encryption!`, 'success');
+        });
+
+        // Utility functions
+        function showStatus(message, type) {
+            status.textContent = message;
+            status.className = `status ${type}`;
+            status.style.display = 'block';
+        }
+
+        function hideStatus() {
+            status.style.display = 'none';
+        }
+
+        function showLoading(show) {
+            loading.style.display = show ? 'block' : 'none';
+        }
+
+        function formatBytes(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+
+        function updateStats(originalBytes, encryptedBytes, finalBytes, signatures, keyLength) {
+            originalSize.textContent = formatBytes(originalBytes);
+            encryptedSize.textContent = formatBytes(encryptedBytes);
+            finalSize.textContent = formatBytes(finalBytes);
+            marvelCount.textContent = signatures;
+            encryptionKey.textContent = keyLength;
+        }
+
+        // Initialize
+        updateStats(0, 0, 0, 0, 'N/A');
+        
+        // Console styling for the advanced hacker theme
+        console.log('%c🔥 MARVEL GANTENG - ADVANCED MULTI-LAYER OBFUSCATION SYSTEM 🔥', 'color: #00ff00; font-size: 24px; font-weight: bold; background: #000; padding: 20px; border: 3px solid #00ff00;');
+        console.log('%c>> Advanced obfuscation system initialized...', 'color: #00ff00; font-family: monospace; font-size: 16px;');
+        console.log('%c>> AES-256 encryption engine: ACTIVE', 'color: #00ff00; font-family: monospace; font-size: 16px;');
+        console.log('%c>> Base64 encoding layer: READY', 'color: #00ff00; font-family: monospace; font-size: 16px;');
+        console.log('%c>> Eval wrapper generator: ARMED', 'color: #00ff00; font-family: monospace; font-size: 16px;');
+        console.log('%c>> Multi-language obfuscator: LOADED', 'color: #00ff00; font-family: monospace; font-size: 16px;');
+        console.log('%c>> MARVEL GANTENG signature injector: READY', 'color: #00ff00; font-family: monospace; font-size: 16px;');
+        console.log('%c>> Ready for advanced multi-layer operations.', 'color: #00ff00; font-family: monospace; font-size: 16px;');
+        console.log('%c>> MARVEL GANTENG RULES THE OBFUSCATION WORLD! 🚀', 'color: #00ff00; font-family: monospace; font-size: 18px; font-weight: bold;');
+    </script>
+</body>
+</html>
