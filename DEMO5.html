@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Enkripsi & Obfuscasi File (Client-Side) - v4.0</title>
+    <title>Enkripsi & Obfuscasi File (HTML Encoder) - v4.0</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
 
@@ -304,7 +304,7 @@
 </head>
 <body>
     <div class="container">
-        <h1>Enkripsi & Obfuscasi File (Client-Side) - v4.0</h1>
+        <h1>Enkripsi & Obfuscasi File (HTML Encoder) - v4.0</h1>
 
         <div class="form-group">
             <label for="fileInput">Pilih File (Semua Tipe):</label>
@@ -328,11 +328,10 @@
         <div class="button-group">
             <button class="btn" id="encodeButton" disabled>Enkripsi File</button>
             <button class="btn" id="copyOutputButton" disabled>Salin Hasil Enkripsi</button>
-            <button class="btn" id="generateScriptButton" disabled>Generate Python Decoder & Encrypted Data</button>
+            <button class="btn" id="generateFilesButton" disabled>Generate Encrypted File & HTML Decoder</button>
             <button class="btn btn-reset" id="resetButton">Reset</button>
         </div>
         <div id="obfuscationInfo" class="message warning hidden"></div>
-        <div id="executionWarningMessage" class="message warning hidden"></div>
         <div id="infoMessage" class="message success hidden"></div>
     </div>
 
@@ -352,12 +351,11 @@
         const encodedOutput = document.getElementById('encodedOutput');
         const encodeButton = document.getElementById('encodeButton');
         const copyOutputButton = document.getElementById('copyOutputButton');
-        const generateScriptButton = document.getElementById('generateScriptButton');
+        const generateFilesButton = document.getElementById('generateFilesButton');
         const resetButton = document.getElementById('resetButton');
         const loadingOverlay = document.getElementById('loadingOverlay');
         const toast = document.getElementById('toast');
         const fileContentDisplay = document.getElementById('fileContentDisplay');
-        const executionWarningMessage = document.getElementById('executionWarningMessage');
         const infoMessage = document.getElementById('infoMessage');
         const obfuscationInfo = document.getElementById('obfuscationInfo');
 
@@ -381,7 +379,7 @@
             alert("Error konfigurasi: Tambahkan lebih banyak kata Marvel di kode!");
         }
 
-        // --- Seed untuk Random Shuffling (PENTING: harus sama di JS dan Python) ---
+        // --- Seed untuk Random Shuffling (PENTING: harus sama di Encoder dan Decoder HTML) ---
         const SHUFFLE_SEED = 1337; 
 
         let currentFileName = '';
@@ -433,7 +431,18 @@
             return btoa(String.fromCharCode.apply(null, compressed));
         }
 
-        // --- RANDOM SHUFFLE FUNCTION (untuk memastikan konsistensi seed antara JS dan Python) ---
+        function decompressContent(base64ZlibString) {
+            try {
+                const compressedBytes = Uint8Array.from(atob(base64ZlibString), c => c.charCodeAt(0));
+                const decompressed = pako.inflate(compressedBytes, { to: 'string' });
+                return decompressed;
+            } catch (e) {
+                console.error("Gagal dekompresi Zlib:", e);
+                return null;
+            }
+        }
+
+        // --- RANDOM SHUFFLE FUNCTION (untuk memastikan konsistensi seed antara JS dan Decoder HTML) ---
         let _currentSeed = SHUFFLE_SEED;
         function getNextPseudoRandom() {
             _currentSeed = (_currentSeed * 9301 + 49297) % 233280;
@@ -482,12 +491,12 @@
                 compact: true,
                 controlFlowFlattening: true,
                 controlFlowFlatteningThreshold: 0.7,
-                deadCodeInjection: false, // Default false, can be enabled
+                deadCodeInjection: false,
                 deadCodeInjectionThreshold: 0.5,
                 debugProtection: false,
                 debugProtectionInterval: 0,
                 disableConsoleOutput: false,
-                identifierNamesGenerator: 'hexadecimal', // or 'mangled'
+                identifierNamesGenerator: 'hexadecimal', 
                 log: false,
                 numbersToExpressions: true,
                 renameGlobals: false,
@@ -496,7 +505,7 @@
                 splitStrings: true,
                 splitStringsChunkLength: 10,
                 stringArray: true,
-                stringArrayEncoding: ['base64'], // or 'rc4', 'none'
+                stringArrayEncoding: ['base64'],
                 stringArrayIndexShift: true,
                 stringArrayRotate: true,
                 stringArrayShuffle: true,
@@ -504,6 +513,11 @@
                 transformObjectKeys: true,
                 unicodeEscapeSequence: false,
             };
+
+            // Check if JavaScriptObfuscator is defined
+            if (typeof JavaScriptObfuscator === 'undefined' || !JavaScriptObfuscator.obfuscate) {
+                throw new Error("JavaScriptObfuscator library not loaded correctly. Please check the CDN link.");
+            }
 
             return JavaScriptObfuscator.obfuscate(code, options).getObfuscatedCode();
         }
@@ -515,38 +529,25 @@
 
             encodeButton.disabled = !hasFileContent;
             copyOutputButton.disabled = !hasEncodedOutput;
-            generateScriptButton.disabled = !hasEncodedOutput;
+            generateFilesButton.disabled = !hasEncodedOutput;
 
-            // Updated warning message for execution
-            if (currentFileExtension && !['.py', '.js', '.json'].includes(currentFileExtension)) {
-                 showMessage(executionWarningMessage, `Perhatian: File ini awalnya tipe '${currentFileExtension}'. Script dekoder yang dihasilkan akan dalam format Python. Untuk mendekode dan menggunakan kontennya, Anda perlu menambahkan logika penanganan khusus di dalam script Python hasil generate.`, "warning");
-            } else if (currentFileExtension === '.js') {
-                 showMessage(executionWarningMessage, `File JS akan di-*obfuscate* sebelum dienkripsi. Anda perlu memanggil dekoder Python dari script Node.js atau aplikasi JS Anda untuk mendapatkan kembali kode aslinya.`, "warning");
-            } else if (currentFileExtension === '.json') {
-                 showMessage(executionWarningMessage, `Perhatian: Anda akan meng-generate file Python dekoder dan file .json yang terenkripsi. Anda perlu memanggil dekoder Python dari aplikasi Anda untuk mendapatkan data JSON yang didekode.`, "warning");
-            }
-            else {
-                hideMessage(executionWarningMessage);
+            // Obfuscation info message
+            if (currentFileExtension === '.js') {
+                showMessage(obfuscationInfo, "Deteksi: File JavaScript. Akan otomatis di-*obfuscate* sebelum dienkripsi. Hasilnya nanti bisa di-download sebagai file `.js` lagi!", "warning");
+            } else {
+                hideMessage(obfuscationInfo);
             }
 
             // Info message after encryption
             if (hasEncodedOutput && currentEncodedMarvelString) {
-                showMessage(infoMessage, "Sekarang, klik **'Generate Python Decoder & Encrypted Data'** untuk mendapatkan file yang siap pakai. Baca petunjuk penggunaannya!", "info");
+                showMessage(infoMessage, "Sekarang, klik **'Generate Encrypted File & HTML Decoder'** untuk mendapatkan file `.enc` dan `decoder.html` yang siap pakai.", "info");
             } else {
                 hideMessage(infoMessage);
             }
-
-            // Obfuscation info message
-            if (currentFileExtension === '.js') {
-                showMessage(obfuscationInfo, "Deteksi: File JavaScript. Akan otomatis di-*obfuscate* sebelum dienkripsi.", "warning");
-            } else {
-                hideMessage(obfuscationInfo);
-            }
         }
 
-        // --- FUNGSI UTAMA: GENERATE PYTHON SCRIPT UNTUK DEKODE ---
-        // Tanpa validasi key atau expire date, hanya dekode murni
-        function generatePythonDecoderScript() {
+        // --- FUNGSI UTAMA: GENERATE HTML DECODER ---
+        function generateHtmlDecoder(originalFileExtension, originalFileNameWithoutExt) {
             let charWordPairs = [];
             for (let i = 0; i < BASE64_CHARS_ORIGINAL.length; i++) {
                 charWordPairs.push([BASE64_CHARS_ORIGINAL[i], marvelWordsOriginal[i]]);
@@ -556,115 +557,2377 @@
             const shuffledBase64Chars = shuffledPairs.map(pair => pair[0]);
             const shuffledMarvelWords = shuffledPairs.map(pair => pair[1]);
 
-            const pythonShuffledBase64Chars = `[${shuffledBase64Chars.map(s => `'${s}'`).join(', ')}]`;
-            const pythonShuffledMarvelWords = `[${shuffledMarvelWords.map(s => `'${s}'`).join(', ')}]`;
+            const jsShuffledBase64Chars = JSON.stringify(shuffledBase64Chars);
+            const jsShuffledMarvelWords = JSON.stringify(shuffledMarvelWords);
 
-            const pythonScript =
-                '"""\n' +
-                'Ini adalah Python Decoder untuk file terenkripsi (Marvel Edition v4.0 Pro).\n' +
-                `Dibuat pada ${new Date().toLocaleString('id-ID', { timeZone: 'Asia/Jakarta' })} WIB.\n` +
-                'Script ini hanya berfungsi untuk mendekode file terenkripsi.\n' +
-                'Tidak ada validasi license key atau tanggal kedaluwarsa di sini.\n' +
-                '"""\n' +
-                '\n' +
-                'import base64\n' +
-                'import sys\n' +
-                'import zlib \n' +
-                'import random \n' +
-                'import traceback \n' +
-                '\n' +
-                '# --- Data untuk Merekonstruksi Tabel Dekode ---\n' +
-                `_SHUFFLED_BASE64_CHARS = ${pythonShuffledBase64Chars}\n` +
-                `_SHUFFLED_MARVEL_WORDS = ${pythonShuffledMarvelWords}\n` +
-                `_SHUFFLE_SEED = ${SHUFFLE_SEED} \n` +
-                '\n' +
-                '# --- FUNGSI UTILITY INTERNAL ---\n' +
-                'def reconstruct_decode_table():\n' +
-                '    """Merekonstruksi DECODE_TABLE dari data yang diacak."""\n' +
-                '    random.seed(_SHUFFLE_SEED) \n' +
-                '    pairs = list(zip(_SHUFFLED_BASE64_CHARS, _SHUFFLED_MARVEL_WORDS))\n' +
-                '    random.shuffle(pairs) \n' +
-                '    decode_table = {word: char for char, word in pairs}\n' +
-                '    return decode_table\n' +
-                '\n' +
-                'def decode_marvel_string_from_list(marvel_word_list, decode_table_ref):\n' +
-                '    base64_chars = []\n' +
-                '    for word in marvel_word_list:\n' +
-                '        if not word: \n' +
-                '            continue\n' +
-                '        if word in decode_table_ref: \n' +
-                '            base64_chars.append(decode_table_ref[word])\n' +
-                '        else:\n' +
-                '            print(f"ERROR_DECODE: Kata \'{word}\' tidak ditemukan di tabel dekode!", file=sys.stderr)\n' +
-                '            return None \n' +
-                '    \n' +
-                '    zlib_compressed_base64_str = "".join(base64_chars)\n' +
-                '\n' +
-                '    try:\n' +
-                '        compressed_bytes = base64.b64decode(zlib_compressed_base64_str)\n' +
-                '        decompressed_bytes = zlib.decompress(compressed_bytes)\n' +
-                '        \n' +
-                '        base64_str_from_zlib = decompressed_bytes.decode(\'utf-8\')\n' +
-                '        decoded_original_bytes = base64.b64decode(base64_str_from_zlib)\n' +
-                '        original_content = decoded_original_bytes.decode(\'utf-8\')\n' +
-                '\n' +
-                '        return original_content\n' +
-                '\n' +
-                '    except zlib.error as e:\n' +
-                '        print(f"ERROR_DECODE: Gagal dekompresi Zlib: {e}", file=sys.stderr)\n' +
-                '        return None\n' +
-                '    except base64.binascii.Error as e:\n' +
-                '        print(f"ERROR_DECODE: Gagal Base64 decode: {e}", file=sys.stderr)\n' +
-                '        return None\n' +
-                '    except Exception as e:\n' +
-                '        print(f"ERROR_DECODE: Kesalahan tidak terduga: {e}", file=sys.stderr)\n' +
-                '        traceback.print_exc()\n' +
-                '        return None\n' +
-                '\n' +
-                '\n' +
-                'def main():\n' +
-                '    if len(sys.argv) < 2: \n' +
-                '        print("Usage: python decoder.py <path_to_encrypted_file>", file=sys.stderr)\n' +
-                '        sys.exit(1)\n' +
-                '\n' +
-                '    encrypted_file_path = sys.argv[1]\n' +
-                '\n' +
-                '    print("\\n--- Memulai Dekode File ---")\n' +
-                '    try:\n' +
-                '        with open(encrypted_file_path, \'r\', encoding=\'utf-8\') as f:\n' +
-                '            encrypted_marvel_string = f.read().strip()\n' +
-                '\n' +
-                '        _ENCODED_MARVEL_WORD_LIST = encrypted_marvel_string.split(\' \')\n' +
-                '\n' +
-                '        DECODE_TABLE_RECONSTRUCTED = reconstruct_decode_table()\n' +
-                '        if DECODE_TABLE_RECONSTRUCTED is None:\n' +
-                '            print("ERROR_DECODE: Gagal merekonstruksi tabel dekode.", file=sys.stderr)\n' +
-                '            sys.exit(1)\n' +
-                '\n' +
-                '        original_content = decode_marvel_string_from_list(_ENCODED_MARVEL_WORD_LIST, DECODE_TABLE_RECONSTRUCTED)\n' +
-                '        if original_content is None:\n' +
-                '            print("ERROR_DECODE: Dekode gagal.", file=sys.stderr)\n' +
-                '            sys.exit(1)\n' +
-                '\n' +
-                '        sys.stdout.buffer.write(original_content.encode(\'utf-8\'))\n' +
-                '        sys.stdout.flush()\n' +
-                '        print("\\nDekode BERHASIL. Konten asli dikeluarkan ke stdout.", file=sys.stderr)\n' +
-                '\n' +
-                '    except FileNotFoundError:\n' +
-                '        print(f"ERROR: File terenkripsi tidak ditemukan: {encrypted_file_path}", file=sys.stderr)\n' +
-                '        sys.exit(1)\n' +
-                '    except Exception as e:\n' +
-                '        print(f"ERROR: Kesalahan saat membaca atau mendekode file terenkripsi: {e}", file=sys.stderr)\n' +
-                '        traceback.print_exc()\n' +
-                '        sys.exit(1)\n' +
-                '\n' +
-                'if __name__ == "__main__":\n' +
-                '    main()\n'
-            return pythonScript;
+            // Constructing the HTML Decoder content
+            const decoderHtmlContent = `
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dekripsi File (HTML Decoder) - v4.0</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        :root {
+            --bg-color: #1a1a2e;
+            --card-bg: #16213e;
+            --text-color: #e0e0e0;
+            --primary-color: #0f3460;
+            --button-hover: #1f4068;
+            --border-color: #0f3460;
+            --textarea-bg: #0d1627;
+            --placeholder-color: #a0a0a0;
+            --error-color: #dc3545;
+            --warning-color: #ffc107;
+            --success-color: #28a745;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 600px;
+            animation: fadeIn 0.8s ease-out;
+            margin-top: 50px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #6a0572, #8e2d2d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 400;
+            color: var(--text-color);
+        }
+
+        input[type="file"] {
+            display: block;
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8mm;
+            background-color: var(--textarea-bg);
+            color: var(--text-color);
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="file"]::file-selector-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6mm;
+            cursor: pointer;
+            margin-right: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background-color: var(--button-hover);
+        }
+
+        input[type="file"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.5);
+        }
+
+        textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8mm;
+            background-color: var(--textarea-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+            min-height: 150px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        textarea::placeholder {
+            color: var(--placeholder-color);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.5);
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8mm;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            flex-grow: 1;
+            min-width: 120px;
+        }
+
+        .btn:hover {
+            background-color: var(--button-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background-color: #3f5b82;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-reset {
+            background-color: #d9534f;
+        }
+
+        .btn-reset:hover {
+            background-color: #c9302c;
+        }
+
+        .file-info {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: var(--placeholder-color);
+        }
+
+        .file-info strong {
+            color: var(--text-color);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .message {
+            padding: 10px 15px;
+            border-radius: 8mm;
+            margin-top: 15px;
+            font-size: 0.95em;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.error {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+        }
+
+        .message.warning {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: var(--warning-color);
+            border: 1px solid var(--warning-color);
+        }
+
+        .message.success {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: white;
+            font-size: 1.2rem;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8mm;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: visibility 0s, opacity 0.5s ease-in-out;
+        }
+
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Responsif untuk HP */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 20px;
+                margin-top: 20px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+                flex-basis: 100%;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@2.20.0/dist/javascript-obfuscator.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Enkripsi & Obfuscasi File (HTML Encoder) - v4.0</h1>
+
+        <div class="form-group">
+            <label for="fileInput">Pilih File (Semua Tipe):</label>
+            <input type="file" id="fileInput">
+            <div id="fileInfo" class="file-info hidden">
+                Nama File: <strong id="fileName"></strong> | Ukuran: <strong id="fileSize"></strong>
+            </div>
+            <div id="fileContentDisplay" class="message hidden"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="originalContentArea">Isi File Asli (atau hasil Obfuscasi jika JS):</label>
+            <textarea id="originalContentArea" placeholder="Isi file yang di-upload akan tampil di sini..." readonly></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="encodedOutput">Hasil Enkripsi (Marvel Words):</label>
+            <textarea id="encodedOutput" placeholder="Hasil enkripsi akan muncul di sini..." readonly></textarea>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn" id="encodeButton" disabled>Enkripsi File</button>
+            <button class="btn" id="copyOutputButton" disabled>Salin Hasil Enkripsi</button>
+            <button class="btn" id="generateFilesButton" disabled>Generate Encrypted File & HTML Decoder</button>
+            <button class="btn btn-reset" id="resetButton">Reset</button>
+        </div>
+        <div id="obfuscationInfo" class="message warning hidden"></div>
+        <div id="infoMessage" class="message success hidden"></div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loader"></div>
+        <p>Sedang memproses, harap tunggu...</p>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileNameSpan = document.getElementById('fileName');
+        const fileSizeSpan = document.getElementById('fileSize');
+        const fileInfoDiv = document.getElementById('fileInfo');
+        const originalContentArea = document.getElementById('originalContentArea');
+        const encodedOutput = document.getElementById('encodedOutput');
+        const encodeButton = document.getElementById('encodeButton');
+        const copyOutputButton = document.getElementById('copyOutputButton');
+        const generateFilesButton = document.getElementById('generateFilesButton');
+        const resetButton = document.getElementById('resetButton');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const toast = document.getElementById('toast');
+        const fileContentDisplay = document.getElementById('fileContentDisplay');
+        const infoMessage = document.getElementById('infoMessage');
+        const obfuscationInfo = document.getElementById('obfuscationInfo');
+
+        // --- MAPPING BASE64 KE KATA MARVEL (KONSISTEN) ---
+        const BASE64_CHARS_ORIGINAL = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+        const marvelWordsOriginal = [
+            "marvel", "ganteng", "banget", "thor", "loki", "wanda", "vision",
+            "hulk", "ultron", "wakanda", "hydra", "ironman", "venom", "strange",
+            "groot", "rocket", "mjolnir", "thanos", "antman", "panther", "bucky", "shuri",
+            "nebula", "gamora", "drax", "mantis", "spiderman", "drdoom", "galactus", "silver",
+            "surfer", "deadpool", "cable", "domino", "xmen", "avengers", "fantastic", "four",
+            "blade", "ghost", "rider", "daredevil", "elektra", "punisher", "blackpanther",
+            "captainamerica", "ironfist", "lukecage", "jessicajones", "eternals", "nova",
+            "scarletwitch", "quicksilver", "hawkeye", "blackwidow", "falcon", "warmachine",
+            "korg", "meek", "valkyrie", "okoye", "killmonger", "mandarin", "dormammu", "enchantress",
+            "hela", "redskull", "baronzemo", "ronan", "skrulls", "kree", "celestials", "infinity",
+            "gauntlet", "stones", "tesseract", "aether", "orb", "scepter", "soulstone", "powerstone"
+        ];
+        if (marvelWordsOriginal.length < BASE64_CHARS_ORIGINAL.length) {
+            console.error("Error: Jumlah marvelWords tidak cukup untuk semua karakter Base64!");
+            alert("Error konfigurasi: Tambahkan lebih banyak kata Marvel di kode!");
+        }
+
+        // --- Seed untuk Random Shuffling (PENTING: harus sama di Encoder dan Decoder HTML) ---
+        const SHUFFLE_SEED = 1337; 
+
+        let currentFileName = '';
+        let currentFileExtension = ''; 
+        let currentContentToEncrypt = ''; // Ini bisa jadi original content atau hasil obfuscation
+        let currentEncodedMarvelString = ''; 
+
+        // --- UTILITY FUNCTIONS ---
+        function showToast(message, type = 'info') {
+            toast.textContent = message;
+            const rootStyles = getComputedStyle(document.documentElement);
+            let bgColor;
+            if (type === 'success') bgColor = rootStyles.getPropertyValue('--success-color');
+            else if (type === 'error') bgColor = rootStyles.getPropertyValue('--error-color');
+            else if (type === 'warning') bgColor = rootStyles.getPropertyValue('--warning-color');
+            else bgColor = '#333'; 
+
+            toast.style.backgroundColor = bgColor;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function showMessage(element, message, type) {
+            element.innerHTML = message;
+            element.className = `message ${type} show`;
+        }
+
+        function hideMessage(element) {
+            element.classList.remove('show');
+            element.innerHTML = '';
+        }
+
+        function showLoading(message = "Sedang memproses...") {
+            loadingOverlay.querySelector('p').textContent = message;
+            loadingOverlay.classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            loadingOverlay.classList.add('hidden');
+        }
+
+        // --- ZLIB Compression/Decompression (menggunakan Pako.js) ---
+        function compressContent(content) {
+            const binaryString = new TextEncoder().encode(content);
+            const compressed = pako.deflate(binaryString, { level: 9 });
+            return btoa(String.fromCharCode.apply(null, compressed));
+        }
+
+        function decompressContent(base64ZlibString) {
+            try {
+                const compressedBytes = Uint8Array.from(atob(base64ZlibString), c => c.charCodeAt(0));
+                const decompressed = pako.inflate(compressedBytes, { to: 'string' });
+                return decompressed;
+            } catch (e) {
+                console.error("Gagal dekompresi Zlib:", e);
+                return null;
+            }
+        }
+
+        // --- RANDOM SHUFFLE FUNCTION (untuk memastikan konsistensi seed antara JS dan Decoder HTML) ---
+        let _currentSeed = SHUFFLE_SEED;
+        function getNextPseudoRandom() {
+            _currentSeed = (_currentSeed * 9301 + 49297) % 233280;
+            return _currentSeed / 233280;
+        }
+
+        function seededShuffle(array) {
+            _currentSeed = SHUFFLE_SEED; // Reset seed for consistent shuffle
+            let currentIndex = array.length, randomIndex;
+
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(getNextPseudoRandom() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // --- ENCODING LOGIC (SUDAH DISINKRONKAN dengan Zlib) ---
+        function encodeFileContent(content) {
+            if (!content) return '';
+
+            // Menggunakan encodeURIComponent untuk menangani karakter non-ASCII dengan benar
+            const base64Encoded = btoa(unescape(encodeURIComponent(content)));
+            const zlibCompressedBase64 = compressContent(base64Encoded);
+
+            let encodedWords = [];
+            for (let i = 0; i < zlibCompressedBase64.length; i++) {
+                const char = zlibCompressedBase64[i];
+                const index = BASE64_CHARS_ORIGINAL.indexOf(char);
+                if (index === -1) {
+                    console.error(`Karakter Base64 (setelah Zlib) tidak ditemukan di BASE64_CHARS_ORIGINAL: ${char}`);
+                    throw new Error(`Karakter Base64 (setelah Zlib) tidak valid '${char}' pada indeks ${i}.`);
+                } else {
+                    encodedWords.push(marvelWordsOriginal[index]);
+                }
+            }
+            return encodedWords.join(' ');
+        }
+
+        // --- JS Obfuscation Logic ---
+        function obfuscateJavaScript(code) {
+            if (!code) return '';
+
+            const options = {
+                compact: true,
+                controlFlowFlattening: true,
+                controlFlowFlatteningThreshold: 0.7,
+                deadCodeInjection: false,
+                deadCodeInjectionThreshold: 0.5,
+                debugProtection: false,
+                debugProtectionInterval: 0,
+                disableConsoleOutput: false,
+                identifierNamesGenerator: 'hexadecimal', 
+                log: false,
+                numbersToExpressions: true,
+                renameGlobals: false,
+                selfDefending: true,
+                simplifyFactorialExpressions: false,
+                splitStrings: true,
+                splitStringsChunkLength: 10,
+                stringArray: true,
+                stringArrayEncoding: ['base64'],
+                stringArrayIndexShift: true,
+                stringArrayRotate: true,
+                stringArrayShuffle: true,
+                stringArrayThreshold: 0.75,
+                transformObjectKeys: true,
+                unicodeEscapeSequence: false,
+            };
+
+            // Check if JavaScriptObfuscator is defined
+            if (typeof JavaScriptObfuscator === 'undefined' || !JavaScriptObfuscator.obfuscate) {
+                throw new Error("JavaScriptObfuscator library not loaded correctly. Please check the CDN link and ensure it's loaded before this script.");
+            }
+
+            return JavaScriptObfuscator.obfuscate(code, options).getObfuscatedCode();
+        }
+
+        // --- UI UPDATE FUNCTIONS ---
+        function updateButtonStates() {
+            const hasFileContent = originalContentArea.value.trim() !== '';
+            const hasEncodedOutput = encodedOutput.value.trim() !== '';
+
+            encodeButton.disabled = !hasFileContent;
+            copyOutputButton.disabled = !hasEncodedOutput;
+            generateFilesButton.disabled = !hasEncodedOutput;
+
+            // Obfuscation info message
+            if (currentFileExtension === '.js') {
+                showMessage(obfuscationInfo, "Deteksi: File JavaScript. Akan otomatis di-*obfuscate* sebelum dienkripsi. Hasilnya nanti bisa di-download sebagai file `.js` lagi!", "warning");
+            } else {
+                hideMessage(obfuscationInfo);
+            }
+
+            // Info message after encryption
+            if (hasEncodedOutput && currentEncodedMarvelString) {
+                showMessage(infoMessage, "Sekarang, klik **'Generate Encrypted File & HTML Decoder'** untuk mendapatkan file `.enc` dan `decoder.html` yang siap pakai.", "info");
+            } else {
+                hideMessage(infoMessage);
+            }
+        }
+
+        // --- FUNGSI UTAMA: GENERATE HTML DECODER ---
+        function generateHtmlDecoder(originalFileExtension, originalFileNameWithoutExt) {
+            let charWordPairs = [];
+            for (let i = 0; i < BASE64_CHARS_ORIGINAL.length; i++) {
+                charWordPairs.push([BASE64_CHARS_ORIGINAL[i], marvelWordsOriginal[i]]);
+            }
+
+            // IMPORTANT: Shuffle the words and chars exactly as done in the encoder
+            // Re-initialize _currentSeed to ensure consistency
+            _currentSeed = SHUFFLE_SEED; 
+            const shuffledPairs = seededShuffle([...charWordPairs]); 
+            const shuffledBase64Chars = shuffledPairs.map(pair => pair[0]);
+            const shuffledMarvelWords = shuffledPairs.map(pair => pair[1]);
+
+            const jsShuffledBase64Chars = JSON.stringify(shuffledBase64Chars);
+            const jsShuffledMarvelWords = JSON.stringify(shuffledMarvelWords);
+            
+            const originalFileExtForDownload = originalFileExtension || '.txt'; // Default to .txt if no extension
+            const originalFileNameForDownload = originalFileNameWithoutExt || 'decoded_file'; // Default filename
+
+            // Constructing the HTML Decoder content
+            const decoderHtmlContent = `
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dekripsi File (HTML Decoder) - v4.0</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        :root {
+            --bg-color: #1a1a2e;
+            --card-bg: #16213e;
+            --text-color: #e0e0e0;
+            --primary-color: #0f3460;
+            --button-hover: #1f4068;
+            --border-color: #0f3460;
+            --textarea-bg: #0d1627;
+            --placeholder-color: #a0a0a0;
+            --error-color: #dc3545;
+            --warning-color: #ffc107;
+            --success-color: #28a745;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 600px;
+            animation: fadeIn 0.8s ease-out;
+            margin-top: 50px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #6a0572, #8e2d2d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 400;
+            color: var(--text-color);
+        }
+
+        input[type="file"] {
+            display: block;
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8mm;
+            background-color: var(--textarea-bg);
+            color: var(--text-color);
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="file"]::file-selector-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6mm;
+            cursor: pointer;
+            margin-right: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background-color: var(--button-hover);
+        }
+
+        input[type="file"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.5);
+        }
+
+        textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8mm;
+            background-color: var(--textarea-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+            min-height: 150px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        textarea::placeholder {
+            color: var(--placeholder-color);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.5);
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8mm;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            flex-grow: 1;
+            min-width: 120px;
+        }
+
+        .btn:hover {
+            background-color: var(--button-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background-color: #3f5b82;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-reset {
+            background-color: #d9534f;
+        }
+
+        .btn-reset:hover {
+            background-color: #c9302c;
+        }
+
+        .file-info {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: var(--placeholder-color);
+        }
+
+        .file-info strong {
+            color: var(--text-color);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .message {
+            padding: 10px 15px;
+            border-radius: 8mm;
+            margin-top: 15px;
+            font-size: 0.95em;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.error {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+        }
+
+        .message.warning {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: var(--warning-color);
+            border: 1px solid var(--warning-color);
+        }
+
+        .message.success {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: white;
+            font-size: 1.2rem;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8mm;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: visibility 0s, opacity 0.5s ease-in-out;
+        }
+
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Responsif untuk HP */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 20px;
+                margin-top: 20px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+                flex-basis: 100%;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@2.20.0/dist/javascript-obfuscator.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Enkripsi & Obfuscasi File (HTML Encoder) - v4.0</h1>
+
+        <div class="form-group">
+            <label for="fileInput">Pilih File (Semua Tipe):</label>
+            <input type="file" id="fileInput">
+            <div id="fileInfo" class="file-info hidden">
+                Nama File: <strong id="fileName"></strong> | Ukuran: <strong id="fileSize"></strong>
+            </div>
+            <div id="fileContentDisplay" class="message hidden"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="originalContentArea">Isi File Asli (atau hasil Obfuscasi jika JS):</label>
+            <textarea id="originalContentArea" placeholder="Isi file yang di-upload akan tampil di sini..." readonly></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="encodedOutput">Hasil Enkripsi (Marvel Words):</label>
+            <textarea id="encodedOutput" placeholder="Hasil enkripsi akan muncul di sini..." readonly></textarea>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn" id="encodeButton" disabled>Enkripsi File</button>
+            <button class="btn" id="copyOutputButton" disabled>Salin Hasil Enkripsi</button>
+            <button class="btn" id="generateFilesButton" disabled>Generate Encrypted File & HTML Decoder</button>
+            <button class="btn btn-reset" id="resetButton">Reset</button>
+        </div>
+        <div id="obfuscationInfo" class="message warning hidden"></div>
+        <div id="infoMessage" class="message success hidden"></div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loader"></div>
+        <p>Sedang memproses, harap tunggu...</p>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileNameSpan = document.getElementById('fileName');
+        const fileSizeSpan = document.getElementById('fileSize');
+        const fileInfoDiv = document.getElementById('fileInfo');
+        const originalContentArea = document.getElementById('originalContentArea');
+        const encodedOutput = document.getElementById('encodedOutput');
+        const encodeButton = document.getElementById('encodeButton');
+        const copyOutputButton = document.getElementById('copyOutputButton');
+        const generateFilesButton = document.getElementById('generateFilesButton');
+        const resetButton = document.getElementById('resetButton');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const toast = document.getElementById('toast');
+        const fileContentDisplay = document.getElementById('fileContentDisplay');
+        const infoMessage = document.getElementById('infoMessage');
+        const obfuscationInfo = document.getElementById('obfuscationInfo');
+
+        // --- MAPPING BASE64 KE KATA MARVEL (KONSISTEN) ---
+        const BASE64_CHARS_ORIGINAL = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+        const marvelWordsOriginal = [
+            "marvel", "ganteng", "banget", "thor", "loki", "wanda", "vision",
+            "hulk", "ultron", "wakanda", "hydra", "ironman", "venom", "strange",
+            "groot", "rocket", "mjolnir", "thanos", "antman", "panther", "bucky", "shuri",
+            "nebula", "gamora", "drax", "mantis", "spiderman", "drdoom", "galactus", "silver",
+            "surfer", "deadpool", "cable", "domino", "xmen", "avengers", "fantastic", "four",
+            "blade", "ghost", "rider", "daredevil", "elektra", "punisher", "blackpanther",
+            "captainamerica", "ironfist", "lukecage", "jessicajones", "eternals", "nova",
+            "scarletwitch", "quicksilver", "hawkeye", "blackwidow", "falcon", "warmachine",
+            "korg", "meek", "valkyrie", "okoye", "killmonger", "mandarin", "dormammu", "enchantress",
+            "hela", "redskull", "baronzemo", "ronan", "skrulls", "kree", "celestials", "infinity",
+            "gauntlet", "stones", "tesseract", "aether", "orb", "scepter", "soulstone", "powerstone"
+        ];
+        if (marvelWordsOriginal.length < BASE64_CHARS_ORIGINAL.length) {
+            console.error("Error: Jumlah marvelWords tidak cukup untuk semua karakter Base64!");
+            alert("Error konfigurasi: Tambahkan lebih banyak kata Marvel di kode!");
+        }
+
+        // --- Seed untuk Random Shuffling (PENTING: harus sama di Encoder dan Decoder HTML) ---
+        const SHUFFLE_SEED = 1337; 
+
+        let currentFileName = '';
+        let currentFileExtension = ''; 
+        let currentContentToEncrypt = ''; // Ini bisa jadi original content atau hasil obfuscation
+        let currentEncodedMarvelString = ''; 
+
+        // --- UTILITY FUNCTIONS ---
+        function showToast(message, type = 'info') {
+            toast.textContent = message;
+            const rootStyles = getComputedStyle(document.documentElement);
+            let bgColor;
+            if (type === 'success') bgColor = rootStyles.getPropertyValue('--success-color');
+            else if (type === 'error') bgColor = rootStyles.getPropertyValue('--error-color');
+            else if (type === 'warning') bgColor = rootStyles.getPropertyValue('--warning-color');
+            else bgColor = '#333'; 
+
+            toast.style.backgroundColor = bgColor;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function showMessage(element, message, type) {
+            element.innerHTML = message;
+            element.className = `message ${type} show`;
+        }
+
+        function hideMessage(element) {
+            element.classList.remove('show');
+            element.innerHTML = '';
+        }
+
+        function showLoading(message = "Sedang memproses...") {
+            loadingOverlay.querySelector('p').textContent = message;
+            loadingOverlay.classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            loadingOverlay.classList.add('hidden');
+        }
+
+        // --- ZLIB Compression/Decompression (menggunakan Pako.js) ---
+        function compressContent(content) {
+            const binaryString = new TextEncoder().encode(content);
+            const compressed = pako.deflate(binaryString, { level: 9 });
+            return btoa(String.fromCharCode.apply(null, compressed));
+        }
+
+        function decompressContent(base64ZlibString) {
+            try {
+                const compressedBytes = Uint8Array.from(atob(base64ZlibString), c => c.charCodeAt(0));
+                const decompressed = pako.inflate(compressedBytes, { to: 'string' });
+                return decompressed;
+            } catch (e) {
+                console.error("Gagal dekompresi Zlib:", e);
+                return null;
+            }
+        }
+
+        // --- RANDOM SHUFFLE FUNCTION (untuk memastikan konsistensi seed antara JS dan Decoder HTML) ---
+        let _currentSeed = SHUFFLE_SEED; // Initialize for encoder
+        function getNextPseudoRandom() {
+            _currentSeed = (_currentSeed * 9301 + 49297) % 233280;
+            return _currentSeed / 233280;
+        }
+
+        function seededShuffle(array) {
+            // No need to reset _currentSeed here for the encoder side, it's global.
+            // But for the decoder, it must be reset.
+            let currentIndex = array.length, randomIndex;
+
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(getNextPseudoRandom() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // --- ENCODING LOGIC (SUDAH DISINKRONKAN dengan Zlib) ---
+        function encodeFileContent(content) {
+            if (!content) return '';
+
+            // Menggunakan encodeURIComponent untuk menangani karakter non-ASCII dengan benar
+            const base64Encoded = btoa(unescape(encodeURIComponent(content)));
+            const zlibCompressedBase64 = compressContent(base64Encoded);
+
+            let encodedWords = [];
+            for (let i = 0; i < zlibCompressedBase64.length; i++) {
+                const char = zlibCompressedBase64[i];
+                const index = BASE64_CHARS_ORIGINAL.indexOf(char);
+                if (index === -1) {
+                    console.error(`Karakter Base64 (setelah Zlib) tidak ditemukan di BASE64_CHARS_ORIGINAL: ${char}`);
+                    throw new Error(`Karakter Base64 (setelah Zlib) tidak valid '${char}' pada indeks ${i}.`);
+                } else {
+                    encodedWords.push(marvelWordsOriginal[index]);
+                }
+            }
+            return encodedWords.join(' ');
+        }
+
+        // --- JS Obfuscation Logic ---
+        function obfuscateJavaScript(code) {
+            if (!code) return '';
+
+            const options = {
+                compact: true,
+                controlFlowFlattening: true,
+                controlFlowFlatteningThreshold: 0.7,
+                deadCodeInjection: false,
+                deadCodeInjectionThreshold: 0.5,
+                debugProtection: false,
+                debugProtectionInterval: 0,
+                disableConsoleOutput: false,
+                identifierNamesGenerator: 'hexadecimal', 
+                log: false,
+                numbersToExpressions: true,
+                renameGlobals: false,
+                selfDefending: true,
+                simplifyFactorialExpressions: false,
+                splitStrings: true,
+                splitStringsChunkLength: 10,
+                stringArray: true,
+                stringArrayEncoding: ['base64'],
+                stringArrayIndexShift: true,
+                stringArrayRotate: true,
+                stringArrayShuffle: true,
+                stringArrayThreshold: 0.75,
+                transformObjectKeys: true,
+                unicodeEscapeSequence: false,
+            };
+
+            // Check if JavaScriptObfuscator is defined
+            if (typeof JavaScriptObfuscator === 'undefined' || !JavaScriptObfuscator.obfuscate) {
+                throw new Error("JavaScriptObfuscator library is not loaded. Please check the CDN link.");
+            }
+
+            return JavaScriptObfuscator.obfuscate(code, options).getObfuscatedCode();
+        }
+
+        // --- UI UPDATE FUNCTIONS ---
+        function updateButtonStates() {
+            const hasFileContent = originalContentArea.value.trim() !== '';
+            const hasEncodedOutput = encodedOutput.value.trim() !== '';
+
+            encodeButton.disabled = !hasFileContent;
+            copyOutputButton.disabled = !hasEncodedOutput;
+            generateFilesButton.disabled = !hasEncodedOutput;
+
+            // Obfuscation info message
+            if (currentFileExtension === '.js') {
+                showMessage(obfuscationInfo, "Deteksi: File JavaScript. Akan otomatis di-*obfuscate* sebelum dienkripsi. Hasilnya nanti bisa di-download sebagai file `.js` lagi!", "warning");
+            } else {
+                hideMessage(obfuscationInfo);
+            }
+
+            // Info message after encryption
+            if (hasEncodedOutput && currentEncodedMarvelString) {
+                showMessage(infoMessage, "Sekarang, klik **'Generate Encrypted File & HTML Decoder'** untuk mendapatkan file `.enc` dan `decoder.html` yang siap pakai.", "info");
+            } else {
+                hideMessage(infoMessage);
+            }
+        }
+
+        // --- FUNGSI UTAMA: GENERATE HTML DECODER ---
+        function generateHtmlDecoder(originalFileExtension, originalFileNameWithoutExt) {
+            let charWordPairs = [];
+            for (let i = 0; i < BASE64_CHARS_ORIGINAL.length; i++) {
+                charWordPairs.push([BASE64_CHARS_ORIGINAL[i], marvelWordsOriginal[i]]);
+            }
+
+            // IMPORTANT: Shuffle the words and chars exactly as done in the encoder
+            // This re-initializes _currentSeed for the purpose of generating the consistent shuffled lists for the decoder.
+            // It ensures the shuffle logic in the decoder's embedded script matches the encoder's.
+            let tempSeed = SHUFFLE_SEED; 
+            function getTempPseudoRandom() {
+                tempSeed = (tempSeed * 9301 + 49297) % 233280;
+                return tempSeed / 233280;
+            }
+
+            // Temporarily use tempSeed for shuffling to generate the shuffled lists for the decoder
+            let currentIndexTemp = charWordPairs.length, randomIndexTemp;
+            let tempShuffledPairs = [...charWordPairs]; // Create a copy to shuffle
+            while (currentIndexTemp !== 0) {
+                randomIndexTemp = Math.floor(getTempPseudoRandom() * currentIndexTemp);
+                currentIndexTemp--;
+                [tempShuffledPairs[currentIndexTemp], tempShuffledPairs[randomIndexTemp]] = 
+                [tempShuffledPairs[randomIndexTemp], tempShuffledPairs[currentIndexTemp]];
+            }
+
+            const shuffledBase64Chars = tempShuffledPairs.map(pair => pair[0]);
+            const shuffledMarvelWords = tempShuffledPairs.map(pair => pair[1]);
+
+            const jsShuffledBase64Chars = JSON.stringify(shuffledBase64Chars);
+            const jsShuffledMarvelWords = JSON.stringify(shuffledMarvelWords);
+            
+            const originalFileExtForDownload = originalFileExtension || '.txt'; // Default to .txt if no extension
+            const originalFileNameForDownload = originalFileNameWithoutExt || 'decoded_file'; // Default filename
+
+            // Constructing the HTML Decoder content
+            const decoderHtmlContent = `
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dekripsi File (HTML Decoder) - v4.0</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        :root {
+            --bg-color: #1a1a2e;
+            --card-bg: #16213e;
+            --text-color: #e0e0e0;
+            --primary-color: #0f3460;
+            --button-hover: #1f4068;
+            --border-color: #0f3460;
+            --textarea-bg: #0d1627;
+            --placeholder-color: #a0a0a0;
+            --error-color: #dc3545;
+            --warning-color: #ffc107;
+            --success-color: #28a745;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 600px;
+            animation: fadeIn 0.8s ease-out;
+            margin-top: 50px;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #6a0572, #8e2d2d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 400;
+            color: var(--text-color);
+        }
+
+        input[type="file"] {
+            display: block;
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8mm;
+            background-color: var(--textarea-bg);
+            color: var(--text-color);
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="file"]::file-selector-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6mm;
+            cursor: pointer;
+            margin-right: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background-color: var(--button-hover);
+        }
+
+        input[type="file"]:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.5);
+        }
+
+        textarea {
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8mm;
+            background-color: var(--textarea-bg);
+            color: var(--text-color);
+            font-size: 1rem;
+            min-height: 150px;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+            box-sizing: border-box;
+        }
+
+        textarea::placeholder {
+            color: var(--placeholder-color);
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.5);
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8mm;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            flex-grow: 1;
+            min-width: 120px;
+        }
+
+        .btn:hover {
+            background-color: var(--button-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background-color: #3f5b82;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-reset {
+            background-color: #d9534f;
+        }
+
+        .btn-reset:hover {
+            background-color: #c9302c;
+        }
+
+        .file-info {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: var(--placeholder-color);
+        }
+
+        .file-info strong {
+            color: var(--text-color);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .message {
+            padding: 10px 15px;
+            border-radius: 8mm;
+            margin-top: 15px;
+            font-size: 0.95em;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.error {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+        }
+
+        .message.warning {
+            background-color: rgba(255, 193, 7, 0.2);
+            color: var(--warning-color);
+            border: 1px solid var(--warning-color);
+        }
+
+        .message.success {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: white;
+            font-size: 1.2rem;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8mm;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: visibility 0s, opacity 0.5s ease-in-out;
+        }
+
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Responsif untuk HP */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 20px;
+                margin-top: 20px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+                flex-basis: 100%;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@2.20.0/dist/javascript-obfuscator.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Enkripsi & Obfuscasi File (HTML Encoder) - v4.0</h1>
+
+        <div class="form-group">
+            <label for="fileInput">Pilih File (Semua Tipe):</label>
+            <input type="file" id="fileInput">
+            <div id="fileInfo" class="file-info hidden">
+                Nama File: <strong id="fileName"></strong> | Ukuran: <strong id="fileSize"></strong>
+            </div>
+            <div id="fileContentDisplay" class="message hidden"></div>
+        </div>
+
+        <div class="form-group">
+            <label for="originalContentArea">Isi File Asli (atau hasil Obfuscasi jika JS):</label>
+            <textarea id="originalContentArea" placeholder="Isi file yang di-upload akan tampil di sini..." readonly></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="encodedOutput">Hasil Enkripsi (Marvel Words):</label>
+            <textarea id="encodedOutput" placeholder="Hasil enkripsi akan muncul di sini..." readonly></textarea>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn" id="encodeButton" disabled>Enkripsi File</button>
+            <button class="btn" id="copyOutputButton" disabled>Salin Hasil Enkripsi</button>
+            <button class="btn" id="generateFilesButton" disabled>Generate Encrypted File & HTML Decoder</button>
+            <button class="btn btn-reset" id="resetButton">Reset</button>
+        </div>
+        <div id="obfuscationInfo" class="message warning hidden"></div>
+        <div id="infoMessage" class="message success hidden"></div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loader"></div>
+        <p>Sedang memproses, harap tunggu...</p>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const fileInput = document.getElementById('fileInput');
+        const fileNameSpan = document.getElementById('fileName');
+        const fileSizeSpan = document.getElementById('fileSize');
+        const fileInfoDiv = document.getElementById('fileInfo');
+        const originalContentArea = document.getElementById('originalContentArea');
+        const encodedOutput = document.getElementById('encodedOutput');
+        const encodeButton = document.getElementById('encodeButton');
+        const copyOutputButton = document.getElementById('copyOutputButton');
+        const generateFilesButton = document.getElementById('generateFilesButton');
+        const resetButton = document.getElementById('resetButton');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const toast = document.getElementById('toast');
+        const fileContentDisplay = document.getElementById('fileContentDisplay');
+        const infoMessage = document.getElementById('infoMessage');
+        const obfuscationInfo = document.getElementById('obfuscationInfo');
+
+        // --- MAPPING BASE64 KE KATA MARVEL (KONSISTEN) ---
+        const BASE64_CHARS_ORIGINAL = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+        const marvelWordsOriginal = [
+            "marvel", "ganteng", "banget", "thor", "loki", "wanda", "vision",
+            "hulk", "ultron", "wakanda", "hydra", "ironman", "venom", "strange",
+            "groot", "rocket", "mjolnir", "thanos", "antman", "panther", "bucky", "shuri",
+            "nebula", "gamora", "drax", "mantis", "spiderman", "drdoom", "galactus", "silver",
+            "surfer", "deadpool", "cable", "domino", "xmen", "avengers", "fantastic", "four",
+            "blade", "ghost", "rider", "daredevil", "elektra", "punisher", "blackpanther",
+            "captainamerica", "ironfist", "lukecage", "jessicajones", "eternals", "nova",
+            "scarletwitch", "quicksilver", "hawkeye", "blackwidow", "falcon", "warmachine",
+            "korg", "meek", "valkyrie", "okoye", "killmonger", "mandarin", "dormammu", "enchantress",
+            "hela", "redskull", "baronzemo", "ronan", "skrulls", "kree", "celestials", "infinity",
+            "gauntlet", "stones", "tesseract", "aether", "orb", "scepter", "soulstone", "powerstone"
+        ];
+        if (marvelWordsOriginal.length < BASE64_CHARS_ORIGINAL.length) {
+            console.error("Error: Jumlah marvelWords tidak cukup untuk semua karakter Base64!");
+            alert("Error konfigurasi: Tambahkan lebih banyak kata Marvel di kode!");
+        }
+
+        // --- Seed untuk Random Shuffling (PENTING: harus sama di Encoder dan Decoder HTML) ---
+        const SHUFFLE_SEED = 1337; 
+
+        let currentFileName = '';
+        let currentFileExtension = ''; 
+        let currentContentToEncrypt = ''; // Ini bisa jadi original content atau hasil obfuscation
+        let currentEncodedMarvelString = ''; 
+
+        // --- UTILITY FUNCTIONS ---
+        function showToast(message, type = 'info') {
+            toast.textContent = message;
+            const rootStyles = getComputedStyle(document.documentElement);
+            let bgColor;
+            if (type === 'success') bgColor = rootStyles.getPropertyValue('--success-color');
+            else if (type === 'error') bgColor = rootStyles.getPropertyValue('--error-color');
+            else if (type === 'warning') bgColor = rootStyles.getPropertyValue('--warning-color');
+            else bgColor = '#333'; 
+
+            toast.style.backgroundColor = bgColor;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function showMessage(element, message, type) {
+            element.innerHTML = message;
+            element.className = `message ${type} show`;
+        }
+
+        function hideMessage(element) {
+            element.classList.remove('show');
+            element.innerHTML = '';
+        }
+
+        function showLoading(message = "Sedang memproses...") {
+            loadingOverlay.querySelector('p').textContent = message;
+            loadingOverlay.classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            loadingOverlay.classList.add('hidden');
+        }
+
+        // --- ZLIB Compression/Decompression (menggunakan Pako.js) ---
+        function compressContent(content) {
+            const binaryString = new TextEncoder().encode(content);
+            const compressed = pako.deflate(binaryString, { level: 9 });
+            return btoa(String.fromCharCode.apply(null, compressed));
+        }
+
+        function decompressContent(base64ZlibString) {
+            try {
+                const compressedBytes = Uint8Array.from(atob(base64ZlibString), c => c.charCodeAt(0));
+                const decompressed = pako.inflate(compressedBytes, { to: 'string' });
+                return decompressed;
+            } catch (e) {
+                console.error("Gagal dekompresi Zlib:", e);
+                return null;
+            }
+        }
+
+        // --- RANDOM SHUFFLE FUNCTION (untuk memastikan konsistensi seed antara JS dan Decoder HTML) ---
+        let _currentSeedForEncoder = SHUFFLE_SEED; // This seed is for the encoder's internal shuffle
+        function getNextPseudoRandomForEncoder() {
+            _currentSeedForEncoder = (_currentSeedForEncoder * 9301 + 49297) % 233280;
+            return _currentSeedForEncoder / 233280;
+        }
+
+        function seededShuffleEncoder(array) {
+            let currentIndex = array.length, randomIndex;
+
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(getNextPseudoRandomForEncoder() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        // --- ENCODING LOGIC (SUDAH DISINKRONKAN dengan Zlib) ---
+        function encodeFileContent(content) {
+            if (!content) return '';
+
+            // Menggunakan encodeURIComponent untuk menangani karakter non-ASCII dengan benar
+            const base64Encoded = btoa(unescape(encodeURIComponent(content)));
+            const zlibCompressedBase64 = compressContent(base64Encoded);
+
+            let encodedWords = [];
+            for (let i = 0; i < zlibCompressedBase64.length; i++) {
+                const char = zlibCompressedBase64[i];
+                const index = BASE64_CHARS_ORIGINAL.indexOf(char);
+                if (index === -1) {
+                    console.error(`Karakter Base64 (setelah Zlib) tidak ditemukan di BASE64_CHARS_ORIGINAL: ${char}`);
+                    throw new Error(`Karakter Base64 (setelah Zlib) tidak valid '${char}' pada indeks ${i}.`);
+                } else {
+                    encodedWords.push(marvelWordsOriginal[index]);
+                }
+            }
+            return encodedWords.join(' ');
+        }
+
+        // --- JS Obfuscation Logic ---
+        function obfuscateJavaScript(code) {
+            if (!code) return '';
+
+            const options = {
+                compact: true,
+                controlFlowFlattening: true,
+                controlFlowFlatteningThreshold: 0.7,
+                deadCodeInjection: false,
+                deadCodeInjectionThreshold: 0.5,
+                debugProtection: false,
+                debugProtectionInterval: 0,
+                disableConsoleOutput: false,
+                identifierNamesGenerator: 'hexadecimal', 
+                log: false,
+                numbersToExpressions: true,
+                renameGlobals: false,
+                selfDefending: true,
+                simplifyFactorialExpressions: false,
+                splitStrings: true,
+                splitStringsChunkLength: 10,
+                stringArray: true,
+                stringArrayEncoding: ['base64'],
+                stringArrayIndexShift: true,
+                stringArrayRotate: true,
+                stringArrayShuffle: true,
+                stringArrayThreshold: 0.75,
+                transformObjectKeys: true,
+                unicodeEscapeSequence: false,
+            };
+
+            // Check if JavaScriptObfuscator is defined
+            if (typeof JavaScriptObfuscator === 'undefined' || !JavaScriptObfuscator.obfuscate) {
+                throw new Error("JavaScriptObfuscator library is not loaded. Please check the CDN link and ensure it's loaded correctly.");
+            }
+
+            return JavaScriptObfuscator.obfuscate(code, options).getObfuscatedCode();
+        }
+
+        // --- UI UPDATE FUNCTIONS ---
+        function updateButtonStates() {
+            const hasFileContent = originalContentArea.value.trim() !== '';
+            const hasEncodedOutput = encodedOutput.value.trim() !== '';
+
+            encodeButton.disabled = !hasFileContent;
+            copyOutputButton.disabled = !hasEncodedOutput;
+            generateFilesButton.disabled = !hasEncodedOutput;
+
+            // Obfuscation info message
+            if (currentFileExtension === '.js') {
+                showMessage(obfuscationInfo, "Deteksi: File JavaScript. Akan otomatis di-*obfuscate* sebelum dienkripsi. Hasilnya nanti bisa di-download sebagai file `.js` lagi!", "warning");
+            } else {
+                hideMessage(obfuscationInfo);
+            }
+
+            // Info message after encryption
+            if (hasEncodedOutput && currentEncodedMarvelString) {
+                showMessage(infoMessage, "Sekarang, klik **'Generate Encrypted File & HTML Decoder'** untuk mendapatkan file `.enc` dan `decoder.html` yang siap pakai.", "info");
+            } else {
+                hideMessage(infoMessage);
+            }
+        }
+
+        // --- FUNGSI UTAMA: GENERATE HTML DECODER ---
+        function generateHtmlDecoder(originalFileExtension, originalFileNameWithoutExt) {
+            let charWordPairs = [];
+            for (let i = 0; i < BASE64_CHARS_ORIGINAL.length; i++) {
+                charWordPairs.push([BASE64_CHARS_ORIGINAL[i], marvelWordsOriginal[i]]);
+            }
+
+            // IMPORTANT: Shuffle the words and chars exactly as done in the encoder
+            // This needs its own temporary seed state to ensure the shuffling for the *decoder script generation* is consistent
+            // without affecting the encoder's _currentSeedForEncoder.
+            let decoderShuffleSeed = SHUFFLE_SEED; 
+            function getDecoderPseudoRandom() {
+                decoderShuffleSeed = (decoderShuffleSeed * 9301 + 49297) % 233280;
+                return decoderShuffleSeed / 233280;
+            }
+
+            let tempShuffledPairsForDecoder = [...charWordPairs]; // Create a copy for shuffling
+            let currentIndexTempDecoder = tempShuffledPairsForDecoder.length, randomIndexTempDecoder;
+
+            while (currentIndexTempDecoder !== 0) {
+                randomIndexTempDecoder = Math.floor(getDecoderPseudoRandom() * currentIndexTempDecoder);
+                currentIndexTempDecoder--;
+                [tempShuffledPairsForDecoder[currentIndexTempDecoder], tempShuffledPairsForDecoder[randomIndexTempDecoder]] = 
+                [tempShuffledPairsForDecoder[randomIndexTempDecoder], tempShuffledPairsForDecoder[currentIndexTempDecoder]];
+            }
+
+            const shuffledBase64Chars = tempShuffledPairsForDecoder.map(pair => pair[0]);
+            const shuffledMarvelWords = tempShuffledPairsForDecoder.map(pair => pair[1]);
+
+            const jsShuffledBase64Chars = JSON.stringify(shuffledBase64Chars);
+            const jsShuffledMarvelWords = JSON.stringify(shuffledMarvelWords);
+            
+            const originalFileExtForDownload = originalFileExtension || '.txt'; // Default to .txt if no extension
+            const originalFileNameForDownload = originalFileNameWithoutExt || 'decoded_file'; // Default filename
+
+            // Constructing the HTML Decoder content
+            const decoderHtmlContent = `
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dekripsi File (HTML Decoder) - v4.0</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap');
+
+        :root {
+            --bg-color: #1a1a2e;
+            --card-bg: #16213e;
+            --text-color: #e0e0e0;
+            --primary-color: #0f3460;
+            --button-hover: #1f4068;
+            --border-color: #0f3460;
+            --textarea-bg: #0d1627;
+            --placeholder-color: #a0a0a0;
+            --error-color: #dc3545;
+            --warning-color: #ffc107;
+            --success-color: #28a745;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+            box-sizing: border-box;
+        }
+
+        .container {
+            background-color: var(--card-bg);
+            padding: 30px;
+            border-radius: 12mm; /* Slightly larger border-radius */
+            box-shadow: 0 8px 30px rgba(0, 0, 0, 0.4);
+            width: 100%;
+            max-width: 600px;
+            animation: fadeIn 0.8s ease-out;
+            margin-top: 50px;
+            border: 1px solid var(--border-color); /* Added border for definition */
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(-20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        h1 {
+            color: var(--text-color);
+            text-align: center;
+            margin-bottom: 30px;
+            font-weight: 600;
+            letter-spacing: 1px;
+            background: linear-gradient(90deg, #6a0572, #8e2d2d);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 400;
+            color: var(--text-color);
+        }
+
+        input[type="file"], textarea {
+            display: block;
+            width: calc(100% - 20px);
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 8mm;
+            background-color: var(--textarea-bg);
+            color: var(--text-color);
+            box-sizing: border-box;
+            transition: border-color 0.3s ease;
+        }
+
+        input[type="file"]::file-selector-button {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 6mm;
+            cursor: pointer;
+            margin-right: 15px;
+            transition: background-color 0.3s ease;
+        }
+
+        input[type="file"]::file-selector-button:hover {
+            background-color: var(--button-hover);
+        }
+
+        input[type="file"]:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(15, 52, 96, 0.5);
+        }
+
+        textarea {
+            min-height: 150px;
+            resize: vertical;
+        }
+
+        textarea::placeholder {
+            color: var(--placeholder-color);
+        }
+
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+            margin-top: 25px;
+        }
+
+        .btn {
+            background-color: var(--primary-color);
+            color: white;
+            padding: 12px 20px;
+            border: none;
+            border-radius: 8mm;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            flex-grow: 1;
+            min-width: 120px;
+        }
+
+        .btn:hover {
+            background-color: var(--button-hover);
+            transform: translateY(-2px);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .btn:disabled {
+            background-color: #3f5b82;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-reset {
+            background-color: #d9534f;
+        }
+
+        .btn-reset:hover {
+            background-color: #c9302c;
+        }
+
+        .file-info {
+            margin-top: 10px;
+            font-size: 0.9em;
+            color: var(--placeholder-color);
+        }
+
+        .file-info strong {
+            color: var(--text-color);
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .message {
+            padding: 10px 15px;
+            border-radius: 8mm;
+            margin-top: 15px;
+            font-size: 0.95em;
+            font-weight: 500;
+            display: none;
+        }
+
+        .message.show {
+            display: block;
+        }
+
+        .message.error {
+            background-color: rgba(220, 53, 69, 0.2);
+            color: var(--error-color);
+            border: 1px solid var(--error-color);
+        }
+
+        .message.success {
+            background-color: rgba(40, 167, 69, 0.2);
+            color: var(--success-color);
+            border: 1px solid var(--success-color);
+        }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: white;
+            font-size: 1.2rem;
+            flex-direction: column;
+            gap: 15px;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid var(--primary-color);
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .toast {
+            visibility: hidden;
+            min-width: 250px;
+            background-color: #333;
+            color: #fff;
+            text-align: center;
+            border-radius: 8mm;
+            padding: 16px;
+            position: fixed;
+            z-index: 1;
+            left: 50%;
+            bottom: 30px;
+            transform: translateX(-50%);
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            opacity: 0;
+            transition: visibility 0s, opacity 0.5s ease-in-out;
+        }
+
+        .toast.show {
+            visibility: visible;
+            opacity: 1;
+        }
+
+        /* Responsive for mobile */
+        @media (max-width: 768px) {
+            body {
+                padding: 15px;
+            }
+
+            .container {
+                padding: 20px;
+                margin-top: 20px;
+            }
+
+            h1 {
+                font-size: 1.8rem;
+            }
+
+            .btn {
+                padding: 10px 15px;
+                font-size: 0.9rem;
+                flex-basis: 100%;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+        }
+    </style>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pako/2.1.0/pako.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/javascript-obfuscator@2.20.0/dist/javascript-obfuscator.min.js"></script>
+</head>
+<body>
+    <div class="container">
+        <h1>Dekripsi File Terenkripsi (HTML Decoder) - v4.0</h1>
+
+        <div class="form-group">
+            <label for="encryptedFileInput">Pilih File Terenkripsi (.enc):</label>
+            <input type="file" id="encryptedFileInput" accept=".enc">
+            <div id="encryptedFileInfo" class="file-info hidden">
+                Nama File: <strong id="encryptedFileName"></strong> | Ukuran: <strong id="encryptedFileSize"></strong>
+            </div>
+        </div>
+
+        <div class="form-group">
+            <label for="encryptedContentArea">Isi File Terenkripsi:</label>
+            <textarea id="encryptedContentArea" placeholder="Isi file .enc akan tampil di sini..." readonly></textarea>
+        </div>
+
+        <div class="form-group">
+            <label for="decodedOutput">Hasil Dekripsi:</label>
+            <textarea id="decodedOutput" placeholder="Hasil dekripsi akan muncul di sini..." readonly></textarea>
+        </div>
+        
+        <div class="button-group">
+            <button class="btn" id="decodeButton" disabled>Dekripsi File</button>
+            <button class="btn" id="copyDecodedButton" disabled>Salin Hasil Dekripsi</button>
+            <button class="btn" id="downloadDecodedButton" disabled>Download File Asli</button>
+            <button class="btn btn-reset" id="resetDecoderButton">Reset</button>
+        </div>
+        <div id="decodeMessage" class="message success hidden"></div>
+    </div>
+
+    <div id="loadingOverlay" class="loading-overlay hidden">
+        <div class="loader"></div>
+        <p>Sedang memproses, harap tunggu...</p>
+    </div>
+
+    <div id="toast" class="toast"></div>
+
+    <script>
+        const encryptedFileInput = document.getElementById('encryptedFileInput');
+        const encryptedFileNameSpan = document.getElementById('encryptedFileName');
+        const encryptedFileSizeSpan = document.getElementById('encryptedFileSize');
+        const encryptedFileInfoDiv = document.getElementById('encryptedFileInfo');
+        const encryptedContentArea = document.getElementById('encryptedContentArea');
+        const decodedOutput = document.getElementById('decodedOutput');
+        const decodeButton = document.getElementById('decodeButton');
+        const copyDecodedButton = document.getElementById('copyDecodedButton');
+        const downloadDecodedButton = document.getElementById('downloadDecodedButton');
+        const resetDecoderButton = document.getElementById('resetDecoderButton');
+        const loadingOverlay = document.getElementById('loadingOverlay');
+        const toast = document.getElementById('toast');
+        const decodeMessage = document.getElementById('decodeMessage');
+
+        // Ini adalah MAPPING BASE64_CHARS_ORIGINAL dan marvelWordsOriginal
+        // HARUS SAMA PERSIS dengan yang di Encoder HTML!
+        const BASE64_CHARS_ORIGINAL = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/=";
+        const marvelWordsOriginal = [
+            "marvel", "ganteng", "banget", "thor", "loki", "wanda", "vision",
+            "hulk", "ultron", "wakanda", "hydra", "ironman", "venom", "strange",
+            "groot", "rocket", "mjolnir", "thanos", "antman", "panther", "bucky", "shuri",
+            "nebula", "gamora", "drax", "mantis", "spiderman", "drdoom", "galactus", "silver",
+            "surfer", "deadpool", "cable", "domino", "xmen", "avengers", "fantastic", "four",
+            "blade", "ghost", "rider", "daredevil", "elektra", "punisher", "blackpanther",
+            "captainamerica", "ironfist", "lukecage", "jessicajones", "eternals", "nova",
+            "scarletwitch", "quicksilver", "hawkeye", "blackwidow", "falcon", "warmachine",
+            "korg", "meek", "valkyrie", "okoye", "killmonger", "mandarin", "dormammu", "enchantress",
+            "hela", "redskull", "baronzemo", "ronan", "skrulls", "kree", "celestials", "infinity",
+            "gauntlet", "stones", "tesseract", "aether", "orb", "scepter", "soulstone", "powerstone"
+        ];
+        // Pastikan panjangnya cocok
+        if (marvelWordsOriginal.length < BASE64_CHARS_ORIGINAL.length) {
+            console.error("Error: Jumlah marvelWords di decoder tidak cukup untuk semua karakter Base64!");
+        }
+
+        // Seed untuk Random Shuffling (HARUS SAMA PERSIS dengan di Encoder!)
+        const SHUFFLE_SEED = 1337; 
+
+        let currentDecodedContent = '';
+        let currentOriginalFileExtension = ''; // Untuk menyimpan ekstensi asli file yang didecode
+
+        // --- UTILITY FUNCTIONS ---
+        function showToast(message, type = 'info') {
+            toast.textContent = message;
+            const rootStyles = getComputedStyle(document.documentElement);
+            let bgColor;
+            if (type === 'success') bgColor = rootStyles.getPropertyValue('--success-color');
+            else if (type === 'error') bgColor = rootStyles.getPropertyValue('--error-color');
+            else if (type === 'warning') bgColor = rootStyles.getPropertyValue('--warning-color');
+            else bgColor = '#333'; 
+
+            toast.style.backgroundColor = bgColor;
+            toast.classList.add('show');
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+            }, 3000);
+        }
+
+        function showMessage(element, message, type) {
+            element.innerHTML = message;
+            element.className = `message ${type} show`;
+        }
+
+        function hideMessage(element) {
+            element.classList.remove('show');
+            element.innerHTML = '';
+        }
+
+        function showLoading(message = "Sedang memproses...") {
+            loadingOverlay.querySelector('p').textContent = message;
+            loadingOverlay.classList.remove('hidden');
+        }
+
+        function hideLoading() {
+            loadingOverlay.classList.add('hidden');
+        }
+
+        // --- ZLIB Compression/Decompression (menggunakan Pako.js) ---
+        function decompressContent(base64ZlibString) {
+            try {
+                const compressedBytes = Uint8Array.from(atob(base64ZlibString), c => c.charCodeAt(0));
+                const decompressed = pako.inflate(compressedBytes, { to: 'string' });
+                return decompressed;
+            } catch (e) {
+                console.error("Gagal dekompresi Zlib:", e);
+                throw new Error("Data terenkripsi korup atau bukan format Zlib.");
+            }
+        }
+
+        // --- RANDOM SHUFFLE FUNCTION (untuk memastikan konsistensi seed antara Encoder dan Decoder) ---
+        // Ini adalah fungsi yang sama persis seperti di Encoder, untuk merekonstruksi tabel.
+        let _currentDecoderSeed = SHUFFLE_SEED; // Seed untuk dekoder
+        function getNextPseudoRandomForDecoder() {
+            _currentDecoderSeed = (_currentDecoderSeed * 9301 + 49297) % 233280;
+            return _currentDecoderSeed / 233280;
+        }
+
+        function seededShuffleDecoder(array) {
+            _currentDecoderSeed = SHUFFLE_SEED; // Reset seed agar konsisten
+            let currentIndex = array.length, randomIndex;
+
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(getNextPseudoRandomForDecoder() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+        
+        // --- DECODING LOGIC ---
+        function decodeMarvelString(marvelString) {
+            if (!marvelString) return '';
+
+            const marvelWordList = marvelString.split(' ');
+
+            // Rekonstruksi tabel dekode
+            let charWordPairs = [];
+            for (let i = 0; i < BASE64_CHARS_ORIGINAL.length; i++) {
+                charWordPairs.push([BASE64_CHARS_ORIGINAL[i], marvelWordsOriginal[i]]);
+            }
+            // Shuffle dengan seed yang sama seperti di encoder
+            const shuffledPairs = seededShuffleDecoder([...charWordPairs]);
+            const decodeTable = {};
+            for (const [char, word] of shuffledPairs) {
+                decodeTable[word] = char;
+            }
+
+            let base64Chars = [];
+            for (const word of marvelWordList) {
+                if (!word) continue; // Skip empty strings from split
+                if (word in decodeTable) {
+                    base64Chars.push(decodeTable[word]);
+                } else {
+                    throw new Error(`Kata Marvel tidak dikenal: '${word}'. Kemungkinan data korup atau versi tidak cocok.`);
+                }
+            }
+            
+            const zlibCompressedBase64 = base64Chars.join('');
+
+            try {
+                // Dekompresi Zlib
+                const decompressedBase64 = decompressContent(zlibCompressedBase64);
+                if (!decompressedBase64) {
+                    throw new Error("Gagal dekompresi data.");
+                }
+                // Dekode Base64
+                const originalContentBytes = atob(decompressedBase64);
+                // Menggunakan decodeURIComponent dan escape untuk menangani karakter UTF-8
+                const originalContent = decodeURIComponent(escape(originalContentBytes));
+                
+                return originalContent;
+            } catch (e) {
+                console.error("Kesalahan saat mendekode:", e);
+                throw new Error(`Gagal mendekode data: ${e.message}`);
+            }
         }
 
 
-        // --- EVENT LISTENERS ---
+        // --- UI UPDATE FUNCTIONS for Decoder ---
+        function updateDecoderButtonStates() {
+            const hasEncryptedContent = encryptedContentArea.value.trim() !== '';
+            const hasDecodedOutput = decodedOutput.value.trim() !== '';
+
+            decodeButton.disabled = !hasEncryptedContent;
+            copyDecodedButton.disabled = !hasDecodedOutput;
+            downloadDecodedButton.disabled = !hasDecodedOutput;
+        }
+
+        // --- EVENT LISTENERS for Decoder ---
+        encryptedFileInput.addEventListener('change', (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                encryptedFileNameSpan.textContent = file.name;
+                encryptedFileSizeSpan.textContent = `${(file.size / 1024).toFixed(2)} KB`;
+                encryptedFileInfoDiv.classList.remove('hidden');
+
+                const reader = new FileReader();
+                reader.onload = (e) => {
+                    encryptedContentArea.value = e.target.result;
+                    // Try to infer original extension from .enc filename (e.g., my_script.js.enc -> .js)
+                    const parts = file.name.split('.');
+                    if (parts.length > 2 && parts[parts.length - 1] === 'enc') {
+                         currentOriginalFileExtension = '.' + parts[parts.length - 2];
+                    } else if (parts.length > 1 && parts[parts.length - 1] === 'enc') {
+                         currentOriginalFileExtension = ''; // Cannot determine, default to txt
+                    } else {
+                         currentOriginalFileExtension = '.' + parts.pop(); // Not an .enc file, use its own extension
+                    }
+                    if (currentOriginalFileExtension === '.enc') currentOriginalFileExtension = '.txt'; // Prevent .enc.enc
+                    
+                    showMessage(decodeMessage, `File '${file.name}' berhasil dimuat. Siap untuk didekripsi.`, "success");
+                    updateDecoderButtonStates();
+                };
+                reader.onerror = () => {
+                    encryptedContentArea.value = '';
+                    hideMessage(decodeMessage);
+                    showToast('Gagal membaca file terenkripsi.', 'error');
+                    updateDecoderButtonStates();
+                };
+                reader.readAsText(file);
+            } else {
+                encryptedContentArea.value = '';
+                encryptedFileInfoDiv.classList.add('hidden');
+                hideMessage(decodeMessage);
+                updateDecoderButtonStates();
+            }
+        });
+
+        decodeButton.addEventListener('click', async () => {
+            showLoading("Memproses dekripsi...");
+            decodedOutput.value = ''; // Clear previous output
+            currentDecodedContent = ''; // Reset
+
+            const encryptedContent = encryptedContentArea.value.trim();
+            if (!encryptedContent) {
+                showToast('Tidak ada konten terenkripsi untuk didekripsi!', 'error');
+                hideLoading();
+                return;
+            }
+
+            try {
+                currentDecodedContent = decodeMarvelString(encryptedContent);
+                decodedOutput.value = currentDecodedContent;
+                showMessage(decodeMessage, `File berhasil didekripsi! Konten asli siap diunduh sebagai **${currentOriginalFileExtension || '.txt'}**`, "success");
+                showToast('File berhasil didekripsi!', 'success');
+            } catch (error) {
+                console.error("Decoding error:", error);
+                showMessage(decodeMessage, `Gagal dekripsi: ${error.message}`, "error");
+                showToast(`Gagal dekripsi file: ${error.message}`, 'error');
+            } finally {
+                hideLoading();
+                updateDecoderButtonStates();
+            }
+        });
+
+        copyDecodedButton.addEventListener('click', () => {
+            decodedOutput.select();
+            decodedOutput.setSelectionRange(0, 99999); // For mobile devices
+            try {
+                document.execCommand('copy');
+                showToast('Hasil dekripsi berhasil disalin!', 'success');
+            } catch (err) {
+                showToast('Gagal menyalin. Silakan salin manual.', 'error');
+                console.error('Failed to copy: ', err);
+            }
+        });
+
+        downloadDecodedButton.addEventListener('click', () => {
+            if (!currentDecodedContent) {
+                showToast('Tidak ada konten yang didekripsi untuk diunduh.', 'error');
+                return;
+            }
+
+            const blob = new Blob([currentDecodedContent], { type: 'text/plain' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            
+            // Generate original filename for download
+            let downloadFileName = encryptedFileNameSpan.textContent;
+            if (downloadFileName.endsWith('.enc')) {
+                // Remove .enc extension
+                downloadFileName = downloadFileName.slice(0, -4); 
+            } else if (downloadFileName.includes('.')) {
+                // Remove existing extension if not .enc, then add original one
+                const parts = downloadFileName.split('.');
+                parts.pop(); // Remove current extension
+                downloadFileName = parts.join('.');
+            }
+            // Add original inferred extension or default to .txt
+            downloadFileName += currentOriginalFileExtension || '.txt';
+
+            a.download = downloadFileName;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            showToast(`File '${downloadFileName}' berhasil diunduh!`, 'success');
+        });
+
+        resetDecoderButton.addEventListener('click', () => {
+            encryptedFileInput.value = '';
+            encryptedContentArea.value = '';
+            decodedOutput.value = '';
+            currentDecodedContent = '';
+            currentOriginalFileExtension = '';
+            encryptedFileInfoDiv.classList.add('hidden');
+            hideMessage(decodeMessage);
+            updateDecoderButtonStates();
+        });
+
+        // Initialize button states on load
+        updateDecoderButtonStates();
+    </script>
+</body>
+</html>
+            `;
+            return decoderHtmlContent;
+        }
+
+
+        // --- EVENT LISTENERS for Encoder ---
         fileInput.addEventListener('change', async (event) => {
             const file = event.target.files[0];
             if (file) {
@@ -686,8 +2949,9 @@
                             showToast('File JavaScript berhasil di-*obfuscate*.', 'success');
                         } catch (error) {
                             console.error("Obfuscation error:", error);
-                            showToast(`Gagal obfuscasi JavaScript: ${error.message}`, 'error');
-                            // Tetap lanjutkan dengan konten asli jika obfuscasi gagal
+                            showToast(`Gagal obfuscasi JavaScript: ${error.message}. Melanjutkan dengan konten asli.`, 'error');
+                            // Jika obfuscasi gagal, gunakan konten asli
+                            fileContent = e.target.result; 
                         } finally {
                             hideLoading();
                         }
@@ -758,8 +3022,8 @@
             }
         });
 
-        generateScriptButton.addEventListener('click', () => {
-            showLoading("Mengenerate decoder Python & file terenkripsi...");
+        generateFilesButton.addEventListener('click', () => {
+            showLoading("Mengenerate file terenkripsi & HTML Decoder...");
             
             if (!currentEncodedMarvelString) {
                  showToast('Silakan enkripsi file terlebih dahulu!', 'error');
@@ -768,22 +3032,34 @@
             }
 
             try {
-                // Generate Python decoder script
-                const pythonDecoderContent = generatePythonDecoderScript();
+                // Extract base filename without extension
+                let baseFileName = currentFileName;
+                if (currentFileExtension && currentFileName.endsWith(currentFileExtension)) {
+                    baseFileName = currentFileName.slice(0, -currentFileExtension.length);
+                } else {
+                    // Fallback if extension parsing is weird, just use the whole name
+                    const lastDotIndex = currentFileName.lastIndexOf('.');
+                    if (lastDotIndex > 0) {
+                        baseFileName = currentFileName.substring(0, lastDotIndex);
+                    }
+                }
 
-                // Create and download decoder.py
-                const decoderBlob = new Blob([pythonDecoderContent], { type: 'text/plain' });
+                // Generate HTML Decoder script
+                const htmlDecoderContent = generateHtmlDecoder(currentFileExtension, baseFileName);
+
+                // Create and download decoder.html
+                const decoderBlob = new Blob([htmlDecoderContent], { type: 'text/html' });
                 const decoderUrl = URL.createObjectURL(decoderBlob);
                 const decoderA = document.createElement('a');
                 decoderA.href = decoderUrl;
-                decoderA.download = 'decoder.py';
+                decoderA.download = 'decoder.html';
                 document.body.appendChild(decoderA);
                 decoderA.click();
                 document.body.removeChild(decoderA);
                 URL.revokeObjectURL(decoderUrl);
 
                 // Create and download encrypted data file
-                const encryptedDataFileName = `${currentFileName || 'encrypted_data'}.enc`; // Use original file name
+                const encryptedDataFileName = `${baseFileName || 'encrypted_data'}.enc`; 
                 const encryptedDataBlob = new Blob([currentEncodedMarvelString], { type: 'text/plain' });
                 const encryptedDataUrl = URL.createObjectURL(encryptedDataBlob);
                 const encryptedDataA = document.createElement('a');
@@ -794,14 +3070,14 @@
                 document.body.removeChild(encryptedDataA);
                 URL.revokeObjectURL(encryptedDataUrl);
 
-                showToast('File `decoder.py` dan `encrypted_data.enc` berhasil di-generate!', 'success');
+                showToast(`File \`decoder.html\` dan \`${encryptedDataFileName}\` berhasil di-generate!`, 'success');
 
                 // Clear input and output after successful generation
                 resetAll();
 
             } catch (error) {
-                console.error("Generate script error:", error);
-                showToast(`Gagal mengenerate script: ${error.message}`, 'error');
+                console.error("Generate files error:", error);
+                showToast(`Gagal mengenerate file: ${error.message}`, 'error');
             } finally {
                 hideLoading();
             }
@@ -820,7 +3096,6 @@
             
             hideMessage(fileContentDisplay);
             hideMessage(obfuscationInfo);
-            hideMessage(executionWarningMessage);
             hideMessage(infoMessage);
             fileInfoDiv.classList.add('hidden');
             updateButtonStates(); // Update button states after reset
