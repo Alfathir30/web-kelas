@@ -172,6 +172,172 @@
             font-size: 0.875rem;
         }
 
+        /* Progress Section */
+        .progress-section {
+            margin-bottom: 2rem;
+        }
+
+        .progress-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 1rem;
+        }
+
+        .progress-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 500;
+            color: #f1f5f9;
+        }
+
+        .progress-percentage {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            color: #60a5fa;
+        }
+
+        .progress-bar-container {
+            width: 100%;
+            height: 8px;
+            background: rgba(15, 23, 42, 0.8);
+            border-radius: 4px;
+            overflow: hidden;
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            margin-bottom: 1rem;
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #60a5fa, #3b82f6, #2563eb);
+            border-radius: 4px;
+            transition: width 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .progress-bar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.4), transparent);
+            animation: progressShine 2s infinite;
+        }
+
+        @keyframes progressShine {
+            0% { left: -100%; }
+            100% { left: 100%; }
+        }
+
+        .progress-steps {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .progress-step {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem;
+            background: rgba(51, 65, 85, 0.3);
+            border-radius: 0.375rem;
+            border: 1px solid rgba(71, 85, 105, 0.3);
+            transition: all 0.3s ease;
+        }
+
+        .progress-step.active {
+            border-color: #60a5fa;
+            background: rgba(96, 165, 250, 0.1);
+        }
+
+        .progress-step.completed {
+            border-color: #10b981;
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .step-icon {
+            width: 16px;
+            height: 16px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .step-icon.pending {
+            background: #475569;
+            color: #94a3b8;
+        }
+
+        .step-icon.active {
+            background: #60a5fa;
+            color: white;
+            animation: pulse 2s infinite;
+        }
+
+        .step-icon.completed {
+            background: #10b981;
+            color: white;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .step-text {
+            font-size: 0.875rem;
+            color: #cbd5e1;
+        }
+
+        .step-text.active {
+            color: #60a5fa;
+            font-weight: 500;
+        }
+
+        .step-text.completed {
+            color: #10b981;
+        }
+
+        .current-operation {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 1rem;
+            background: rgba(59, 130, 246, 0.1);
+            border: 1px solid rgba(96, 165, 250, 0.3);
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .operation-spinner {
+            width: 16px;
+            height: 16px;
+            border: 2px solid transparent;
+            border-top: 2px solid #60a5fa;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .operation-text {
+            color: #60a5fa;
+            font-weight: 500;
+            font-family: 'Courier New', monospace;
+        }
+
         /* File Info */
         .file-info {
             margin-top: 1.5rem;
@@ -240,6 +406,11 @@
             background: #15803d;
         }
 
+        .btn-primary:disabled {
+            background: #475569;
+            cursor: not-allowed;
+        }
+
         /* Preview */
         .preview-textarea {
             width: 100%;
@@ -255,28 +426,7 @@
             margin-top: 1rem;
         }
 
-        /* Analysis Results */
-        .loading {
-            text-align: center;
-            padding: 3rem;
-        }
-
-        .spinner {
-            display: inline-block;
-            width: 1.5rem;
-            height: 1.5rem;
-            border: 2px solid transparent;
-            border-top: 2px solid #60a5fa;
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin-right: 0.75rem;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
+        /* Detection Results */
         .detection-result {
             padding: 1rem;
             background: rgba(51, 65, 85, 0.3);
@@ -325,7 +475,7 @@
             margin: 0 auto 1rem;
         }
 
-        /* Result Textarea */
+        /* Result */
         .result-header {
             display: flex;
             justify-content: space-between;
@@ -391,6 +541,10 @@
             
             .container {
                 padding: 1rem;
+            }
+
+            .progress-steps {
+                grid-template-columns: 1fr;
             }
         }
 
@@ -480,6 +634,46 @@
             </div>
         </div>
 
+        <!-- Progress Card -->
+        <div id="progressCard" class="card hidden">
+            <div class="card-header">
+                <div class="card-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+                        <circle cx="12" cy="12" r="10"></circle>
+                        <polyline points="12 6 12 12 16 14"></polyline>
+                    </svg>
+                    Real-time Progress
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="progress-section">
+                    <div class="progress-header">
+                        <div class="progress-title">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                            </svg>
+                            Analysis Progress
+                        </div>
+                        <div id="progressPercentage" class="progress-percentage">0%</div>
+                    </div>
+                    
+                    <div class="progress-bar-container">
+                        <div id="progressBar" class="progress-bar" style="width: 0%"></div>
+                    </div>
+
+                    <div id="currentOperation" class="current-operation">
+                        <div class="operation-spinner"></div>
+                        <div id="operationText" class="operation-text">Initializing scanner...</div>
+                    </div>
+
+                    <div class="progress-steps" id="progressSteps">
+                        <!-- Steps will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
         <!-- Analysis Results Card -->
         <div id="analysisCard" class="card hidden">
             <div class="card-header">
@@ -545,6 +739,22 @@
         let detectionResults = [];
         let decodedContent = '';
         let showPreview = false;
+        let currentProgress = 0;
+        let currentStepIndex = 0;
+
+        const analysisSteps = [
+            { id: 'init', name: 'Initialize Scanner', description: 'Setting up analysis environment...' },
+            { id: 'base64', name: 'Base64 Detection', description: 'Scanning for Base64 patterns...' },
+            { id: 'hex', name: 'Hex Analysis', description: 'Analyzing hexadecimal encoding...' },
+            { id: 'charcode', name: 'CharCode Scan', description: 'Detecting String.fromCharCode obfuscation...' },
+            { id: 'evalatob', name: 'Eval(atob) Check', description: 'Searching for eval(atob()) patterns...' },
+            { id: 'jsfuck', name: 'JSFuck Detection', description: 'Analyzing JSFuck encoding...' },
+            { id: 'jjencode', name: 'JJencode Scan', description: 'Checking for JJencode patterns...' },
+            { id: 'aaencode', name: 'AAencode Check', description: 'Detecting AAencode obfuscation...' },
+            { id: 'utf16', name: 'UTF-16 Analysis', description: 'Scanning Unicode escape sequences...' },
+            { id: 'iso', name: 'ISO-8859-1 Check', description: 'Analyzing extended ASCII encoding...' },
+            { id: 'finalize', name: 'Finalize Results', description: 'Compiling analysis results...' }
+        ];
 
         // Initialize matrix background
         function initMatrixBackground() {
@@ -568,8 +778,68 @@
             }
         }
 
-        // Enhanced Detection Functions
-        function detectBase64(content) {
+        // Progress management
+        function initProgressSteps() {
+            const stepsContainer = document.getElementById('progressSteps');
+            stepsContainer.innerHTML = '';
+            
+            analysisSteps.forEach((step, index) => {
+                const stepElement = document.createElement('div');
+                stepElement.className = 'progress-step';
+                stepElement.id = `step-${step.id}`;
+                
+                stepElement.innerHTML = `
+                    <div class="step-icon pending">${index + 1}</div>
+                    <div class="step-text">${step.name}</div>
+                `;
+                
+                stepsContainer.appendChild(stepElement);
+            });
+        }
+
+        function updateProgress(percentage, stepIndex, operation) {
+            // Update progress bar
+            const progressBar = document.getElementById('progressBar');
+            const progressPercentage = document.getElementById('progressPercentage');
+            
+            progressBar.style.width = percentage + '%';
+            progressPercentage.textContent = Math.round(percentage) + '%';
+            
+            // Update current operation
+            const operationText = document.getElementById('operationText');
+            operationText.textContent = operation;
+            
+            // Update steps
+            analysisSteps.forEach((step, index) => {
+                const stepElement = document.getElementById(`step-${step.id}`);
+                const stepIcon = stepElement.querySelector('.step-icon');
+                const stepText = stepElement.querySelector('.step-text');
+                
+                if (index < stepIndex) {
+                    // Completed step
+                    stepElement.className = 'progress-step completed';
+                    stepIcon.className = 'step-icon completed';
+                    stepIcon.innerHTML = '✓';
+                    stepText.className = 'step-text completed';
+                } else if (index === stepIndex) {
+                    // Active step
+                    stepElement.className = 'progress-step active';
+                    stepIcon.className = 'step-icon active';
+                    stepIcon.textContent = index + 1;
+                    stepText.className = 'step-text active';
+                } else {
+                    // Pending step
+                    stepElement.className = 'progress-step';
+                    stepIcon.className = 'step-icon pending';
+                    stepIcon.textContent = index + 1;
+                    stepText.className = 'step-text';
+                }
+            });
+        }
+
+        // Enhanced Detection Functions with progress
+        async function detectBase64(content) {
+            await new Promise(resolve => setTimeout(resolve, 300));
             const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
             const lines = content.split('\n');
             let base64Lines = 0;
@@ -591,7 +861,8 @@
             return null;
         }
 
-        function detectHexadecimal(content) {
+        async function detectHexadecimal(content) {
+            await new Promise(resolve => setTimeout(resolve, 250));
             const hexMatches = content.match(/[0-9A-Fa-f]{20,}/g);
             if (hexMatches && hexMatches.length > 0) {
                 return {
@@ -603,7 +874,8 @@
             return null;
         }
 
-        function detectStringFromCharCode(content) {
+        async function detectStringFromCharCode(content) {
+            await new Promise(resolve => setTimeout(resolve, 200));
             const charCodeRegex = /String\.fromCharCode\s*\(/gi;
             const matches = content.match(charCodeRegex);
             if (matches && matches.length > 5) {
@@ -616,7 +888,8 @@
             return null;
         }
 
-        function detectEvalAtob(content) {
+        async function detectEvalAtob(content) {
+            await new Promise(resolve => setTimeout(resolve, 180));
             const evalAtobRegex = /eval\s*\(\s*atob\s*\(/gi;
             const matches = content.match(evalAtobRegex);
             if (matches && matches.length > 0) {
@@ -629,7 +902,8 @@
             return null;
         }
 
-        function detectJSFuck(content) {
+        async function detectJSFuck(content) {
+            await new Promise(resolve => setTimeout(resolve, 220));
             const jsfuckRatio = (content.match(/[[\]()!+{}]/g) || []).length / content.length;
             if (jsfuckRatio > 0.8) {
                 return {
@@ -641,7 +915,8 @@
             return null;
         }
 
-        function detectJJencode(content) {
+        async function detectJJencode(content) {
+            await new Promise(resolve => setTimeout(resolve, 160));
             if (content.includes('$=~[];') && content.includes('__={}+""')) {
                 return {
                     type: 'JJencode',
@@ -652,7 +927,8 @@
             return null;
         }
 
-        function detectAAencode(content) {
+        async function detectAAencode(content) {
+            await new Promise(resolve => setTimeout(resolve, 190));
             const aaencodePattern = /ﾟωﾟﾉ|ﾟΘﾟ|ﾟｰﾟ/;
             if (aaencodePattern.test(content)) {
                 return {
@@ -664,7 +940,8 @@
             return null;
         }
 
-        function detectUTF16(content) {
+        async function detectUTF16(content) {
+            await new Promise(resolve => setTimeout(resolve, 170));
             const utf16Regex = /\\u[0-9A-Fa-f]{4}/g;
             const matches = content.match(utf16Regex);
             if (matches && matches.length > 10) {
@@ -677,7 +954,8 @@
             return null;
         }
 
-        function detectISO88591(content) {
+        async function detectISO88591(content) {
+            await new Promise(resolve => setTimeout(resolve, 140));
             const isoChars = /[\x80-\xFF]/g;
             const matches = content.match(isoChars);
             if (matches && matches.length > content.length * 0.1) {
@@ -780,16 +1058,10 @@
             document.getElementById('fileSize').textContent = (file.size / 1024).toFixed(2) + ' KB';
             document.getElementById('fileInfo').classList.remove('hidden');
 
-            // Show analysis card with loading
-            const analysisCard = document.getElementById('analysisCard');
-            const analysisContent = document.getElementById('analysisContent');
-            analysisContent.innerHTML = `
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <span>Analyzing obfuscation patterns...</span>
-                </div>
-            `;
-            analysisCard.classList.remove('hidden');
+            // Initialize progress
+            document.getElementById('progressCard').classList.remove('hidden');
+            initProgressSteps();
+            updateProgress(0, 0, 'Preparing to read file...');
 
             // Read file
             const reader = new FileReader();
@@ -797,39 +1069,63 @@
                 fileContent = e.target.result;
                 document.getElementById('previewTextarea').value = fileContent.substring(0, 1000) + (fileContent.length > 1000 ? '...' : '');
                 
-                // Simulate analysis delay
-                setTimeout(() => {
-                    analyzeFile();
-                }, 1500);
+                // Start analysis
+                analyzeFile();
             };
             reader.readAsText(file);
         });
 
-        function analyzeFile() {
+        async function analyzeFile() {
             detectionResults = [];
+            currentProgress = 0;
+            currentStepIndex = 0;
 
             const detectors = [
-                detectBase64,
-                detectHexadecimal,
-                detectStringFromCharCode,
-                detectEvalAtob,
-                detectJSFuck,
-                detectJJencode,
-                detectAAencode,
-                detectUTF16,
-                detectISO88591
+                { func: () => Promise.resolve(), name: 'init' },
+                { func: detectBase64, name: 'base64' },
+                { func: detectHexadecimal, name: 'hex' },
+                { func: detectStringFromCharCode, name: 'charcode' },
+                { func: detectEvalAtob, name: 'evalatob' },
+                { func: detectJSFuck, name: 'jsfuck' },
+                { func: detectJJencode, name: 'jjencode' },
+                { func: detectAAencode, name: 'aaencode' },
+                { func: detectUTF16, name: 'utf16' },
+                { func: detectISO88591, name: 'iso' },
+                { func: () => Promise.resolve(), name: 'finalize' }
             ];
 
-            detectors.forEach(detector => {
-                const result = detector(fileContent);
-                if (result) detectionResults.push(result);
-            });
+            for (let i = 0; i < detectors.length; i++) {
+                const detector = detectors[i];
+                const step = analysisSteps[i];
+                
+                // Update progress
+                currentProgress = (i / detectors.length) * 100;
+                updateProgress(currentProgress, i, step.description);
+                
+                // Run detector
+                if (detector.func !== (() => Promise.resolve())) {
+                    const result = await detector.func(fileContent);
+                    if (result) detectionResults.push(result);
+                } else {
+                    // Simulate processing time for init and finalize
+                    await new Promise(resolve => setTimeout(resolve, 200));
+                }
+            }
 
+            // Complete progress
+            updateProgress(100, analysisSteps.length, 'Analysis complete!');
+            
+            // Sort results and display
             detectionResults.sort((a, b) => b.confidence - a.confidence);
-            displayResults();
+            
+            // Show results after a brief delay
+            setTimeout(() => {
+                displayResults();
+            }, 500);
         }
 
         function displayResults() {
+            const analysisCard = document.getElementById('analysisCard');
             const analysisContent = document.getElementById('analysisContent');
             
             if (detectionResults.length > 0) {
@@ -874,10 +1170,28 @@
                     </div>
                 `;
             }
+            
+            analysisCard.classList.remove('hidden');
         }
 
-        function performDecode() {
+        async function performDecode() {
             if (detectionResults.length === 0) return;
+
+            // Show decoding progress
+            const progressCard = document.getElementById('progressCard');
+            const operationText = document.getElementById('operationText');
+            const progressBar = document.getElementById('progressBar');
+            const progressPercentage = document.getElementById('progressPercentage');
+            
+            progressCard.classList.remove('hidden');
+            operationText.textContent = 'Decoding content...';
+            
+            // Animate decoding progress
+            for (let i = 0; i <= 100; i += 10) {
+                progressBar.style.width = i + '%';
+                progressPercentage.textContent = i + '%';
+                await new Promise(resolve => setTimeout(resolve, 50));
+            }
 
             const topResult = detectionResults[0];
             let decoded = '';
@@ -907,6 +1221,11 @@
             document.getElementById('lineCount').textContent = 'Lines: ' + decoded.split('\n').length;
             document.getElementById('charCount').textContent = 'Characters: ' + decoded.length;
             document.getElementById('resultCard').classList.remove('hidden');
+            
+            // Hide progress card after completion
+            setTimeout(() => {
+                progressCard.classList.add('hidden');
+            }, 1000);
         }
 
         function togglePreview() {
@@ -927,7 +1246,7 @@
             } else {
                 previewTextarea.classList.add('hidden');
                 previewBtn.innerHTML = `
-                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <svg width="16" width="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                         <circle cx="12" cy="12" r="3"></circle>
                     </svg>
