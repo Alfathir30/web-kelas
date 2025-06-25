@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>JS DECODER MATRIX - Advanced JavaScript Deobfuscation Tool</title>
+    <title>JS Decoder - Advanced JavaScript Deobfuscation Suite</title>
     <style>
         * {
             margin: 0;
@@ -12,255 +12,391 @@
         }
 
         body {
-            background-color: #000000;
-            color: #00FF00;
-            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0f172a 0%, #1e3a8a 50%, #0f172a 100%);
+            color: #f1f5f9;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
             min-height: 100vh;
-            padding: 20px;
             position: relative;
-            overflow-x: auto;
+            overflow-x: hidden;
         }
 
-        .container {
-            max-width: 1200px;
-            margin: 0 auto;
-            position: relative;
-            z-index: 10;
-        }
-
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
-        }
-
-        .header h1 {
-            font-size: 3rem;
-            font-weight: bold;
-            margin-bottom: 10px;
-            text-shadow: 0 0 10px #00FF00;
-        }
-
-        .header p {
-            font-size: 1.2rem;
-            opacity: 0.8;
-            margin-bottom: 10px;
-        }
-
-        .header .status {
-            font-size: 0.9rem;
-            opacity: 0.6;
-        }
-
-        .card {
-            background-color: #1a1a1a;
-            border: 2px solid #00FF00;
-            border-radius: 8px;
-            margin-bottom: 30px;
-            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
-        }
-
-        .card-header {
-            padding: 20px;
-            border-bottom: 1px solid #00FF00;
-        }
-
-        .card-title {
-            font-size: 1.5rem;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-
-        .card-content {
-            padding: 20px;
-        }
-
-        .upload-area {
-            border: 2px dashed #00FF00;
-            border-radius: 8px;
-            padding: 40px;
-            text-align: center;
-            transition: all 0.3s ease;
-        }
-
-        .upload-area:hover {
-            background-color: rgba(0, 255, 0, 0.05);
-        }
-
-        .upload-btn {
-            background: transparent;
-            border: 2px solid #00FF00;
-            color: #00FF00;
-            padding: 15px 30px;
-            font-family: 'Courier New', monospace;
-            font-size: 1.1rem;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-        }
-
-        .upload-btn:hover {
-            background-color: #00FF00;
-            color: #000000;
-            box-shadow: 0 0 15px #00FF00;
-        }
-
-        .decode-btn {
-            background-color: #00FF00;
-            color: #000000;
-            border: none;
-            padding: 15px 30px;
-            font-family: 'Courier New', monospace;
-            font-size: 1.1rem;
-            cursor: pointer;
-            border-radius: 4px;
-            width: 100%;
-            margin-top: 20px;
-            transition: all 0.3s ease;
-            text-transform: uppercase;
-        }
-
-        .decode-btn:hover {
-            background-color: #00CC00;
-            box-shadow: 0 0 15px #00FF00;
-        }
-
-        .file-info {
-            margin-top: 20px;
-            padding: 20px;
-            background-color: #2a2a2a;
-            border: 1px solid #00FF00;
-            border-radius: 4px;
-        }
-
-        .detection-result {
-            padding: 15px;
-            background-color: #2a2a2a;
-            border: 1px solid #00FF00;
-            border-radius: 4px;
-            margin-bottom: 15px;
-        }
-
-        .detection-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 5px;
-        }
-
-        .confidence {
-            font-size: 0.9rem;
-        }
-
-        .description {
-            font-size: 0.9rem;
-            opacity: 0.8;
-        }
-
-        .textarea {
-            width: 100%;
-            min-height: 400px;
-            background-color: #000000;
-            border: 2px solid #00FF00;
-            color: #00FF00;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            padding: 15px;
-            resize: vertical;
-            border-radius: 4px;
-        }
-
-        .textarea:focus {
-            outline: none;
-            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
-        }
-
-        .button-group {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-        }
-
-        .small-btn {
-            background: transparent;
-            border: 1px solid #00FF00;
-            color: #00FF00;
-            padding: 8px 16px;
-            font-family: 'Courier New', monospace;
-            font-size: 0.9rem;
-            cursor: pointer;
-            border-radius: 4px;
-            transition: all 0.3s ease;
-        }
-
-        .small-btn:hover {
-            background-color: #00FF00;
-            color: #000000;
-        }
-
-        .processing {
-            text-align: center;
-            padding: 40px;
-            animation: pulse 2s infinite;
-        }
-
-        .error {
-            color: #FF0000;
-            text-align: center;
-            padding: 40px;
-        }
-
-        .watermark {
-            position: fixed;
-            bottom: 20px;
-            right: 20px;
-            font-size: 0.8rem;
-            opacity: 0.5;
-            z-index: 20;
-        }
-
+        /* Matrix Background */
         .matrix-bg {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            opacity: 0.05;
-            z-index: 1;
+            opacity: 0.1;
+            z-index: 0;
             pointer-events: none;
             overflow: hidden;
-            font-size: 12px;
-            line-height: 1;
         }
 
         .matrix-line {
+            position: absolute;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            color: #0f4c75;
             white-space: nowrap;
-            animation: pulse 3s infinite;
+            animation: matrixFall 10s linear infinite;
         }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 0.3; }
-            50% { opacity: 0.8; }
+        @keyframes matrixFall {
+            0% { transform: translateY(-100vh); opacity: 0; }
+            10% { opacity: 1; }
+            90% { opacity: 1; }
+            100% { transform: translateY(100vh); opacity: 0; }
         }
 
-        .hidden {
-            display: none;
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem 1rem;
+            position: relative;
+            z-index: 10;
         }
 
+        /* Header */
+        .header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .header-icons {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .icon-container {
+            padding: 0.75rem;
+            background: rgba(59, 130, 246, 0.2);
+            border-radius: 50%;
+            border: 1px solid rgba(96, 165, 250, 0.3);
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: 300;
+            letter-spacing: 0.05em;
+            margin-bottom: 0.5rem;
+        }
+
+        .header .brand {
+            font-weight: 600;
+            color: #60a5fa;
+        }
+
+        .header p {
+            font-size: 1.25rem;
+            color: #cbd5e1;
+            font-weight: 300;
+            margin-bottom: 0.5rem;
+        }
+
+        .header-divider {
+            width: 6rem;
+            height: 1px;
+            background: linear-gradient(to right, transparent, #60a5fa, transparent);
+            margin: 0 auto;
+        }
+
+        /* Cards */
+        .card {
+            background: rgba(30, 41, 59, 0.5);
+            border: 1px solid rgba(71, 85, 105, 0.5);
+            border-radius: 0.5rem;
+            backdrop-filter: blur(8px);
+            margin-bottom: 2rem;
+            overflow: hidden;
+        }
+
+        .card-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(71, 85, 105, 0.3);
+        }
+
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-size: 1.125rem;
+            font-weight: 500;
+            color: #f1f5f9;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        /* Upload Area */
+        .upload-area {
+            text-align: center;
+            padding: 2rem;
+            border: 2px dashed #475569;
+            border-radius: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover {
+            border-color: rgba(96, 165, 250, 0.5);
+        }
+
+        .upload-btn {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 0.75rem 2rem;
+            font-size: 1.125rem;
+            font-weight: 500;
+            border-radius: 0.375rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .upload-btn:hover {
+            background: #1d4ed8;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+        }
+
+        .upload-info {
+            color: #94a3b8;
+            margin-top: 1rem;
+            font-size: 0.875rem;
+        }
+
+        /* File Info */
+        .file-info {
+            margin-top: 1.5rem;
+            padding: 1rem;
+            background: rgba(51, 65, 85, 0.3);
+            border-radius: 0.5rem;
+            border: 1px solid rgba(71, 85, 105, 0.5);
+        }
+
+        .file-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            font-size: 0.875rem;
+        }
+
+        .file-label {
+            color: #94a3b8;
+        }
+
+        .file-value {
+            color: #f1f5f9;
+            font-family: 'Courier New', monospace;
+            word-break: break-all;
+        }
+
+        .status-loaded {
+            color: #10b981;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 0.375rem;
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.25rem;
+            text-decoration: none;
+        }
+
+        .btn-outline {
+            background: transparent;
+            border: 1px solid #475569;
+            color: #cbd5e1;
+        }
+
+        .btn-outline:hover {
+            background: #334155;
+        }
+
+        .btn-primary {
+            background: #16a34a;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 0.75rem;
+            font-size: 1.125rem;
+            margin-top: 1.5rem;
+        }
+
+        .btn-primary:hover {
+            background: #15803d;
+        }
+
+        /* Preview */
+        .preview-textarea {
+            width: 100%;
+            height: 8rem;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid #475569;
+            color: #cbd5e1;
+            font-family: 'Courier New', monospace;
+            font-size: 0.75rem;
+            padding: 0.75rem;
+            resize: none;
+            border-radius: 0.375rem;
+            margin-top: 1rem;
+        }
+
+        /* Analysis Results */
+        .loading {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner {
+            display: inline-block;
+            width: 1.5rem;
+            height: 1.5rem;
+            border: 2px solid transparent;
+            border-top: 2px solid #60a5fa;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-right: 0.75rem;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .detection-result {
+            padding: 1rem;
+            background: rgba(51, 65, 85, 0.3);
+            border-radius: 0.5rem;
+            border: 1px solid rgba(71, 85, 105, 0.5);
+            margin-bottom: 1rem;
+        }
+
+        .detection-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+        }
+
+        .detection-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            color: #f1f5f9;
+        }
+
+        .confidence-badge {
+            background: rgba(59, 130, 246, 0.2);
+            color: #93c5fd;
+            padding: 0.25rem 0.5rem;
+            border-radius: 0.25rem;
+            font-size: 0.75rem;
+        }
+
+        .detection-description {
+            color: #cbd5e1;
+            font-size: 0.875rem;
+        }
+
+        .no-detection {
+            text-align: center;
+            padding: 2rem;
+        }
+
+        .warning-icon {
+            width: 3rem;
+            height: 3rem;
+            color: #f59e0b;
+            margin: 0 auto 1rem;
+        }
+
+        /* Result Textarea */
+        .result-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .result-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .result-textarea {
+            width: 100%;
+            height: 24rem;
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid #475569;
+            color: #f1f5f9;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            padding: 1rem;
+            resize: none;
+            border-radius: 0.375rem;
+        }
+
+        .result-textarea:focus {
+            outline: none;
+            border-color: rgba(96, 165, 250, 0.5);
+        }
+
+        .result-stats {
+            margin-top: 0.75rem;
+            display: flex;
+            justify-content: space-between;
+            color: #94a3b8;
+            font-size: 0.75rem;
+        }
+
+        /* Watermark */
+        .watermark {
+            position: fixed;
+            bottom: 1.5rem;
+            right: 1.5rem;
+            color: rgba(148, 163, 184, 0.6);
+            font-size: 0.875rem;
+            font-weight: 300;
+            z-index: 20;
+        }
+
+        /* Responsive */
         @media (max-width: 768px) {
             .header h1 {
                 font-size: 2rem;
             }
             
-            .button-group {
+            .file-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .result-actions {
                 flex-direction: column;
             }
             
-            body {
-                padding: 10px;
+            .container {
+                padding: 1rem;
             }
+        }
+
+        /* Hidden class */
+        .hidden {
+            display: none !important;
         }
     </style>
 </head>
@@ -271,55 +407,131 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            <h1>⚡ JS DECODER MATRIX ⚡</h1>
-            <p>&gt; ADVANCED JAVASCRIPT DEOBFUSCATION TOOL &lt;</p>
-            <div class="status">[SYSTEM READY] - [ENCRYPTION DETECTION ACTIVE] - [CLIENT-SIDE PROCESSING]</div>
+            <div class="header-icons">
+                <div class="icon-container">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+                        <polyline points="4 17 10 11 4 5"></polyline>
+                        <line x1="12" y1="19" x2="20" y2="19"></line>
+                    </svg>
+                </div>
+                <h1>JS <span class="brand">Decoder</span></h1>
+                <div class="icon-container">
+                    <svg width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                    </svg>
+                </div>
+            </div>
+            <p>Advanced JavaScript Deobfuscation Suite</p>
+            <div class="header-divider"></div>
         </div>
 
-        <!-- File Upload -->
+        <!-- File Upload Card -->
         <div class="card">
             <div class="card-header">
                 <div class="card-title">
-                    📄 FILE UPLOAD PROTOCOL
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+                        <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                        <polyline points="7 10 12 15 17 10"></polyline>
+                        <line x1="12" y1="15" x2="12" y2="3"></line>
+                    </svg>
+                    File Upload
                 </div>
             </div>
             <div class="card-content">
                 <div class="upload-area">
                     <input type="file" id="fileInput" accept=".js" class="hidden">
                     <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
-                        📤 SELECT TARGET FILE (.js)
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                            <polyline points="7 10 12 15 17 10"></polyline>
+                            <line x1="12" y1="15" x2="12" y2="3"></line>
+                        </svg>
+                        Select JavaScript File
                     </button>
-                    <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.7;">
-                        &gt; MAX SIZE: 109MB | SUPPORTED: .js files only
-                    </p>
-                    <div id="fileInfo" class="file-info hidden"></div>
+                    <p class="upload-info">Supports .js files up to 20MB</p>
+                </div>
+
+                <div id="fileInfo" class="file-info hidden">
+                    <div class="file-grid">
+                        <div>
+                            <div class="file-label">Filename:</div>
+                            <div id="fileName" class="file-value"></div>
+                        </div>
+                        <div>
+                            <div class="file-label">Size:</div>
+                            <div id="fileSize" class="file-value"></div>
+                        </div>
+                        <div>
+                            <div class="file-label">Status:</div>
+                            <div class="file-value status-loaded">Loaded</div>
+                        </div>
+                    </div>
+                    <div style="margin-top: 1rem;">
+                        <button id="previewBtn" class="btn btn-outline" onclick="togglePreview()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                            Show Preview
+                        </button>
+                    </div>
+                    <textarea id="previewTextarea" class="preview-textarea hidden" readonly></textarea>
                 </div>
             </div>
         </div>
 
-        <!-- Detection Results -->
-        <div id="detectionCard" class="card hidden">
+        <!-- Analysis Results Card -->
+        <div id="analysisCard" class="card hidden">
             <div class="card-header">
-                <div class="card-title">🔍 ENCRYPTION ANALYSIS RESULTS</div>
+                <div class="card-title">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+                        <polyline points="16 18 22 12 16 6"></polyline>
+                        <polyline points="8 6 2 12 8 18"></polyline>
+                    </svg>
+                    Analysis Results
+                </div>
             </div>
             <div class="card-content">
-                <div id="detectionContent"></div>
+                <div id="analysisContent"></div>
             </div>
         </div>
 
-        <!-- Decoded Result -->
+        <!-- Decoded Results Card -->
         <div id="resultCard" class="card hidden">
             <div class="card-header">
-                <div class="card-title" style="justify-content: space-between;">
-                    <span>💻 DECODED OUTPUT</span>
-                    <div class="button-group">
-                        <button class="small-btn" onclick="copyToClipboard()">📋 COPY</button>
-                        <button class="small-btn" onclick="downloadResult()">💾 DOWNLOAD</button>
+                <div class="result-header">
+                    <div class="card-title">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#60a5fa" stroke-width="2">
+                            <polyline points="4 17 10 11 4 5"></polyline>
+                            <line x1="12" y1="19" x2="20" y2="19"></line>
+                        </svg>
+                        Decoded Output
+                    </div>
+                    <div class="result-actions">
+                        <button class="btn btn-outline" onclick="copyToClipboard()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
+                                <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
+                            </svg>
+                            Copy
+                        </button>
+                        <button class="btn btn-outline" onclick="downloadResult()">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path>
+                                <polyline points="7 10 12 15 17 10"></polyline>
+                                <line x1="12" y1="15" x2="12" y2="3"></line>
+                            </svg>
+                            Download
+                        </button>
                     </div>
                 </div>
             </div>
             <div class="card-content">
-                <textarea id="resultTextarea" class="textarea" readonly placeholder="Decoded content will appear here..."></textarea>
+                <textarea id="resultTextarea" class="result-textarea" readonly placeholder="Decoded content will appear here..."></textarea>
+                <div class="result-stats">
+                    <span id="lineCount">Lines: 0</span>
+                    <span id="charCount">Characters: 0</span>
+                </div>
             </div>
         </div>
     </div>
@@ -332,21 +544,31 @@
         let fileContent = '';
         let detectionResults = [];
         let decodedContent = '';
+        let showPreview = false;
 
         // Initialize matrix background
         function initMatrixBackground() {
             const matrixBg = document.getElementById('matrixBg');
-            const binaryPattern = '01010101 11001100 10101010 01110111 00110011 10011001 ';
+            const chars = '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲン';
+            const charArray = chars.split('');
             
-            for (let i = 0; i < 50; i++) {
+            for (let i = 0; i < 20; i++) {
                 const line = document.createElement('div');
                 line.className = 'matrix-line';
-                line.textContent = binaryPattern.repeat(20);
+                line.style.left = Math.random() * 100 + '%';
+                line.style.animationDelay = Math.random() * 10 + 's';
+                line.style.animationDuration = (Math.random() * 10 + 10) + 's';
+                
+                let text = '';
+                for (let j = 0; j < 50; j++) {
+                    text += charArray[Math.floor(Math.random() * charArray.length)];
+                }
+                line.textContent = text;
                 matrixBg.appendChild(line);
             }
         }
 
-        // Detection functions
+        // Enhanced Detection Functions
         function detectBase64(content) {
             const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
             const lines = content.split('\n');
@@ -363,7 +585,7 @@
                 return {
                     type: 'Base64',
                     confidence: Math.min(95, (base64Lines / lines.length) * 100),
-                    description: 'Base64 encoded content detected'
+                    description: 'Base64 encoded content detected with high confidence'
                 };
             }
             return null;
@@ -375,7 +597,7 @@
                 return {
                     type: 'Hexadecimal',
                     confidence: 85,
-                    description: 'Hexadecimal encoded content detected'
+                    description: 'Hexadecimal encoded patterns detected'
                 };
             }
             return null;
@@ -388,7 +610,7 @@
                 return {
                     type: 'String.fromCharCode',
                     confidence: 90,
-                    description: 'String.fromCharCode obfuscation detected'
+                    description: 'Character code obfuscation detected'
                 };
             }
             return null;
@@ -401,19 +623,19 @@
                 return {
                     type: 'eval(atob(...))',
                     confidence: 95,
-                    description: 'eval(atob(...)) obfuscation detected'
+                    description: 'Base64 eval obfuscation pattern detected'
                 };
             }
             return null;
         }
 
         function detectJSFuck(content) {
-            const jsfuckRatio = (content.match(/[\[\]()!+{}]/g) || []).length / content.length;
+            const jsfuckRatio = (content.match(/[[\]()!+{}]/g) || []).length / content.length;
             if (jsfuckRatio > 0.8) {
                 return {
                     type: 'JSFuck',
                     confidence: 90,
-                    description: 'JSFuck obfuscation detected'
+                    description: 'JSFuck obfuscation using only []()!+{} characters'
                 };
             }
             return null;
@@ -424,7 +646,7 @@
                 return {
                     type: 'JJencode',
                     confidence: 95,
-                    description: 'JJencode obfuscation detected'
+                    description: 'JJencode obfuscation pattern identified'
                 };
             }
             return null;
@@ -436,7 +658,7 @@
                 return {
                     type: 'AAencode',
                     confidence: 95,
-                    description: 'AAencode obfuscation detected'
+                    description: 'AAencode Japanese character obfuscation detected'
                 };
             }
             return null;
@@ -449,18 +671,31 @@
                 return {
                     type: 'UTF-16',
                     confidence: 80,
-                    description: 'UTF-16 unicode escapes detected'
+                    description: 'UTF-16 unicode escape sequences found'
                 };
             }
             return null;
         }
 
-        // Decoding functions
+        function detectISO88591(content) {
+            const isoChars = /[\x80-\xFF]/g;
+            const matches = content.match(isoChars);
+            if (matches && matches.length > content.length * 0.1) {
+                return {
+                    type: 'ISO-8859-1',
+                    confidence: 75,
+                    description: 'Extended ASCII (ISO-8859-1) encoding detected'
+                };
+            }
+            return null;
+        }
+
+        // Enhanced Decoding Functions
         function decodeBase64(content) {
             try {
                 return atob(content.replace(/\s/g, ''));
             } catch {
-                return 'Failed to decode Base64';
+                return 'Error: Invalid Base64 encoding format';
             }
         }
 
@@ -473,7 +708,7 @@
                 }
                 return result;
             } catch {
-                return 'Failed to decode Hexadecimal';
+                return 'Error: Invalid hexadecimal format';
             }
         }
 
@@ -491,7 +726,7 @@
 
                 return decoded;
             } catch {
-                return 'Failed to decode String.fromCharCode';
+                return 'Error: Failed to decode String.fromCharCode';
             }
         }
 
@@ -509,7 +744,7 @@
 
                 return decoded;
             } catch {
-                return 'Failed to decode eval(atob(...))';
+                return 'Error: Failed to decode eval(atob(...))';
             }
         }
 
@@ -519,7 +754,7 @@
                     return String.fromCharCode(parseInt(hex, 16));
                 });
             } catch {
-                return 'Failed to decode UTF-16';
+                return 'Error: Invalid UTF-16 format';
             }
         }
 
@@ -528,8 +763,8 @@
             const file = event.target.files[0];
             if (!file) return;
 
-            if (file.size > 109 * 1024 * 1024) {
-                alert('File size exceeds 109MB limit');
+            if (file.size > 20 * 1024 * 1024) {
+                alert('File size exceeds 20MB limit');
                 return;
             }
 
@@ -541,24 +776,31 @@
             currentFile = file;
             
             // Show file info
-            const fileInfo = document.getElementById('fileInfo');
-            fileInfo.innerHTML = `
-                <p>&gt; FILE LOADED: ${file.name}</p>
-                <p>&gt; SIZE: ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
-            `;
-            fileInfo.classList.remove('hidden');
+            document.getElementById('fileName').textContent = file.name;
+            document.getElementById('fileSize').textContent = (file.size / 1024).toFixed(2) + ' KB';
+            document.getElementById('fileInfo').classList.remove('hidden');
 
-            // Show processing
-            const detectionCard = document.getElementById('detectionCard');
-            const detectionContent = document.getElementById('detectionContent');
-            detectionContent.innerHTML = '<div class="processing">&gt; SCANNING FOR OBFUSCATION PATTERNS...</div>';
-            detectionCard.classList.remove('hidden');
+            // Show analysis card with loading
+            const analysisCard = document.getElementById('analysisCard');
+            const analysisContent = document.getElementById('analysisContent');
+            analysisContent.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <span>Analyzing obfuscation patterns...</span>
+                </div>
+            `;
+            analysisCard.classList.remove('hidden');
 
             // Read file
             const reader = new FileReader();
             reader.onload = function(e) {
                 fileContent = e.target.result;
-                analyzeFile();
+                document.getElementById('previewTextarea').value = fileContent.substring(0, 1000) + (fileContent.length > 1000 ? '...' : '');
+                
+                // Simulate analysis delay
+                setTimeout(() => {
+                    analyzeFile();
+                }, 1500);
             };
             reader.readAsText(file);
         });
@@ -574,7 +816,8 @@
                 detectJSFuck,
                 detectJJencode,
                 detectAAencode,
-                detectUTF16
+                detectUTF16,
+                detectISO88591
             ];
 
             detectors.forEach(detector => {
@@ -587,28 +830,47 @@
         }
 
         function displayResults() {
-            const detectionContent = document.getElementById('detectionContent');
+            const analysisContent = document.getElementById('analysisContent');
             
             if (detectionResults.length > 0) {
-                let html = '';
+                let html = '<div style="margin-bottom: 1rem;">';
                 detectionResults.forEach(result => {
                     html += `
                         <div class="detection-result">
                             <div class="detection-header">
-                                <span><strong>&gt; ${result.type}</strong></span>
-                                <span class="confidence">CONFIDENCE: ${Math.round(result.confidence)}%</span>
+                                <div class="detection-title">
+                                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#10b981" stroke-width="2">
+                                        <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                                        <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                                    </svg>
+                                    ${result.type}
+                                </div>
+                                <div class="confidence-badge">${Math.round(result.confidence)}% confidence</div>
                             </div>
-                            <div class="description">${result.description}</div>
+                            <div class="detection-description">${result.description}</div>
                         </div>
                     `;
                 });
-                html += '<button class="decode-btn" onclick="performDecode()">⚡ DECODE TO ORIGINAL CODE</button>';
-                detectionContent.innerHTML = html;
+                html += '</div>';
+                html += `
+                    <button class="btn btn-primary" onclick="performDecode()">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
+                        </svg>
+                        Decode to Original Code
+                    </button>
+                `;
+                analysisContent.innerHTML = html;
             } else {
-                detectionContent.innerHTML = `
-                    <div class="error">
-                        <p>&gt; ENCODING NOT DETECTED</p>
-                        <p style="font-size: 0.9rem; margin-top: 10px;">&gt; MANUAL ANALYSIS REQUIRED</p>
+                analysisContent.innerHTML = `
+                    <div class="no-detection">
+                        <svg class="warning-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <line x1="12" y1="8" x2="12" y2="12"></line>
+                            <line x1="12" y1="16" x2="12.01" y2="16"></line>
+                        </svg>
+                        <p style="font-weight: 500; color: #f1f5f9; margin-bottom: 0.5rem;">No obfuscation patterns detected</p>
+                        <p style="color: #94a3b8; font-size: 0.875rem;">The file may already be in plain text or use custom obfuscation</p>
                     </div>
                 `;
             }
@@ -637,19 +899,54 @@
                     decoded = decodeUTF16(fileContent);
                     break;
                 default:
-                    decoded = 'Decoding not implemented for this type';
+                    decoded = 'Decoding method not yet implemented for this obfuscation type';
             }
 
             decodedContent = decoded;
             document.getElementById('resultTextarea').value = decoded;
+            document.getElementById('lineCount').textContent = 'Lines: ' + decoded.split('\n').length;
+            document.getElementById('charCount').textContent = 'Characters: ' + decoded.length;
             document.getElementById('resultCard').classList.remove('hidden');
         }
 
-        function copyToClipboard() {
-            const textarea = document.getElementById('resultTextarea');
-            textarea.select();
-            document.execCommand('copy');
-            alert('Copied to clipboard!');
+        function togglePreview() {
+            const previewTextarea = document.getElementById('previewTextarea');
+            const previewBtn = document.getElementById('previewBtn');
+            
+            showPreview = !showPreview;
+            
+            if (showPreview) {
+                previewTextarea.classList.remove('hidden');
+                previewBtn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                        <line x1="1" y1="1" x2="23" y2="23"></line>
+                    </svg>
+                    Hide Preview
+                `;
+            } else {
+                previewTextarea.classList.add('hidden');
+                previewBtn.innerHTML = `
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                        <circle cx="12" cy="12" r="3"></circle>
+                    </svg>
+                    Show Preview
+                `;
+            }
+        }
+
+        async function copyToClipboard() {
+            try {
+                await navigator.clipboard.writeText(decodedContent);
+                alert('Successfully copied to clipboard!');
+            } catch {
+                // Fallback for older browsers
+                const textarea = document.getElementById('resultTextarea');
+                textarea.select();
+                document.execCommand('copy');
+                alert('Copied to clipboard!');
+            }
         }
 
         function downloadResult() {
