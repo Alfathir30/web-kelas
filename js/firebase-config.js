@@ -1,12 +1,13 @@
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDE6ZBC9OZQomhNYa2s26kdna2gVtOitiI",
-  authDomain: "webkelas-1f013.firebaseapp.com",
-  projectId: "webkelas-1f013",
-  storageBucket: "webkelas-1f013.firebasestorage.app",
-  messagingSenderId: "479528175775",
-  appId: "1:479528175775:web:333be78ef70f19ac07baaa",
-  measurementId: "G-HZDNBT8N6G"
+  apiKey: "AIzaSyBnWBIil8PKjFXoPRXI4NtgAv6mVNkL89s",
+  authDomain: "tkj2-2db1e.firebaseapp.com",
+  databaseURL: "https://tkj2-2db1e-default-rtdb.firebaseio.com",
+  projectId: "tkj2-2db1e",
+  storageBucket: "tkj2-2db1e.firebasestorage.app",
+  messagingSenderId: "1017107912057",
+  appId: "1:1017107912057:web:0754a2adc6d4b686bc8ba8",
+  measurementId: "G-440VKHG02X"
 }
 
 // Validasi config
