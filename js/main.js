@@ -26,7 +26,74 @@ const jadwalPelajaran = {
     { jam: "14:15-15:00", mata_pelajaran: "Akidah Akhlak", guru: "Indriani", kode: "23.A" },
     { jam: "15:00-15:45", mata_pelajaran: "Akidah Akhlak", guru: "Indriani", kode: "23.A" },
   ],
-  // ... data jadwal lainnya (dipotong untuk menghemat space)
+  Selasa: [
+    {
+      jam: "07:00-07:45",
+      mata_pelajaran: "Administrasi Infrastruktur Jaringan",
+      guru: "Djuli Hartono",
+      kode: "12.A - D",
+    },
+    {
+      jam: "07:45-08:30",
+      mata_pelajaran: "Administrasi Infrastruktur Jaringan",
+      guru: "Djuli Hartono",
+      kode: "12.A - D",
+    },
+    {
+      jam: "08:30-09:15",
+      mata_pelajaran: "Administrasi Infrastruktur Jaringan",
+      guru: "Djuli Hartono",
+      kode: "12.A - D",
+    },
+    { jam: "09:15-09:30", mata_pelajaran: "Istirahat 1", guru: "", kode: "", istirahat: true },
+    {
+      jam: "09:30-10:15",
+      mata_pelajaran: "Administrasi Infrastruktur Jaringan",
+      guru: "Djuli Hartono",
+      kode: "12.A - D",
+    },
+    { jam: "10:15-11:00", mata_pelajaran: "Sejarah", guru: "Indri Astuti", kode: "17.A" },
+    { jam: "11:00-11:45", mata_pelajaran: "Sejarah", guru: "Indri Astuti", kode: "17.A" },
+    { jam: "11:45-12:15", mata_pelajaran: "Istirahat 2", guru: "", kode: "", istirahat: true },
+    { jam: "12:15-13:00", mata_pelajaran: "Tehwan", guru: "Dina Novida", kode: "20.A" },
+    { jam: "13:00-13:45", mata_pelajaran: "Tehwan", guru: "Dina Novida", kode: "20.A" },
+    { jam: "13:45-14:30", mata_pelajaran: "Tehwan", guru: "Dina Novida", kode: "20.A" },
+  ],
+  Rabu: [
+    { jam: "07:00-07:45", mata_pelajaran: "B. Indonesia", guru: "Rifai", kode: "02.A" },
+    { jam: "07:45-08:30", mata_pelajaran: "B. Indonesia", guru: "Rifai", kode: "02.A" },
+    { jam: "08:30-09:15", mata_pelajaran: "B. Indonesia", guru: "Rifai", kode: "02.A" },
+    { jam: "09:15-09:30", mata_pelajaran: "Istirahat 1", guru: "", kode: "", istirahat: true },
+    { jam: "09:30-10:15", mata_pelajaran: "Teknologi Layanan Jaringan", guru: "Indra", kode: "33.B" },
+    { jam: "10:15-11:00", mata_pelajaran: "Teknologi Layanan Jaringan", guru: "Indra", kode: "33.B" },
+    { jam: "11:00-11:45", mata_pelajaran: "Teknologi Layanan Jaringan", guru: "Indra", kode: "33.B" },
+    { jam: "11:45-12:15", mata_pelajaran: "Istirahat 2", guru: "", kode: "", istirahat: true },
+    { jam: "12:15-13:00", mata_pelajaran: "Administrasi Sistem Jaringan", guru: "Irfan", kode: "34.A" },
+    { jam: "13:00-13:45", mata_pelajaran: "Administrasi Sistem Jaringan", guru: "Irfan", kode: "34.A" },
+    { jam: "13:45-14:30", mata_pelajaran: "Administrasi Sistem Jaringan", guru: "Irfan", kode: "34.A" },
+  ],
+  Kamis: [
+    { jam: "07:00-07:45", mata_pelajaran: "Al-Quran", guru: "Zaky", kode: "38.A" },
+    { jam: "07:45-08:30", mata_pelajaran: "Al-Quran", guru: "Zaky", kode: "38.A" },
+    { jam: "08:30-09:15", mata_pelajaran: "PPKn", guru: "Irfan Rizwansyah", kode: "39.A" },
+    { jam: "09:15-09:30", mata_pelajaran: "Istirahat 1", guru: "", kode: "", istirahat: true },
+    { jam: "09:30-10:15", mata_pelajaran: "PPKn", guru: "Irfan Rizwansyah", kode: "39.A" },
+    { jam: "10:15-11:00", mata_pelajaran: "Sunda", guru: "Saefi", kode: "27.B" },
+    { jam: "11:00-11:45", mata_pelajaran: "Sunda", guru: "Saefi", kode: "27.B" },
+    { jam: "11:45-12:15", mata_pelajaran: "Istirahat 2", guru: "", kode: "", istirahat: true },
+    { jam: "12:15-13:00", mata_pelajaran: "Mata Pelajaran Pilihan (Coding)", guru: "Djuli Hartono", kode: "12.A - D" },
+    { jam: "13:00-13:45", mata_pelajaran: "Mata Pelajaran Pilihan (Coding)", guru: "Djuli Hartono", kode: "12.A - D" },
+    { jam: "13:45-14:30", mata_pelajaran: "Mata Pelajaran Pilihan (Coding)", guru: "Djuli Hartono", kode: "12.A - D" },
+  ],
+  Jumat: [
+    { jam: "07:00-07:45", mata_pelajaran: "Matematika", guru: "Bu Ika", kode: "16.A - C" },
+    { jam: "07:45-08:30", mata_pelajaran: "Matematika", guru: "Bu Ika", kode: "16.A - C" },
+    { jam: "08:30-09:15", mata_pelajaran: "Matematika", guru: "Bu Ika", kode: "16.A - C" },
+    { jam: "09:15-09:30", mata_pelajaran: "Istirahat 1", guru: "", kode: "", istirahat: true },
+    { jam: "09:30-10:15", mata_pelajaran: "PKK", guru: "Saefi", kode: "27.B" },
+    { jam: "10:15-11:00", mata_pelajaran: "PKK", guru: "Saefi", kode: "27.B" },
+    { jam: "11:00-11:45", mata_pelajaran: "PKK", guru: "Saefi", kode: "27.B" },
+  ],
 }
 
 const daftarGuru = [
@@ -224,11 +291,12 @@ async function loadTugas() {
   if (!tugasContainer) return
 
   try {
-    const { collection, getDocs, query, orderBy } = window.firebaseUtils
     const db = window.firebaseDB
+    if (!db) {
+      throw new Error("Firebase database tidak tersedia")
+    }
 
-    const q = query(collection(db, "tugas"), orderBy("deadline", "asc"))
-    const querySnapshot = await getDocs(q)
+    const querySnapshot = await db.collection("tugas").orderBy("deadline", "asc").get()
 
     if (querySnapshot.empty) {
       tugasContainer.innerHTML = `
@@ -288,6 +356,7 @@ async function loadTugas() {
     tugasContainer.innerHTML = `
             <div style="text-align: center; padding: 3rem; color: var(--red-400);">
                 <p>Gagal memuat tugas. Silakan refresh halaman.</p>
+                <p style="font-size: 0.875rem; margin-top: 0.5rem;">Error: ${error.message}</p>
             </div>
         `
   }
