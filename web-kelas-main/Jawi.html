@@ -1,0 +1,645 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JS DECODER MATRIX - Advanced JavaScript Deobfuscation Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: #000000;
+            color: #00FF00;
+            font-family: 'Courier New', monospace;
+            min-height: 100vh;
+            padding: 20px;
+            position: relative;
+            overflow-x: auto;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        .header h1 {
+            font-size: 3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+            text-shadow: 0 0 10px #00FF00;
+        }
+
+        .header p {
+            font-size: 1.2rem;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .header .status {
+            font-size: 0.9rem;
+            opacity: 0.6;
+        }
+
+        .card {
+            background-color: #1a1a1a;
+            border: 2px solid #00FF00;
+            border-radius: 8px;
+            margin-bottom: 30px;
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.3);
+        }
+
+        .card-header {
+            padding: 20px;
+            border-bottom: 1px solid #00FF00;
+        }
+
+        .card-title {
+            font-size: 1.5rem;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .upload-area {
+            border: 2px dashed #00FF00;
+            border-radius: 8px;
+            padding: 40px;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+
+        .upload-area:hover {
+            background-color: rgba(0, 255, 0, 0.05);
+        }
+
+        .upload-btn {
+            background: transparent;
+            border: 2px solid #00FF00;
+            color: #00FF00;
+            padding: 15px 30px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .upload-btn:hover {
+            background-color: #00FF00;
+            color: #000000;
+            box-shadow: 0 0 15px #00FF00;
+        }
+
+        .decode-btn {
+            background-color: #00FF00;
+            color: #000000;
+            border: none;
+            padding: 15px 30px;
+            font-family: 'Courier New', monospace;
+            font-size: 1.1rem;
+            cursor: pointer;
+            border-radius: 4px;
+            width: 100%;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+        }
+
+        .decode-btn:hover {
+            background-color: #00CC00;
+            box-shadow: 0 0 15px #00FF00;
+        }
+
+        .file-info {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #2a2a2a;
+            border: 1px solid #00FF00;
+            border-radius: 4px;
+        }
+
+        .detection-result {
+            padding: 15px;
+            background-color: #2a2a2a;
+            border: 1px solid #00FF00;
+            border-radius: 4px;
+            margin-bottom: 15px;
+        }
+
+        .detection-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 5px;
+        }
+
+        .confidence {
+            font-size: 0.9rem;
+        }
+
+        .description {
+            font-size: 0.9rem;
+            opacity: 0.8;
+        }
+
+        .textarea {
+            width: 100%;
+            min-height: 400px;
+            background-color: #000000;
+            border: 2px solid #00FF00;
+            color: #00FF00;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            padding: 15px;
+            resize: vertical;
+            border-radius: 4px;
+        }
+
+        .textarea:focus {
+            outline: none;
+            box-shadow: 0 0 10px rgba(0, 255, 0, 0.5);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .small-btn {
+            background: transparent;
+            border: 1px solid #00FF00;
+            color: #00FF00;
+            padding: 8px 16px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            cursor: pointer;
+            border-radius: 4px;
+            transition: all 0.3s ease;
+        }
+
+        .small-btn:hover {
+            background-color: #00FF00;
+            color: #000000;
+        }
+
+        .processing {
+            text-align: center;
+            padding: 40px;
+            animation: pulse 2s infinite;
+        }
+
+        .error {
+            color: #FF0000;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .watermark {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            font-size: 0.8rem;
+            opacity: 0.5;
+            z-index: 20;
+        }
+
+        .matrix-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.05;
+            z-index: 1;
+            pointer-events: none;
+            overflow: hidden;
+            font-size: 12px;
+            line-height: 1;
+        }
+
+        .matrix-line {
+            white-space: nowrap;
+            animation: pulse 3s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 0.3; }
+            50% { opacity: 0.8; }
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 768px) {
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .button-group {
+                flex-direction: column;
+            }
+            
+            body {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Matrix Background -->
+    <div class="matrix-bg" id="matrixBg"></div>
+
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>⚡ JS DECODER MATRIX ⚡</h1>
+            <p>&gt; ADVANCED JAVASCRIPT DEOBFUSCATION TOOL &lt;</p>
+            <div class="status">[SYSTEM READY] - [ENCRYPTION DETECTION ACTIVE] - [CLIENT-SIDE PROCESSING]</div>
+        </div>
+
+        <!-- File Upload -->
+        <div class="card">
+            <div class="card-header">
+                <div class="card-title">
+                    📄 FILE UPLOAD PROTOCOL
+                </div>
+            </div>
+            <div class="card-content">
+                <div class="upload-area">
+                    <input type="file" id="fileInput" accept=".js" class="hidden">
+                    <button class="upload-btn" onclick="document.getElementById('fileInput').click()">
+                        📤 SELECT TARGET FILE (.js)
+                    </button>
+                    <p style="margin-top: 20px; font-size: 0.9rem; opacity: 0.7;">
+                        &gt; MAX SIZE: 109MB | SUPPORTED: .js files only
+                    </p>
+                    <div id="fileInfo" class="file-info hidden"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Detection Results -->
+        <div id="detectionCard" class="card hidden">
+            <div class="card-header">
+                <div class="card-title">🔍 ENCRYPTION ANALYSIS RESULTS</div>
+            </div>
+            <div class="card-content">
+                <div id="detectionContent"></div>
+            </div>
+        </div>
+
+        <!-- Decoded Result -->
+        <div id="resultCard" class="card hidden">
+            <div class="card-header">
+                <div class="card-title" style="justify-content: space-between;">
+                    <span>💻 DECODED OUTPUT</span>
+                    <div class="button-group">
+                        <button class="small-btn" onclick="copyToClipboard()">📋 COPY</button>
+                        <button class="small-btn" onclick="downloadResult()">💾 DOWNLOAD</button>
+                    </div>
+                </div>
+            </div>
+            <div class="card-content">
+                <textarea id="resultTextarea" class="textarea" readonly placeholder="Decoded content will appear here..."></textarea>
+            </div>
+        </div>
+    </div>
+
+    <!-- Watermark -->
+    <div class="watermark">Made by Marvel</div>
+
+    <script>
+        let currentFile = null;
+        let fileContent = '';
+        let detectionResults = [];
+        let decodedContent = '';
+
+        // Initialize matrix background
+        function initMatrixBackground() {
+            const matrixBg = document.getElementById('matrixBg');
+            const binaryPattern = '01010101 11001100 10101010 01110111 00110011 10011001 ';
+            
+            for (let i = 0; i < 50; i++) {
+                const line = document.createElement('div');
+                line.className = 'matrix-line';
+                line.textContent = binaryPattern.repeat(20);
+                matrixBg.appendChild(line);
+            }
+        }
+
+        // Detection functions
+        function detectBase64(content) {
+            const base64Regex = /^[A-Za-z0-9+/]*={0,2}$/;
+            const lines = content.split('\n');
+            let base64Lines = 0;
+
+            for (const line of lines) {
+                const trimmed = line.trim();
+                if (trimmed.length > 50 && base64Regex.test(trimmed)) {
+                    base64Lines++;
+                }
+            }
+
+            if (base64Lines > lines.length * 0.3) {
+                return {
+                    type: 'Base64',
+                    confidence: Math.min(95, (base64Lines / lines.length) * 100),
+                    description: 'Base64 encoded content detected'
+                };
+            }
+            return null;
+        }
+
+        function detectHexadecimal(content) {
+            const hexMatches = content.match(/[0-9A-Fa-f]{20,}/g);
+            if (hexMatches && hexMatches.length > 0) {
+                return {
+                    type: 'Hexadecimal',
+                    confidence: 85,
+                    description: 'Hexadecimal encoded content detected'
+                };
+            }
+            return null;
+        }
+
+        function detectStringFromCharCode(content) {
+            const charCodeRegex = /String\.fromCharCode\s*\(/gi;
+            const matches = content.match(charCodeRegex);
+            if (matches && matches.length > 5) {
+                return {
+                    type: 'String.fromCharCode',
+                    confidence: 90,
+                    description: 'String.fromCharCode obfuscation detected'
+                };
+            }
+            return null;
+        }
+
+        function detectEvalAtob(content) {
+            const evalAtobRegex = /eval\s*\(\s*atob\s*\(/gi;
+            const matches = content.match(evalAtobRegex);
+            if (matches && matches.length > 0) {
+                return {
+                    type: 'eval(atob(...))',
+                    confidence: 95,
+                    description: 'eval(atob(...)) obfuscation detected'
+                };
+            }
+            return null;
+        }
+
+        function detectJSFuck(content) {
+            const jsfuckRatio = (content.match(/[\[\]()!+{}]/g) || []).length / content.length;
+            if (jsfuckRatio > 0.8) {
+                return {
+                    type: 'JSFuck',
+                    confidence: 90,
+                    description: 'JSFuck obfuscation detected'
+                };
+            }
+            return null;
+        }
+
+        function detectJJencode(content) {
+            if (content.includes('$=~[];') && content.includes('__={}+""')) {
+                return {
+                    type: 'JJencode',
+                    confidence: 95,
+                    description: 'JJencode obfuscation detected'
+                };
+            }
+            return null;
+        }
+
+        function detectAAencode(content) {
+            const aaencodePattern = /ﾟωﾟﾉ|ﾟΘﾟ|ﾟｰﾟ/;
+            if (aaencodePattern.test(content)) {
+                return {
+                    type: 'AAencode',
+                    confidence: 95,
+                    description: 'AAencode obfuscation detected'
+                };
+            }
+            return null;
+        }
+
+        function detectUTF16(content) {
+            const utf16Regex = /\\u[0-9A-Fa-f]{4}/g;
+            const matches = content.match(utf16Regex);
+            if (matches && matches.length > 10) {
+                return {
+                    type: 'UTF-16',
+                    confidence: 80,
+                    description: 'UTF-16 unicode escapes detected'
+                };
+            }
+            return null;
+        }
+
+        // Decoding functions
+        function decodeBase64(content) {
+            try {
+                return atob(content.replace(/\s/g, ''));
+            } catch {
+                return 'Failed to decode Base64';
+            }
+        }
+
+        function decodeHexadecimal(content) {
+            try {
+                const hex = content.replace(/\s/g, '');
+                let result = '';
+                for (let i = 0; i < hex.length; i += 2) {
+                    result += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+                }
+                return result;
+            } catch {
+                return 'Failed to decode Hexadecimal';
+            }
+        }
+
+        function decodeStringFromCharCode(content) {
+            try {
+                const regex = /String\.fromCharCode\s*$$\s*([^)]+)\s*$$/gi;
+                let decoded = content;
+                let match;
+
+                while ((match = regex.exec(content)) !== null) {
+                    const numbers = match[1].split(',').map(n => parseInt(n.trim()));
+                    const chars = numbers.map(n => String.fromCharCode(n)).join('');
+                    decoded = decoded.replace(match[0], chars);
+                }
+
+                return decoded;
+            } catch {
+                return 'Failed to decode String.fromCharCode';
+            }
+        }
+
+        function decodeEvalAtob(content) {
+            try {
+                const regex = /eval\s*$$\s*atob\s*$$\s*["']([^"']+)["']\s*$$\s*$$/gi;
+                let decoded = content;
+                let match;
+
+                while ((match = regex.exec(content)) !== null) {
+                    const base64Content = match[1];
+                    const decodedBase64 = atob(base64Content);
+                    decoded = decoded.replace(match[0], decodedBase64);
+                }
+
+                return decoded;
+            } catch {
+                return 'Failed to decode eval(atob(...))';
+            }
+        }
+
+        function decodeUTF16(content) {
+            try {
+                return content.replace(/\\u([0-9A-Fa-f]{4})/g, (match, hex) => {
+                    return String.fromCharCode(parseInt(hex, 16));
+                });
+            } catch {
+                return 'Failed to decode UTF-16';
+            }
+        }
+
+        // File handling
+        document.getElementById('fileInput').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            if (file.size > 109 * 1024 * 1024) {
+                alert('File size exceeds 109MB limit');
+                return;
+            }
+
+            if (!file.name.endsWith('.js')) {
+                alert('Please select a JavaScript (.js) file');
+                return;
+            }
+
+            currentFile = file;
+            
+            // Show file info
+            const fileInfo = document.getElementById('fileInfo');
+            fileInfo.innerHTML = `
+                <p>&gt; FILE LOADED: ${file.name}</p>
+                <p>&gt; SIZE: ${(file.size / 1024 / 1024).toFixed(2)} MB</p>
+            `;
+            fileInfo.classList.remove('hidden');
+
+            // Show processing
+            const detectionCard = document.getElementById('detectionCard');
+            const detectionContent = document.getElementById('detectionContent');
+            detectionContent.innerHTML = '<div class="processing">&gt; SCANNING FOR OBFUSCATION PATTERNS...</div>';
+            detectionCard.classList.remove('hidden');
+
+            // Read file
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                fileContent = e.target.result;
+                analyzeFile();
+            };
+            reader.readAsText(file);
+        });
+
+        function analyzeFile() {
+            detectionResults = [];
+
+            const detectors = [
+                detectBase64,
+                detectHexadecimal,
+                detectStringFromCharCode,
+                detectEvalAtob,
+                detectJSFuck,
+                detectJJencode,
+                detectAAencode,
+                detectUTF16
+            ];
+
+            detectors.forEach(detector => {
+                const result = detector(fileContent);
+                if (result) detectionResults.push(result);
+            });
+
+            detectionResults.sort((a, b) => b.confidence - a.confidence);
+            displayResults();
+        }
+
+        function displayResults() {
+            const detectionContent = document.getElementById('detectionContent');
+            
+            if (detectionResults.length > 0) {
+                let html = '';
+                detectionResults.forEach(result => {
+                    html += `
+                        <div class="detection-result">
+                            <div class="detection-header">
+                                <span><strong>&gt; ${result.type}</strong></span>
+                                <span class="confidence">CONFIDENCE: ${Math.round(result.confidence)}%</span>
+                            </div>
+                            <div class="description">${result.description}</div>
+                        </div>
+                    `;
+                });
+                html += '<button class="decode-btn" onclick="performDecode()">⚡ DECODE TO ORIGINAL CODE</button>';
+                detectionContent.innerHTML = html;
+            } else {
+                detectionContent.innerHTML = `
+                    <div class="error">
+                        <p>&gt; ENCODING NOT DETECTED</p>
+                        <p style="font-size: 0.9rem; margin-top: 10px;">&gt; MANUAL ANALYSIS REQUIRED</p>
+                    </div>
+                `;
+            }
+        }
+
+        function performDecode() {
+            if (detectionResults.length === 0) return;
+
+            const topResult = detectionResults[0];
+            let decoded = '';
+
+            switch (topResult.type) {
+                case 'Base64':
+                    decoded = decodeBase64(fileContent);
+                    break;
+                case 'Hexadecimal':
+                    decoded = decodeHexadecimal(fileContent);
+                    break;
+                case 'String.fromCharCode':
+                    decoded = decodeStringFromCharCode(fileContent);
+                    break;
+                case 'eval(atob(...))':
+                    decoded = decodeEvalAtob(fileContent);
+                    break;
+                case 'UTF-16':
+                    decoded = decodeUTF16(fileContent);
+                    break;
+                default:
+                    decoded = 'Decoding not implemented for this type';
+            }
+
+            decodedContent = decoded;
+            document.getElementById('resultTextarea').value = decoded;
+            document

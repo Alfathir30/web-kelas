@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - Kelas 11 TKJ2</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <!-- Login Modal -->
+    <div class="login-modal" id="loginModal">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="login-icon">
+                    <i data-lucide="lock"></i>
+                </div>
+                <h2>Admin Dashboard</h2>
+                <p>Masukkan password untuk mengakses</p>
+            </div>
+            <form id="loginForm">
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Masukkan password admin" required>
+                </div>
+                <button type="submit" class="btn btn-primary">
+                    <i data-lucide="unlock"></i>
+                    Masuk
+                </button>
+                <a href="index.html" class="btn btn-outline">
+                    <i data-lucide="arrow-left"></i>
+                    Kembali ke Beranda
+                </a>
+            </form>
+        </div>
+    </div>
+
+    <!-- Admin Dashboard -->
+    <div class="admin-dashboard" id="adminDashboard" style="display: none;">
+        <!-- Header -->
+        <header class="header">
+            <div class="container">
+                <div class="header-content">
+                    <div class="logo">
+                        <div class="logo-icon">
+                            <i data-lucide="settings"></i>
+                        </div>
+                        <div class="logo-text">
+                            <h1>Admin Dashboard</h1>
+                            <p>Kelola tugas kelas 11 TKJ2</p>
+                        </div>
+                    </div>
+                    <div class="admin-actions">
+                        <a href="index.html" class="btn btn-outline">
+                            <i data-lucide="arrow-left"></i>
+                            Kembali
+                        </a>
+                        <button class="btn btn-outline" id="logoutBtn">
+                            <i data-lucide="lock"></i>
+                            Logout
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <div class="container admin-content">
+            <div class="admin-grid">
+                <!-- Form Tambah Tugas -->
+                <div class="admin-form-section animate-fade-in-left">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>
+                                <i data-lucide="plus"></i>
+                                Tambah Tugas Baru
+                            </h3>
+                        </div>
+                        <div class="card-content">
+                            <form id="tugasForm">
+                                <div class="form-group">
+                                    <label for="judul">Judul Tugas *</label>
+                                    <input type="text" id="judul" placeholder="Contoh: Membuat laporan jaringan" required>
+                                </div>
+                                <div class="form-group">
+                                    <label for="mataPelajaran">Mata Pelajaran *</label>
+                                    <select id="mataPelajaran" required>
+                                        <option value="">Pilih mata pelajaran</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="hari">Hari *</label>
+                                    <select id="hari" required>
+                                        <option value="">Pilih hari</option>
+                                        <option value="Senin">Senin</option>
+                                        <option value="Selasa">Selasa</option>
+                                        <option value="Rabu">Rabu</option>
+                                        <option value="Kamis">Kamis</option>
+                                        <option value="Jumat">Jumat</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label for="deskripsi">Deskripsi Tugas</label>
+                                    <textarea id="deskripsi" placeholder="Jelaskan detail tugas yang harus dikerjakan..." rows="3"></textarea>
+                                </div>
+                                <div class="form-group">
+                                    <label for="deadline">Deadline *</label>
+                                    <input type="date" id="deadline" required>
+                                </div>
+                                <button type="submit" class="btn btn-primary" id="submitBtn">
+                                    <i data-lucide="save"></i>
+                                    Simpan Tugas
+                                </button>
+                            </form>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Daftar Tugas -->
+                <div class="admin-list-section animate-fade-in-right">
+                    <div class="card">
+                        <div class="card-header">
+                            <h3>Daftar Tugas</h3>
+                            <p>Kelola tugas yang sudah dibuat</p>
+                        </div>
+                        <div class="card-content">
+                            <div id="adminTugasList">
+                                <div class="loading-spinner">
+                                    <div class="spinner"></div>
+                                    <p>Memuat tugas...</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/admin.js"></script>
+</body>
+</html>

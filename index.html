@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelas 11 TKJ2 - SMK Teknik Komputer dan Jaringan</title>
+    <meta name="description" content="Website resmi kelas 11 TKJ2 untuk informasi jadwal, tugas, dan struktur kelas">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="styles/main.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo animate-fade-in-left">
+                    <div class="logo-icon">
+                        <i data-lucide="monitor"></i>
+                    </div>
+                    <div class="logo-text">
+                        <h1>Kelas 11 TKJ2</h1>
+                        <p>Teknik Komputer dan Jaringan</p>
+                    </div>
+                </div>
+                <nav class="nav-desktop animate-fade-in-right">
+                    <a href="#struktur">Struktur Kelas</a>
+                    <a href="#piket">Piket</a>
+                    <a href="#jadwal">Jadwal</a>
+                    <a href="#tugas">Tugas</a>
+                    <a href="admin.html" class="btn btn-outline">
+                        <i data-lucide="settings"></i>
+                        Admin
+                    </a>
+                </nav>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile Navigation -->
+    <div class="mobile-nav" id="mobileNav">
+        <div class="mobile-nav-header">
+            <div class="logo">
+                <div class="logo-icon">
+                    <i data-lucide="monitor"></i>
+                </div>
+                <span>Kelas 11 TKJ2</span>
+            </div>
+            <button class="mobile-nav-close" id="mobileNavClose">
+                <i data-lucide="x"></i>
+            </button>
+        </div>
+        <nav class="mobile-nav-links">
+            <a href="#struktur">Struktur Kelas</a>
+            <a href="#piket">Piket</a>
+            <a href="#jadwal">Jadwal</a>
+            <a href="#tugas">Tugas</a>
+            <a href="admin.html" class="btn btn-outline">
+                <i data-lucide="settings"></i>
+                Admin
+            </a>
+        </nav>
+    </div>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content animate-fade-in-up">
+                <h1 class="hero-title">Kelas 11 TKJ2</h1>
+                <p class="hero-subtitle">Membangun masa depan digital melalui teknologi komputer dan jaringan</p>
+                <div class="hero-badges">
+                    <span class="badge animate-fade-in-up delay-200">
+                        <i data-lucide="monitor"></i>
+                        Hardware
+                    </span>
+                    <span class="badge animate-fade-in-up delay-300">
+                        <i data-lucide="wifi"></i>
+                        Networking
+                    </span>
+                    <span class="badge animate-fade-in-up delay-400">
+                        <i data-lucide="server"></i>
+                        Server
+                    </span>
+                    <span class="badge animate-fade-in-up delay-500">
+                        <i data-lucide="code"></i>
+                        Programming
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Struktur Kelas -->
+    <section id="struktur" class="struktur-kelas">
+        <div class="container">
+            <div class="section-header animate-fade-in-up">
+                <h2>Struktur Kelas</h2>
+                <p>Pengurus kelas yang bertanggung jawab mengorganisir kegiatan pembelajaran</p>
+            </div>
+            <div class="struktur-grid">
+                <div class="struktur-card animate-fade-in-up delay-100">
+                    <div class="avatar">
+                        <img src="public/diverse-classroom-teacher.png" alt="Saefi">
+                    </div>
+                    <h3>Saefi</h3>
+                    <span class="badge badge-blue">
+                        <i data-lucide="graduation-cap"></i>
+                        Wali Kelas
+                    </span>
+                </div>
+                <div class="struktur-card animate-fade-in-up delay-200">
+                    <div class="avatar">
+                        <img src="public/placeholder-43pfg.png" alt="Rofi Rijal">
+                    </div>
+                    <h3>Rofi Rijal</h3>
+                    <span class="badge badge-green">
+                        <i data-lucide="user"></i>
+                        Ketua Kelas
+                    </span>
+                </div>
+                <div class="struktur-card animate-fade-in-up delay-300">
+                    <div class="avatar">
+                        <img src="public/secretary-student.png" alt="Sekretaris">
+                    </div>
+                    <h3>Sekretaris</h3>
+                    <span class="badge badge-purple">
+                        <i data-lucide="book-open"></i>
+                        Sekretaris
+                    </span>
+                </div>
+                <div class="struktur-card animate-fade-in-up delay-400">
+                    <div class="avatar">
+                        <img src="public/placeholder-rm3e0.png" alt="Bendahara">
+                    </div>
+                    <h3>Bendahara</h3>
+                    <span class="badge badge-orange">
+                        <i data-lucide="users"></i>
+                        Bendahara
+                    </span>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Quick Stats -->
+    <section class="quick-stats">
+        <div class="container">
+            <div class="stats-grid">
+                <div class="stat-card animate-fade-in-left">
+                    <i data-lucide="users" class="stat-icon text-blue"></i>
+                    <h3>32 Siswa</h3>
+                    <p>Total siswa aktif</p>
+                </div>
+                <div class="stat-card animate-fade-in-up delay-100">
+                    <i data-lucide="calendar" class="stat-icon text-green"></i>
+                    <h3>5 Hari</h3>
+                    <p>Jadwal pembelajaran</p>
+                </div>
+                <div class="stat-card animate-fade-in-right delay-200">
+                    <i data-lucide="clock" class="stat-icon text-purple"></i>
+                    <h3>8 Jam</h3>
+                    <p>Jam pelajaran per hari</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Jadwal Piket -->
+    <section id="piket" class="jadwal-piket">
+        <div class="container">
+            <div class="section-header animate-fade-in-up">
+                <h2>Jadwal Piket Kelas</h2>
+                <p>Pembagian tugas piket harian untuk menjaga kebersihan kelas</p>
+            </div>
+            <div class="piket-grid" id="piketGrid">
+                <!-- Akan diisi oleh JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Jadwal Pelajaran -->
+    <section id="jadwal" class="jadwal-pelajaran">
+        <div class="container">
+            <div class="section-header animate-fade-in-up">
+                <h2>Jadwal Pelajaran</h2>
+                <p>Jadwal mata pelajaran lengkap untuk kelas 11 TKJ2</p>
+            </div>
+            <div class="jadwal-container" id="jadwalContainer">
+                <!-- Akan diisi oleh JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Daftar Guru -->
+    <section class="daftar-guru">
+        <div class="container">
+            <div class="section-header animate-fade-in-up">
+                <h2>Daftar Guru</h2>
+                <p>Guru pengajar dengan kode masing-masing</p>
+            </div>
+            <div class="guru-grid" id="guruGrid">
+                <!-- Akan diisi oleh JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Tugas -->
+    <section id="tugas" class="tugas-section">
+        <div class="container">
+            <div class="section-header animate-fade-in-up">
+                <h2>Tugas Kelas</h2>
+                <p>Daftar tugas yang harus dikerjakan siswa</p>
+            </div>
+            <div class="tugas-container" id="tugasContainer">
+                <div class="loading-spinner" id="tugasLoading">
+                    <div class="spinner"></div>
+                    <p>Memuat tugas...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content animate-fade-in-up">
+                <div class="footer-logo">
+                    <i data-lucide="monitor"></i>
+                    <span>Kelas 11 TKJ2</span>
+                </div>
+                <p>© 2024 Kelas 11 TKJ2. Membangun masa depan melalui teknologi.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Scroll to Top -->
+    <button class="scroll-to-top" id="scrollToTop">
+        <i data-lucide="arrow-up"></i>
+    </button>
+
+    <!-- Scripts -->
+    <script type="module" src="js/firebase-config.js"></script>
+    <script type="module" src="js/main.js"></script>
+</body>
+</html>
