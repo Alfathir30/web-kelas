@@ -17,7 +17,7 @@ const mataPelajaran = [
   "PKK",
 ]
 
-const lucide = window.lucide // Declare the lucide variable
+const lucide = require("lucide") // Declare the lucide variable
 
 document.addEventListener("DOMContentLoaded", () => {
   lucide.createIcons()
@@ -107,12 +107,11 @@ function setupTugasForm() {
       '<div class="spinner" style="width: 1rem; height: 1rem; margin-right: 0.5rem;"></div>Menyimpan...'
 
     try {
-      const { collection, addDoc } = window.firebaseUtils
       const db = window.firebaseDB
 
       console.log("📝 Attempting to save tugas:", formData)
 
-      const docRef = await addDoc(collection(db, "tugas"), {
+      const docRef = await db.collection("tugas").add({
         judul: formData.judul,
         mataPelajaran: formData.mataPelajaran,
         hari: formData.hari,
@@ -162,12 +161,10 @@ async function loadAdminTugasList() {
     `
 
   try {
-    const { collection, getDocs, query, orderBy } = window.firebaseUtils
     const db = window.firebaseDB
 
     console.log("📖 Loading tugas list...")
-    const q = query(collection(db, "tugas"), orderBy("deadline", "asc"))
-    const querySnapshot = await getDocs(q)
+    const querySnapshot = await db.collection("tugas").orderBy("deadline", "asc").get()
     console.log("✅ Tugas loaded, count:", querySnapshot.size)
 
     if (querySnapshot.empty) {
@@ -244,10 +241,9 @@ async function deleteTugas(tugasId) {
   }
 
   try {
-    const { deleteDoc, doc } = window.firebaseUtils
     const db = window.firebaseDB
 
-    await deleteDoc(doc(db, "tugas", tugasId))
+    await db.collection("tugas").doc(tugasId).delete()
     alert("Tugas berhasil dihapus!")
 
     // Reload tugas list

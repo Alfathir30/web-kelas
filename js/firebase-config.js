@@ -10,6 +10,7 @@ const firebaseConfig = {
   measurementId: "G-440VKHG02X"
 }
 
+
 // Validasi config
 function validateFirebaseConfig() {
   const requiredFields = ["apiKey", "authDomain", "projectId", "storageBucket", "messagingSenderId", "appId"]
@@ -38,20 +39,9 @@ function validateFirebaseConfig() {
   return true
 }
 
-// Initialize Firebase
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js"
-import {
-  getFirestore,
-  collection,
-  addDoc,
-  getDocs,
-  deleteDoc,
-  doc,
-  orderBy,
-  query,
-} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js"
-
+// Initialize Firebase menggunakan compat SDK
 let app, db
+const firebase = window.firebase // Declare the firebase variable
 
 try {
   if (!validateFirebaseConfig()) {
@@ -59,8 +49,10 @@ try {
   }
 
   console.log("🔥 Initializing Firebase...")
-  app = initializeApp(firebaseConfig)
-  db = getFirestore(app)
+
+  firebase.initializeApp(firebaseConfig)
+  db = firebase.firestore()
+
   console.log("✅ Firebase initialized successfully")
 
   // Test connection
@@ -70,17 +62,6 @@ try {
   alert("❌ Gagal menginisialisasi Firebase. Periksa console untuk detail error.")
 }
 
-// Export untuk digunakan di file lain
 window.firebaseDB = db
-window.firebaseUtils = {
-  collection,
-  addDoc,
-  getDocs,
-  deleteDoc,
-  doc,
-  orderBy,
-  query,
-}
-
 window.firebaseReady = !!db
 console.log("Firebase ready status:", window.firebaseReady)
