@@ -83,6 +83,12 @@ function setupTugasForm() {
   form.addEventListener("submit", async (e) => {
     e.preventDefault()
 
+    if (!window.firebaseReady) {
+      alert("❌ Firebase belum siap. Periksa konfigurasi Firebase di js/firebase-config.js")
+      console.error("Firebase not ready. Check firebase-config.js")
+      return
+    }
+
     const formData = {
       judul: document.getElementById("judul").value,
       mataPelajaran: document.getElementById("mataPelajaran").value,
@@ -104,7 +110,9 @@ function setupTugasForm() {
       const { collection, addDoc } = window.firebaseUtils
       const db = window.firebaseDB
 
-      await addDoc(collection(db, "tugas"), {
+      console.log("📝 Attempting to save tugas:", formData)
+
+      const docRef = await addDoc(collection(db, "tugas"), {
         judul: formData.judul,
         mataPelajaran: formData.mataPelajaran,
         hari: formData.hari,
@@ -113,15 +121,18 @@ function setupTugasForm() {
         createdAt: new Date(),
       })
 
+      console.log("✅ Tugas saved with ID:", docRef.id)
+
       // Reset form
       form.reset()
-      alert("Tugas berhasil ditambahkan!")
+      alert("✅ Tugas berhasil ditambahkan!")
 
       // Reload tugas list
       loadAdminTugasList()
     } catch (error) {
-      console.error("Error adding tugas:", error)
-      alert("Gagal menambahkan tugas")
+      console.error("❌ Error adding tugas:", error)
+      console.error("Error details:", error.message)
+      alert(`❌ Gagal menambahkan tugas!\n\nError: ${error.message}\n\nPeriksa console untuk detail lebih lanjut.`)
     } finally {
       submitBtn.disabled = false
       submitBtn.innerHTML = '<i data-lucide="save"></i>Simpan Tugas'
@@ -134,6 +145,15 @@ async function loadAdminTugasList() {
   const tugasList = document.getElementById("adminTugasList")
   if (!tugasList) return
 
+  if (!window.firebaseReady) {
+    tugasList.innerHTML = `
+      <div style="text-align: center; padding: 2rem; color: var(--red-400);">
+        <p>❌ Firebase belum dikonfigurasi. Periksa js/firebase-config.js</p>
+      </div>
+    `
+    return
+  }
+
   tugasList.innerHTML = `
         <div class="loading-spinner">
             <div class="spinner"></div>
@@ -145,8 +165,10 @@ async function loadAdminTugasList() {
     const { collection, getDocs, query, orderBy } = window.firebaseUtils
     const db = window.firebaseDB
 
+    console.log("📖 Loading tugas list...")
     const q = query(collection(db, "tugas"), orderBy("deadline", "asc"))
     const querySnapshot = await getDocs(q)
+    console.log("✅ Tugas loaded, count:", querySnapshot.size)
 
     if (querySnapshot.empty) {
       tugasList.innerHTML = `
@@ -206,10 +228,11 @@ async function loadAdminTugasList() {
     tugasList.innerHTML = html
     lucide.createIcons()
   } catch (error) {
-    console.error("Error loading tugas:", error)
+    console.error("❌ Error loading tugas:", error)
     tugasList.innerHTML = `
             <div style="text-align: center; padding: 2rem; color: var(--red-400);">
-                <p>Gagal memuat tugas. Silakan refresh halaman.</p>
+                <p>❌ Gagal memuat tugas: ${error.message}</p>
+                <p style="font-size: 0.875rem; margin-top: 0.5rem;">Periksa console untuk detail error</p>
             </div>
         `
   }
