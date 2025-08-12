@@ -1,0 +1,461 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Kelas 11 TKJ2 - Teknik Komputer dan Jaringan</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=DM+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- Mobile Navigation -->
+    <div id="mobile-nav" class="mobile-nav">
+        <div class="mobile-nav-header">
+            <h3>Menu</h3>
+            <button id="close-nav" class="close-nav">×</button>
+        </div>
+        <nav class="mobile-nav-links">
+            <a href="#struktur">Struktur Kelas</a>
+            <a href="#jadwal-piket">Jadwal Piket</a>
+            <a href="#jadwal-pelajaran">Jadwal Pelajaran</a>
+            <a href="#daftar-guru">Daftar Guru</a>
+            <a href="#tugas">Tugas Kelas</a>
+            <a href="admin.html">Admin</a>
+        </nav>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <h1>11 TKJ2</h1>
+                    <span>Teknik Komputer & Jaringan</span>
+                </div>
+                <nav class="nav">
+                    <a href="#struktur">Struktur</a>
+                    <a href="#jadwal-piket">Piket</a>
+                    <a href="#jadwal-pelajaran">Pelajaran</a>
+                    <a href="#daftar-guru">Guru</a>
+                    <a href="#tugas">Tugas</a>
+                    <a href="admin.html" class="admin-link">Admin</a>
+                </nav>
+                <button id="mobile-menu" class="mobile-menu">
+                    <i data-lucide="menu"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <div class="hero-content">
+                <h1 class="hero-title">Selamat Datang di Kelas 11 TKJ2</h1>
+                <p class="hero-subtitle">Teknik Komputer dan Jaringan - Membangun Masa Depan Digital</p>
+                <div class="hero-stats">
+                    <div class="stat">
+                        <span class="stat-number">32</span>
+                        <span class="stat-label">Siswa</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">12</span>
+                        <span class="stat-label">Mata Pelajaran</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-number">1</span>
+                        <span class="stat-label">Keluarga Besar</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Struktur Kelas -->
+    <section id="struktur" class="section">
+        <div class="container">
+            <h2 class="section-title">Struktur Kelas</h2>
+            <div class="struktur-grid">
+                <div class="struktur-card wali-kelas">
+                    <div class="card-image">
+                        <img src="public/diverse-classroom-teacher.png" alt="Wali Kelas">
+                    </div>
+                    <div class="card-content">
+                        <h3>Wali Kelas</h3>
+                        <p class="name">Saefi</p>
+                        <span class="role">Pembimbing & Pengajar</span>
+                    </div>
+                </div>
+                
+                <div class="struktur-card">
+                    <div class="card-image">
+                        <img src="public/placeholder-43pfg.png" alt="Ketua Kelas">
+                    </div>
+                    <div class="card-content">
+                        <h3>Ketua Kelas</h3>
+                        <p class="name">Rofi Rijal</p>
+                        <span class="role">Pemimpin Kelas</span>
+                    </div>
+                </div>
+                
+                <div class="struktur-card">
+                    <div class="card-image">
+                        <img src="public/secretary-student.png" alt="Sekretaris">
+                    </div>
+                    <div class="card-content">
+                        <h3>Sekretaris</h3>
+                        <p class="name">Akan Diisi</p>
+                        <span class="role">Pencatat & Administrasi</span>
+                    </div>
+                </div>
+                
+                <div class="struktur-card">
+                    <div class="card-image">
+                        <img src="public/placeholder-rm3e0.png" alt="Bendahara">
+                    </div>
+                    <div class="card-content">
+                        <h3>Bendahara</h3>
+                        <p class="name">Akan Diisi</p>
+                        <span class="role">Pengelola Keuangan</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Jadwal Piket -->
+    <section id="jadwal-piket" class="section bg-secondary">
+        <div class="container">
+            <h2 class="section-title">Jadwal Piket Kelas</h2>
+            <div class="jadwal-piket-grid">
+                <div class="piket-card">
+                    <div class="piket-header">
+                        <i data-lucide="calendar"></i>
+                        <h3>Senin</h3>
+                    </div>
+                    <ul class="piket-list">
+                        <li>Alip</li>
+                        <li>Asri</li>
+                        <li>Bunga</li>
+                        <li>Rofi</li>
+                        <li>Rizka</li>
+                        <li>Lexa</li>
+                        <li>Baik</li>
+                        <li>Aji</li>
+                    </ul>
+                </div>
+                
+                <div class="piket-card">
+                    <div class="piket-header">
+                        <i data-lucide="calendar"></i>
+                        <h3>Selasa</h3>
+                    </div>
+                    <ul class="piket-list">
+                        <li>Fakhri H</li>
+                        <li>Yusuf</li>
+                        <li>Natasya</li>
+                        <li>Sella</li>
+                        <li>Faiz</li>
+                        <li>Arumi</li>
+                        <li>Ardi</li>
+                        <li>Sona</li>
+                    </ul>
+                </div>
+                
+                <div class="piket-card">
+                    <div class="piket-header">
+                        <i data-lucide="calendar"></i>
+                        <h3>Rabu</h3>
+                    </div>
+                    <ul class="piket-list">
+                        <li>Gani</li>
+                        <li>Raihan</li>
+                        <li>Icad</li>
+                        <li>Kia</li>
+                        <li>Sri</li>
+                        <li>Ica</li>
+                        <li>Ayu</li>
+                    </ul>
+                </div>
+                
+                <div class="piket-card">
+                    <div class="piket-header">
+                        <i data-lucide="calendar"></i>
+                        <h3>Kamis</h3>
+                    </div>
+                    <ul class="piket-list">
+                        <li>Citra</li>
+                        <li>Ghiwen</li>
+                        <li>Mulyadi</li>
+                        <li>Alwan</li>
+                        <li>Rofi</li>
+                        <li>Lia</li>
+                        <li>Fahri S</li>
+                    </ul>
+                </div>
+                
+                <div class="piket-card">
+                    <div class="piket-header">
+                        <i data-lucide="calendar"></i>
+                        <h3>Jumat</h3>
+                    </div>
+                    <ul class="piket-list">
+                        <li>Ian</li>
+                        <li>Kela</li>
+                        <li>Eldo</li>
+                        <li>Ninda</li>
+                        <li>Dara</li>
+                        <li>Sahet</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Jadwal Pelajaran -->
+    <section id="jadwal-pelajaran" class="section">
+        <div class="container">
+            <h2 class="section-title">Jadwal Pelajaran</h2>
+            <div class="jadwal-container">
+                <div class="jadwal-card">
+                    <div class="jadwal-header">
+                        <h3>Senin</h3>
+                    </div>
+                    <div class="jadwal-content">
+                        <div class="jadwal-item">
+                            <span class="jam">07:00-07:30</span>
+                            <span class="mapel">Upacara</span>
+                        </div>
+                        <div class="jadwal-item">
+                            <span class="jam">07:30-09:00</span>
+                            <span class="mapel">B. Inggris</span>
+                            <span class="guru">16.A - C</span>
+                        </div>
+                        <div class="jadwal-item">
+                            <span class="jam">09:00-09:30</span>
+                            <span class="mapel">Istirahat 1</span>
+                        </div>
+                        <div class="jadwal-item">
+                            <span class="jam">09:30-12:00</span>
+                            <span class="mapel">PABP</span>
+                            <span class="guru">21.A</span>
+                        </div>
+                        <div class="jadwal-item">
+                            <span class="jam">12:00-12:30</span>
+                            <span class="mapel">Istirahat 2</span>
+                        </div>
+                        <div class="jadwal-item">
+                            <span class="jam">12:30-15:00</span>
+                            <span class="mapel">Penjas & Akidah Akhlak</span>
+                            <span class="guru">33.B & 23.A</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="jadwal-card">
+                    <div class="jadwal-header">
+                        <h3>Selasa</h3>
+                    </div>
+                    <div class="jadwal-content">
+                        <div class="jadwal-item">
+                            <span class="jam">07:00-09:00</span>
+                            <span class="mapel">Administrasi Infrastruktur Jaringan</span>
+                            <span class="guru">27.B</span>
+                        </div>
+                        <div class="jadwal-item">
+                            <span class="jam">09:00-09:30</span>
+                            <span class="mapel">Istirahat 1</span>
+                        </div>
+                        <div class="jadwal-item">
+                            <span class="jam">09:30-12:00</span>
+                            <span class="mapel">Sejarah</span>
+                            <span class="guru">20.A</span>
+                        </div>
+                        <div class="jadwal-item">
+                            <span class="jam">12:00-12:30</span>
+                            <span class="mapel">Istirahat 2</span>
+                        </div>
+                        <div class="jadwal-item">
+                            <span class="jam">12:30-15:00</span>
+                            <span class="mapel">Tehwan</span>
+                            <span class="guru">32.A</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="jadwal-card">
+                    <div class="jadwal-header">
+                        <h3>Rabu</h3>
+                    </div>
+                    <div class="jadwal-content">
+                        <div class="jadwal-item">
+                            <span class="jam">07:00-09:00</span>
+                            <span class="mapel">B. Indonesia</span>
+                            <span class="guru">12.A - D</span>
+                        </div>
+                        <div class="jadwal-item">
+                            <span class="jam">09:00-09:30</span>
+                            <span class="mapel">Istirahat 1</span>
+                        </div>
+                        <div class="jadwal-item">
+                            <span class="jam">09:30-12:00</span>
+                            <span class="mapel">Teknologi Layanan Jaringan</span>
+                            <span class="guru">34.A</span>
+                        </div>
+                        <div class="jadwal-item">
+                            <span class="jam">12:00-12:30</span>
+                            <span class="mapel">Istirahat 2</span>
+                        </div>
+                        <div class="jadwal-item">
+                            <span class="jam">12:30-15:00</span>
+                            <span class="mapel">Administrasi Sistem Jaringan</span>
+                            <span class="guru">38.A</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="jadwal-card">
+                    <div class="jadwal-header">
+                        <h3>Kamis</h3>
+                    </div>
+                    <div class="jadwal-content">
+                        <div class="jadwal-item">
+                            <span class="jam">07:00-09:00</span>
+                            <span class="mapel">Al-Quran & PPKn</span>
+                            <span class="guru">02.A & 17.A</span>
+                        </div>
+                        <div class="jadwal-item">
+                            <span class="jam">09:00-09:30</span>
+                            <span class="mapel">Istirahat 1</span>
+                        </div>
+                        <div class="jadwal-item">
+                            <span class="jam">09:30-12:00</span>
+                            <span class="mapel">Sunda</span>
+                            <span class="guru">39.A</span>
+                        </div>
+                        <div class="jadwal-item">
+                            <span class="jam">12:00-12:30</span>
+                            <span class="mapel">Istirahat 2</span>
+                        </div>
+                        <div class="jadwal-item">
+                            <span class="jam">12:30-15:00</span>
+                            <span class="mapel">Mata Pelajaran Pilihan (Coding)</span>
+                            <span class="guru">TBD</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="jadwal-card">
+                    <div class="jadwal-header">
+                        <h3>Jumat</h3>
+                    </div>
+                    <div class="jadwal-content">
+                        <div class="jadwal-item">
+                            <span class="jam">07:00-09:00</span>
+                            <span class="mapel">Matematika</span>
+                            <span class="guru">TBD</span>
+                        </div>
+                        <div class="jadwal-item">
+                            <span class="jam">09:00-09:30</span>
+                            <span class="mapel">Istirahat 1</span>
+                        </div>
+                        <div class="jadwal-item">
+                            <span class="jam">09:30-11:30</span>
+                            <span class="mapel">PKK</span>
+                            <span class="guru">TBD</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Daftar Guru -->
+    <section id="daftar-guru" class="section bg-secondary">
+        <div class="container">
+            <h2 class="section-title">Daftar Guru & Kode</h2>
+            <div class="guru-grid">
+                <div class="guru-card">
+                    <div class="guru-kode">02.A</div>
+                    <div class="guru-nama">Rifai</div>
+                </div>
+                <div class="guru-card">
+                    <div class="guru-kode">12.A - D</div>
+                    <div class="guru-nama">Djuli Hartono</div>
+                </div>
+                <div class="guru-card">
+                    <div class="guru-kode">16.A - C</div>
+                    <div class="guru-nama">Bu Ika</div>
+                </div>
+                <div class="guru-card">
+                    <div class="guru-kode">17.A</div>
+                    <div class="guru-nama">Indri Astuti</div>
+                </div>
+                <div class="guru-card">
+                    <div class="guru-kode">20.A</div>
+                    <div class="guru-nama">Dina Novida</div>
+                </div>
+                <div class="guru-card">
+                    <div class="guru-kode">21.A</div>
+                    <div class="guru-nama">Mugajidin</div>
+                </div>
+                <div class="guru-card">
+                    <div class="guru-kode">23.A</div>
+                    <div class="guru-nama">Indriani</div>
+                </div>
+                <div class="guru-card">
+                    <div class="guru-kode">27.B</div>
+                    <div class="guru-nama">Saefi</div>
+                </div>
+                <div class="guru-card">
+                    <div class="guru-kode">32.A</div>
+                    <div class="guru-nama">Hadi</div>
+                </div>
+                <div class="guru-card">
+                    <div class="guru-kode">33.B</div>
+                    <div class="guru-nama">Indra</div>
+                </div>
+                <div class="guru-card">
+                    <div class="guru-kode">34.A</div>
+                    <div class="guru-nama">Irfan</div>
+                </div>
+                <div class="guru-card">
+                    <div class="guru-kode">38.A</div>
+                    <div class="guru-nama">Zaky</div>
+                </div>
+                <div class="guru-card">
+                    <div class="guru-kode">39.A</div>
+                    <div class="guru-nama">Irfan Rizwansyah</div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tugas Kelas -->
+    <section id="tugas" class="section">
+        <div class="container">
+            <h2 class="section-title">Tugas Kelas</h2>
+            <div id="tugas-container" class="tugas-container">
+                <div class="loading-spinner">
+                    <div class="spinner"></div>
+                    <p>Memuat tugas...</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Scroll to Top Button -->
+    <button id="scroll-to-top" class="scroll-to-top">
+        <i data-lucide="arrow-up"></i>
+    </button>
+
+    <!-- Scripts -->
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    <script src="js/firebase-config.js"></script>
+    <script src="js/main.js"></script>
+</body>
+</html>

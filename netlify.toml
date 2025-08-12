@@ -1,6 +1,6 @@
 [build]
-  command = "echo 'Static HTML site ready for deployment'"
-  publish = "."
+  command = "mkdir -p dist && cp -r *.html js styles public dist/"
+  publish = "dist"
 
 [build.environment]
   NODE_VERSION = "18"
