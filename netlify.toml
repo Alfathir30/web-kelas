@@ -1,6 +1,7 @@
+
 [build]
-  command = "mkdir -p dist && cp -r *.html js styles public dist/"
-  publish = "dist"
+  command = "next build"
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "18"
