@@ -60,6 +60,7 @@ try {
   alert("❌ Gagal menginisialisasi Firebase. Periksa console untuk detail error.")
 }
 
+// Global variables untuk digunakan di file lain
 window.firebaseDB = db
 window.firebaseReady = !!db
 console.log("Firebase ready status:", window.firebaseReady)

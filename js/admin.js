@@ -17,11 +17,11 @@ const mataPelajaran = [
   "PKK",
 ]
 
-// Declare the lucide variable
-const lucide = window.lucide // Assuming lucide is available from CDN
-
 document.addEventListener("DOMContentLoaded", () => {
-  lucide.createIcons()
+  // Initialize Lucide icons
+  if (window.lucide) {
+    window.lucide.createIcons()
+  }
 
   // Setup login
   setupLogin()
@@ -136,7 +136,9 @@ function setupTugasForm() {
     } finally {
       submitBtn.disabled = false
       submitBtn.innerHTML = '<i data-lucide="save"></i>Simpan Tugas'
-      lucide.createIcons()
+      if (window.lucide) {
+        window.lucide.createIcons()
+      }
     }
   })
 }
@@ -175,7 +177,9 @@ async function loadAdminTugasList() {
                     <p>Belum ada tugas yang dibuat</p>
                 </div>
             `
-      lucide.createIcons()
+      if (window.lucide) {
+        window.lucide.createIcons()
+      }
       return
     }
 
@@ -224,7 +228,9 @@ async function loadAdminTugasList() {
     })
 
     tugasList.innerHTML = html
-    lucide.createIcons()
+    if (window.lucide) {
+      window.lucide.createIcons()
+    }
   } catch (error) {
     console.error("❌ Error loading tugas:", error)
     tugasList.innerHTML = `
