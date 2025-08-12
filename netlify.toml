@@ -1,9 +1,14 @@
 [build]
-  command = "echo 'Static files ready'"
+  command = "echo 'Static HTML site ready for deployment'"
   publish = "."
 
 [build.environment]
   NODE_VERSION = "18"
+
+[[redirects]]
+  from = "/admin"
+  to = "/admin.html"
+  status = 200
 
 [[redirects]]
   from = "/*"
