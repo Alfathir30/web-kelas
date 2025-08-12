@@ -1,6 +1,6 @@
 [build]
   command = "echo 'Static HTML site ready for deployment'"
-  publish = ".next"
+  publish = "."
 
 [build.environment]
   NODE_VERSION = "18"
