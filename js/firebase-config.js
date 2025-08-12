@@ -1,11 +1,12 @@
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyC...", // Ganti dengan API key Anda
-  authDomain: "kelas-tkj2.firebaseapp.com", // Ganti dengan auth domain Anda
-  projectId: "kelas-tkj2", // Ganti dengan project ID Anda
-  storageBucket: "kelas-tkj2.appspot.com", // Ganti dengan storage bucket Anda
-  messagingSenderId: "123456789", // Ganti dengan messaging sender ID Anda
-  appId: "1:123456789:web:abc123", // Ganti dengan app ID Anda
+  apiKey: "AIzaSyDE6ZBC9OZQomhNYa2s26kdna2gVtOitiI",
+  authDomain: "webkelas-1f013.firebaseapp.com",
+  projectId: "webkelas-1f013",
+  storageBucket: "webkelas-1f013.firebasestorage.app",
+  messagingSenderId: "479528175775",
+  appId: "1:479528175775:web:333be78ef70f19ac07baaa",
+  measurementId: "G-HZDNBT8N6G"
 }
 
 // Validasi config
