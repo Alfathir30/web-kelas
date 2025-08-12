@@ -47,7 +47,7 @@ function setupLogin() {
   const password = document.getElementById("password").value
 
   // List password yang boleh akses admin
-  const validPasswords = ["vel", "ajhjjhjhvh", "hhgfyjfyjf"]
+  const validPasswords = ["vel", "ajhjjhnmnjhvh", "hhgfyjfyjf"]
 
   if (validPasswords.includes(password)) {
     loginModal.style.display = "none"
