@@ -1,14 +1,13 @@
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyBnWBIil8PKjFXoPRXI4NtgAv6mVNkL89s",
-  authDomain: "tkj2-2db1e.firebaseapp.com",
-  databaseURL: "https://tkj2-2db1e-default-rtdb.firebaseio.com",
-  projectId: "tkj2-2db1e",
-  storageBucket: "tkj2-2db1e.firebasestorage.app",
-  messagingSenderId: "1017107912057",
-  appId: "1:1017107912057:web:0754a2adc6d4b686bc8ba8",
-  measurementId: "G-440VKHG02X"
-};
+    apiKey: "AIzaSyDp7hrxSE0V9vmQWE7d0jl4xllQViNmNjQ",
+    authDomain: "webkelas-1f013.firebaseapp.com",
+    projectId: "webkelas-1f013",
+    storageBucket: "webkelas-1f013.firebasestorage.app",
+    messagingSenderId: "479528175775",
+    appId: "1:479528175775:web:0d1f9a1b9f1e91e907baaa",
+    measurementId: "G-LK85T5W7EK"
+  }
 
 // Validasi config
 function validateFirebaseConfig() {
