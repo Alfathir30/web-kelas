@@ -1,5 +1,5 @@
 // Import Lucide icons library
-import lucide from "lucide"
+// const lucide = "lucide" // Removed ES6 import statement
 
 // Data statis
 const jadwalPiket = {
@@ -114,7 +114,7 @@ const daftarGuru = [
 
 // Initialize Lucide icons
 document.addEventListener("DOMContentLoaded", () => {
-  lucide.createIcons()
+  // lucide.createIcons() // Removed Lucide icon initialization
 
   // Mobile navigation
   setupMobileNav()
@@ -182,11 +182,11 @@ function loadPiketSchedule() {
             <div class="card animate-fade-in-up" style="animation-delay: ${index * 0.1}s">
                 <div class="card-header">
                     <h3>
-                        <i data-lucide="calendar"></i>
+                        <i class="calendar-icon"></i>
                         ${hari}
                     </h3>
                     <span class="badge">
-                        <i data-lucide="users"></i>
+                        <i class="users-icon"></i>
                         ${siswa.length} siswa
                     </span>
                 </div>
@@ -209,7 +209,7 @@ function loadPiketSchedule() {
   }
 
   piketGrid.innerHTML = html
-  lucide.createIcons()
+  // lucide.createIcons() // Removed Lucide icon creation
 }
 
 function loadJadwalPelajaran() {
@@ -224,7 +224,7 @@ function loadJadwalPelajaran() {
             <div class="card animate-fade-in-up" style="animation-delay: ${index * 0.1}s; margin-bottom: 1.5rem;">
                 <div class="card-header">
                     <h3>
-                        <i data-lucide="book-open"></i>
+                        <i class="book-open-icon"></i>
                         ${hari}
                     </h3>
                     <span class="badge">${pelajaran.length} jam pelajaran</span>
@@ -236,7 +236,7 @@ function loadJadwalPelajaran() {
                             (item) => `
                             <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.75rem; border-radius: 0.5rem; transition: background 0.2s; ${item.istirahat ? "background: rgba(234, 88, 12, 0.2); border: 1px solid rgba(251, 146, 60, 0.3);" : "background: rgba(51, 65, 85, 0.5);"}">
                                 <div style="display: flex; align-items: center; gap: 0.75rem;">
-                                    <i data-lucide="${item.istirahat ? "coffee" : "clock"}" style="width: 1rem; height: 1rem; color: ${item.istirahat ? "var(--orange-400)" : "var(--blue-400)"};"></i>
+                                    <i class="${item.istirahat ? "coffee-icon" : "clock-icon"}" style="width: 1rem; height: 1rem; color: ${item.istirahat ? "var(--orange-400)" : "var(--blue-400)"};"></i>
                                     <div>
                                         <div style="color: white; font-weight: 500;">${item.mata_pelajaran}</div>
                                         ${item.guru ? `<div style="font-size: 0.875rem; color: var(--slate-400);">${item.guru} ${item.kode ? `(${item.kode})` : ""}</div>` : ""}
@@ -255,7 +255,7 @@ function loadJadwalPelajaran() {
   }
 
   jadwalContainer.innerHTML = html
-  lucide.createIcons()
+  // lucide.createIcons() // Removed Lucide icon creation
 }
 
 function loadDaftarGuru() {
@@ -270,7 +270,7 @@ function loadDaftarGuru() {
                 <div class="card-content" style="padding: 1rem;">
                     <div style="display: flex; align-items: center; gap: 0.75rem;">
                         <div style="padding: 0.5rem; background: rgba(59, 130, 246, 0.2); border-radius: 0.5rem;">
-                            <i data-lucide="graduation-cap" style="width: 1rem; height: 1rem; color: var(--blue-400);"></i>
+                            <i class="graduation-cap-icon" style="width: 1rem; height: 1rem; color: var(--blue-400);"></i>
                         </div>
                         <div style="flex: 1;">
                             <div style="color: white; font-weight: 500;">${guru.nama}</div>
@@ -283,7 +283,7 @@ function loadDaftarGuru() {
   })
 
   guruGrid.innerHTML = html
-  lucide.createIcons()
+  // lucide.createIcons() // Removed Lucide icon creation
 }
 
 async function loadTugas() {
@@ -301,12 +301,12 @@ async function loadTugas() {
     if (querySnapshot.empty) {
       tugasContainer.innerHTML = `
                 <div style="text-align: center; padding: 3rem; color: var(--slate-300);">
-                    <i data-lucide="book-open" style="width: 4rem; height: 4rem; margin: 0 auto 1rem; display: block; color: var(--slate-400);"></i>
+                    <i class="book-open-icon" style="width: 4rem; height: 4rem; margin: 0 auto 1rem; display: block; color: var(--slate-400);"></i>
                     <h3 style="font-size: 1.25rem; font-weight: 600; color: white; margin-bottom: 0.5rem;">Belum Ada Tugas</h3>
                     <p>Tugas akan muncul di sini ketika guru memberikan tugas baru</p>
                 </div>
             `
-      lucide.createIcons()
+      // lucide.createIcons() // Removed Lucide icon creation
       return
     }
 
@@ -324,15 +324,15 @@ async function loadTugas() {
                         <h3 style="color: white; font-size: 1.125rem; margin-bottom: 0.75rem;">${tugas.judul}</h3>
                         <div style="display: flex; flex-wrap: wrap; gap: 0.5rem;">
                             <span class="badge badge-blue">
-                                <i data-lucide="book-open"></i>
+                                <i class="book-open-icon"></i>
                                 ${tugas.mataPelajaran}
                             </span>
                             <span class="badge badge-purple">
-                                <i data-lucide="calendar"></i>
+                                <i class="calendar-icon"></i>
                                 ${tugas.hari}
                             </span>
                             <span class="badge" style="border-color: ${deadlineInfo.color}; color: ${deadlineInfo.color};">
-                                <i data-lucide="${deadlineInfo.icon}"></i>
+                                <i class="${deadlineInfo.icon}-icon"></i>
                                 ${deadlineInfo.text}
                             </span>
                         </div>
@@ -340,7 +340,7 @@ async function loadTugas() {
                     <div class="card-content">
                         ${tugas.deskripsi ? `<p style="color: var(--slate-300); margin-bottom: 1rem; line-height: 1.6;">${tugas.deskripsi}</p>` : ""}
                         <div style="display: flex; align-items: center; gap: 0.5rem; font-size: 0.875rem; color: var(--slate-400);">
-                            <i data-lucide="clock" style="width: 1rem; height: 1rem;"></i>
+                            <i class="clock-icon" style="width: 1rem; height: 1rem;"></i>
                             <span>Deadline: ${formatDate(deadline)}</span>
                         </div>
                     </div>
@@ -350,7 +350,7 @@ async function loadTugas() {
     })
 
     tugasContainer.innerHTML = html
-    lucide.createIcons()
+    // lucide.createIcons() // Removed Lucide icon creation
   } catch (error) {
     console.error("Error loading tugas:", error)
     tugasContainer.innerHTML = `

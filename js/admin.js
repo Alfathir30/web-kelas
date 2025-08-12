@@ -17,7 +17,8 @@ const mataPelajaran = [
   "PKK",
 ]
 
-const lucide = require("lucide") // Declare the lucide variable
+// Declare the lucide variable
+const lucide = window.lucide // Assuming lucide is available from CDN
 
 document.addEventListener("DOMContentLoaded", () => {
   lucide.createIcons()
