@@ -43,16 +43,20 @@ function setupLogin() {
   const logoutBtn = document.getElementById("logoutBtn")
 
   loginForm.addEventListener("submit", (e) => {
-    e.preventDefault()
-    const password = document.getElementById("password").value
+  e.preventDefault()
+  const password = document.getElementById("password").value
 
-    if (password === "tkj2admin") {
-      loginModal.style.display = "none"
-      adminDashboard.style.display = "block"
-    } else {
-      alert("Password salah!")
-    }
-  })
+  // List password yang boleh akses admin
+  const validPasswords = ["vel", "ajhjjhjhvh", "hhgfyjfyjf"]
+
+  if (validPasswords.includes(password)) {
+    loginModal.style.display = "none"
+    adminDashboard.style.display = "block"
+  } else {
+    alert("Password salah!")
+  }
+})
+  
 
   if (logoutBtn) {
     logoutBtn.addEventListener("click", () => {
