@@ -1,13 +1,13 @@
 // Firebase configuration
 const firebaseConfig = {
-  apiKey: "AIzaSyDE6ZBC9OZQomhNYa2s26kdna2gVtOitiI",
+  apiKey: "AIzaSyDp7hrxSE0V9vmQWE7d0jl4xllQViNmNjQ",
   authDomain: "webkelas-1f013.firebaseapp.com",
   databaseURL: "https://webkelas-1f013-default-rtdb.firebaseio.com",
   projectId: "webkelas-1f013",
   storageBucket: "webkelas-1f013.firebasestorage.app",
   messagingSenderId: "479528175775",
-  appId: "1:479528175775:web:333be78ef70f19ac07baaa",
-  measurementId: "G-HZDNBT8N6G"
+  appId: "1:479528175775:web:d46a6c0fb4ccbe4507baaa",
+  measurementId: "G-MBP1YMTKBG"
 };
 
 // Validasi config
