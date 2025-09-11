@@ -1,265 +1,539 @@
 <!DOCTYPE html>
-<html lang="id">
+<html lang="en">
+
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kelas 11 TKJ2 - SMK Teknik Komputer dan Jaringan</title>
-    <meta name="description" content="Website resmi kelas 11 TKJ2 untuk informasi jadwal, tugas, dan struktur kelas">
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="styles/main.css">
-    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=Edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="google-site-verification" content="dxwFTpAdAACQ_3yMZuYO0LB702tqXc-5FtdWGiQ6mcY" />
+
+  <title>X TKJ 2</title>
+  <!-- HTML -->
+
+  <!-- Custom Styles -->
+  <link rel="stylesheet" href="style.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.2.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-Zenh87qX5JnK2Jl0vWa8Ck2rdkQ2Bzep5IDxbcnCeuOxjzrPF/et3URy9Bv1WTRi" crossorigin="anonymous">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.3.0/font/bootstrap-icons.css">
+  <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+  <link rel="icon" type="image/x-icon" href="pp.ico">
 </head>
-<style>
-  h3 a {
-    color: white;
-    text-decoration: none; /* biar gak ada garis bawah */
-  }
 
-  h3 a:hover {
-    text-decoration: underline; /* opsional, biar ada efek pas di-hover */
-  }
-</style>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <div class="container">
-            <div class="header-content">
-                <div class="logo animate-fade-in-left">
-                    <div class="logo-icon">
-                        <i data-lucide="monitor"></i>
-                    </div>
-                    <div class="logo-text">
-                        <h1>Kelas 11 TKJ2</h1>
-                        <p>Teknik Komputer dan Jaringan</p>
-                    </div>
-                </div>
-                <nav class="nav-desktop animate-fade-in-right">
-                    <a href="#struktur">Struktur Kelas</a>
-                    <a href="#piket">Piket</a>
-                    <a href="#jadwal">Jadwal</a>
-                    <a href="#tugas">Tugas</a>
-                    <a href="admin.html" class="btn btn-outline">
-                        <i data-lucide="settings"></i>
-                        Admin
-                    </a>
-                </nav>
-                <button class="mobile-menu-btn" id="mobileMenuBtn">
-                    <i data-lucide="menu"></i>
-                </button>
-            </div>
-        </div>
-    </header>
+  <nav class="navbar sticky-top bg-light" id="navbar_top">
+    <div class="container-fluid">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarTogglerDemo03" aria-controls="navbarTogglerDemo03" aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <a class="navbar-brand" href="#"></a>
+      <i class="bi-moon" id="toggleDark"></i>
 
-    <!-- Mobile Navigation -->
-    <div class="mobile-nav" id="mobileNav">
-        <div class="mobile-nav-header">
-            <div class="logo">
-                <div class="logo-icon">
-                    <i data-lucide="monitor"></i>
-                </div>
-                <span>Kelas 11 TKJ2</span>
-            </div>
-            <button class="mobile-nav-close" id="mobileNavClose">
-                <i data-lucide="x"></i>
-            </button>
+      <div class="collapse navbar-collapse" id="navbarTogglerDemo03">
+        <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+          <li class="nav-item">
+            <a class="nav-link active" aria-current="page" href="#">Home</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#tarik">Jadwal Pelajaran</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#judul3">Jadwal Piket</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#selasa">Info Tugas</a>
+          </li>
+          <li class="nav-item">
+            <a class="nav-link" href="#menfess">Menfess</a>
+          </li>
+        </ul>
+        <iframe src='https://my.spline.design/untitled-1708734a2624046b33d47defe1ae4c07/' frameborder='0' width='100%' height="250px" style="display: none;"></iframe>
+      </div>
+    </div>
+  </nav>
+  <br>
+  <div class="Hi_makhluk">Hi! Makhluk TKJ 2!</div>
+  </div>
+  <div id="selamat" ></div>
+  <form id=”form1″ name=”form1″ method=”post” action="sec.html">
+    <div class="pencarian"><input type="text" name="pencarian" placeholder="Search..."></div>
+  </form>
+
+  <div class="Welcome" id="Welc">Welcome
+    <br>
+    <div class="bawah_welcome" id="bwh_wlc">
+      Let's check your
+      schedule<br> And assignments</div>
+  </div>
+  <br>
+    <nav class="navbar navbar-light bg-light border-top bg-info navbar-expand fixed-bottom" id="navbar_bottom">
+      <ul class="navbar-nav nav-justified w-100">
+        <li class="nav-item">
+          <a href="#" class="nav-link"><i class="fa-solid fa-house"></i><br>
+            <div class="text_icon">Home</div>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#tarik" class="nav-link"><i class="fa-solid fa-calendar-days"></i><br>
+            <div class="text_icon">Schedule</div>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#senin" class="nav-link"><i class="fa-solid fa-list-check"></i><br>
+            <div class="text_icon">MyTask</div>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="#menfess" class="nav-link">
+            <i class="fa-solid fa-envelope-open-text"></i><br>
+            <div class="text_icon">Menfess</div>
+          </a>
+        </li>
+      </ul>
+    </nav>
+  <div class="tarik" id="tarik">
+    <br>
+    <div class="garis_tarik"></div>
+
+    <h4 style="margin: 1em auto 1em; width: 10em; " id="judul1" data-aos="fade-up" data-aos-duration="1000" data-aos-offset="5">Jadwal Pelajaran</h4>
+
+    <ul data-aos="fade-up" data-aos-duration="1000" data-aos-offset="15">
+      <div class="Senin" id="judul2"> SENIN</div>
+      <div class="mapel" style="height: 100px">
+        <li>PABP</li>
+        <li>Al-quran</li>
+        <li>Pemrograman Dasar</li>
+      </div>
+    </ul>
+
+<div data-aos="fade-up" data-aos-duration="1000" data-aos-offset="40">
+    <ul>
+      <div class="Selasa" id="judul3">SELASA</div>
+      <div class="mapel">
+        <li>Seni Budaya</li>
+        <li>Akidah Akhlak</li>
+        <li>Sejarah Indonesia</li>
+        <li>Bahasa Sunda</li>
+        <li>Bahasa Inggris</li>
+      </div>
+    </ul>
+</div>
+
+
+    <ul data-aos="fade-up" data-aos-duration="1000" data-aos-offset="30">
+      <div class="Rabu" id="judul4">RABU</div>
+      <div class="mapel" style="height: 100px">
+        <li>KJD</li>
+        <li>IPAS</li>
+        <li>Informatika</li>
+      </div>
+    </ul>
+  
+
+    <div data-aos="fade-up" data-aos-duration="1000" data-aos-offset="25">
+      <ul>
+        <div class="Kamis" id="judul5">KAMIS</div>
+        <div class="mapel" style="height: 150px">
+          <li>Sistem Komputer</li>
+          <li>B.sunda</li>
+          <li>pkn</li>
+          <li>ipas</li>
+          <li>penjaskes</li>
         </div>
-        <nav class="mobile-nav-links">
-            <a href="#struktur">Struktur Kelas</a>
-            <a href="#piket">Piket</a>
-            <a href="#jadwal">Jadwal</a>
-            <a href="#tugas">Tugas</a>
-            <a href="admin.html" class="btn btn-outline">
-                <i data-lucide="settings"></i>
-                Admin
-            </a>
-        </nav>
+      </ul>
     </div>
 
-    <!-- Hero Section -->
-    <section class="hero">
-        <div class="container">
-            <div class="hero-content animate-fade-in-up">
-                <h1 class="hero-title">Kelas 11 TKJ2</h1>
-                <p class="hero-subtitle">Membangun masa depan digital melalui teknologi komputer dan jaringan</p>
-                <div class="hero-badges">
-                    <span class="badge animate-fade-in-up delay-200">
-                        <i data-lucide="monitor"></i>
-                        Hardware
-                    </span>
-                    <span class="badge animate-fade-in-up delay-300">
-                        <i data-lucide="wifi"></i>
-                        Networking
-                    </span>
-                    <span class="badge animate-fade-in-up delay-400">
-                        <i data-lucide="server"></i>
-                        Server
-                    </span>
-                    <span class="badge animate-fade-in-up delay-500">
-                        <i data-lucide="code"></i>
-                        Programming
-                    </span>
-                </div>
-            </div>
-        </div>
-    </section>
+      <div data-aos="fade-up" data-aos-duration="1000" data-aos-offset="25">
+        <ul>
+          <div class="Jumat" id="judul6">JUMAT</div>
+          <div class="mapel" style="height: 100px">
+            <li>MTK</li>
+            <li>Bahasa Indonesia</li>
+          </div>
+        </ul>
+        <hr>
+      </div>
 
-    <!-- Struktur Kelas -->
-    <section id="struktur" class="struktur-kelas">
-        <div class="container">
-            <div class="section-header animate-fade-in-up">
-                <h2>Struktur Kelas</h2>
-                <p>Pengurus kelas yang bertanggung jawab mengorganisir kegiatan pembelajaran</p>
-            </div>
-            <div class="struktur-grid">
-                <div class="struktur-card animate-fade-in-up delay-100">
-                    <div class="avatar">
-                        <img src="public/" alt="Saefi">
-                    </div>
-                    <h3>Saefi</h3>
-                    <span class="badge badge-blue">
-                        <i data-lucide="graduation-cap"></i>
-                        Wali Kelas
-                    </span>
-                </div>
-                <div class="struktur-card animate-fade-in-up delay-200">
-                    <div class="avatar">
-                        <img src="public/rofi.jpg" alt="Rofi Rijal">
-                    </div>
-                    <h3><a href = "https://www.instagram.com/opik.nieboss?igsh=MWtjbGM4Z21uZHhhdA==">Rofi Rijal</a></h3>
-                    <span class="badge badge-green">
-                        <i data-lucide="user"></i>
-                        Ketua Kelas
-                    </span>
-                </div>
-                <div class="struktur-card animate-fade-in-up delay-300">
-                    <div class="avatar">
-                        <img src="public/" alt="Sekretaris">
-                    </div>
-                    <h3>Sekretaris</h3>
-                    <span class="badge badge-purple">
-                        <i data-lucide="book-open"></i>
-                        Sekretaris
-                    </span>
-                </div>
-                <div class="struktur-card animate-fade-in-up delay-400">
-                    <div class="avatar">
-                        <img src="public/" alt="Bendahara">
-                    </div>
-                    <h3>Bendahara</h3>
-                    <span class="badge badge-orange">
-                        <i data-lucide="users"></i>
-                        Bendahara
-                    </span>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Quick Stats -->
-    <section class="quick-stats">
-        <div class="container">
-            <div class="stats-grid">
-                <div class="stat-card animate-fade-in-left">
-                    <i data-lucide="users" class="stat-icon text-blue"></i>
-                    <h3>32 Siswa</h3>
-                    <p>Total siswa aktif</p>
-                </div>
-                <div class="stat-card animate-fade-in-up delay-100">
-                    <i data-lucide="calendar" class="stat-icon text-green"></i>
-                    <h3>5 Hari</h3>
-                    <p>Jadwal pembelajaran</p>
-                </div>
-                <div class="stat-card animate-fade-in-right delay-200">
-                    <i data-lucide="clock" class="stat-icon text-purple"></i>
-                    <h3>8 Jam</h3>
-                    <p>Jam pelajaran per hari</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Jadwal Piket -->
-    <section id="piket" class="jadwal-piket">
-        <div class="container">
-            <div class="section-header animate-fade-in-up">
-                <h2>Jadwal Piket Kelas</h2>
-                <p>Pembagian tugas piket harian untuk menjaga kebersihan kelas</p>
-            </div>
-            <div class="piket-grid" id="piketGrid">
-                <!-- Akan diisi oleh JavaScript -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Jadwal Pelajaran -->
-    <section id="jadwal" class="jadwal-pelajaran">
-        <div class="container">
-            <div class="section-header animate-fade-in-up">
-                <h2>Jadwal Pelajaran</h2>
-                <p>Jadwal mata pelajaran lengkap untuk kelas 11 TKJ2</p>
-            </div>
-            <div class="jadwal-container" id="jadwalContainer">
-                <!-- Akan diisi oleh JavaScript -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Daftar Guru -->
-    <section class="daftar-guru">
-        <div class="container">
-            <div class="section-header animate-fade-in-up">
-                <h2>Daftar Guru</h2>
-                <p>Guru pengajar dengan kode masing-masing</p>
-            </div>
-            <div class="guru-grid" id="guruGrid">
-                <!-- Akan diisi oleh JavaScript -->
-            </div>
-        </div>
-    </section>
-
-    <!-- Tugas -->
-    <section id="tugas" class="tugas-section">
-        <div class="container">
-            <div class="section-header animate-fade-in-up">
-                <h2>Tugas Kelas</h2>
-                <p>Daftar tugas yang harus dikerjakan siswa</p>
-            </div>
-            <div class="tugas-container" id="tugasContainer">
-                <div class="loading-spinner" id="tugasLoading">
-                    <div class="spinner"></div>
-                    <p>Memuat tugas...</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Footer -->
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content animate-fade-in-up">
-                <div class="footer-logo">
-                    <i data-lucide="monitor"></i>
-                    <span>Kelas 11 TKJ2</span>
-                </div>
-                <p>© 2024 Kelas 11 TKJ2. Membangun masa depan melalui teknologi.</p>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Scroll to Top -->
-    <button class="scroll-to-top" id="scrollToTop">
-        <i data-lucide="arrow-up"></i>
-    </button>
-
-    <!-- Scripts -->
-    <!-- Firebase CDN -->
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+          <div data-aos="fade-up" data-aos-duration="1000" data-aos-offset="25">
+        <ul>
+          <div class="Jumat" id="judul6">Sabtu</div>
+          <div class="mapel" style="height: 100px">
+            <li>Pramuka Kelas X</li>
+            <li>Eskul</li>
+          </div>
+        </ul>
+        <hr>
+      </div>
     
-    <!-- Menggunakan regular script tags bukan module -->
-    <script src="js/firebase-config.js"></script>
-    <script src="js/main.js"></script>
+
+    <h4 id="judul7" data-aos="fade-up" data-aos-duration="800" data-aos-offset="20">Jadwal Piket</h4>
+    <center>
+      <div class="dropdown">
+        <button class="btn  dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="Buttonj" data-aos="fade-up" data-aos-duration="600" data-aos-offset="25">
+          <span id="senin">Senin</span>
+        </button>
+
+        <ul class="dropdown-menu">
+          <li class="dropdown-item">1. AHMAD HUBAIB ASSHIDIQIE</li>
+          <li class="dropdown-item">2. ASRI NUR KHOFIFAH</li>
+          <li class="dropdown-item">3. FADLI ALDIANSYAH PUTRA </li>
+          <li class="dropdown-item">4. LEXA TRIDENIA </li>
+          <li class="dropdown-item">5. MUHAMMAD FAIZ RAMADHAN</li>
+          <li class="dropdown-item">6. RISYAD IBRAHIM PAMUNGKAS </li>
+          <li class="dropdown-item">7. PUSPA DARA MITA </li>
+          <li class="dropdown-item">8. SASKIA FITRIYANI </li>
+        </ul>
+        </ul>
+      </div>
+
+
+      <div class="dropdown">
+        <button class="btn dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="Buttonj" data-aos="fade-up" data-aos-duration="600" data-aos-offset="25">
+          <span id="selasa">Selasa</span>
+        </button>
+        <ul class="dropdown-menu">
+          <li class="dropdown-item">1. AHMAD SAHET</li>
+          <li class="dropdown-item">2. AYU NOVITASARI </li>
+          <li class="dropdown-item">3. FAJRI NOVIRIANSYAH</li>
+          <li class="dropdown-item">4. M FAHRI SETIAWAN</li>
+          <li class="dropdown-item">5. NATASYA NUR DEFRILIANSYAH</li>
+          <li class="dropdown-item">6. MUHAMMAD RAIHAN RAMADHAN</li>
+          <li class="dropdown-item">7. SHELLA ANASTASYA</li>
+        </ul>
+      </div>
+      <br><br>
+
+      <div class="dropdown">
+        <button class="btn  dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="Buttonj" data-aos="fade-up" data-aos-duration="900" data-aos-offset="25">
+          <span id="rabu">Rabu</span>
+        </button>
+        <ul class="dropdown-menu">
+          <li class="dropdown-item">1. ALIF MARVEL AL FATHIR</li>
+          <li class="dropdown-item">2. BUNGA FIKRIA FAJARINI</li>
+          <li class="dropdown-item">3. HIBATULLAH </li>
+          <li class="dropdown-item">4. M YUSUF SYIHABBUDIN</li>
+          <li class="dropdown-item">5. NINDA KHOERUNNISA</li>
+          <li class="dropdown-item">6. RIZKA FITRIYANI</li>
+          <li class="dropdown-item">7. SRI WANTI</li>
+        </ul>
+      </div>
+
+      <div class="dropdown">
+        <button class="btn  dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="Buttonj" data-aos="fade-up" data-aos-duration="1100" data-aos-offset="25">
+          <span id="kamis">Kamis</span>
+        </button>
+        <ul class="dropdown-menu">
+          <li class="dropdown-item">1. ARDY RAMADHAN</li>
+          <li class="dropdown-item">2. CITRA XENA </li>
+          <li class="dropdown-item">3. GHIWEN ANANDA RULITHA </li>
+          <li class="dropdown-item">4. MUHAMMAD SYAHRIAL ALWAN</li>
+          <li class="dropdown-item">5. ROFI RIZAL SANI</li>
+          <li class="dropdown-item">6. SYAFA ELLISE AULIA</li>
+          <li class="dropdown-item">7. BINTANG ADITYA PRATAMA</li>
+        </ul>
+      </div>
+
+      <div class="dropdown">
+        <button class="btn  dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false" id="Buttonj" data-aos="fade-up" data-aos-duration="900" data-aos-offset="25">
+          <span id="jumat">Jumat</span>
+        </button>
+        <ul class="dropdown-menu">
+          <li class="dropdown-item">1. ARUMI KALILA RAMADHANI </li>
+          <li class="dropdown-item">2. KAYLA PUTRI AMALIA</li>
+          <li class="dropdown-item">3. MUHAMMAD ELDO RAFASHA</li>
+          <li class="dropdown-item">4. TRISYA PUTRI SAHARANI</li>
+          <li class="dropdown-item">5. ROFIIF AZHAR MA'RUF</li>
+          <li class="dropdown-item">6. MUHAMMAD FAKHRY MULYADI</li>
+          <li class="dropdown-item">7. SONA MARDIYANSYA</li>
+        </ul>
+      </div>
+    </center>
+
+
+    <hr>
+    <h4 id="judul8" data-aos="fade-up" data-aos-duration="1000" data-aos-offset="25">Tugas</h4>
+    <center>
+      <div class="atur_box">
+        <div class="box_project" id="box1" data-aos="fade-up" data-aos-duration="800" data-aos-offset="25"><b>PABP : </b><br>
+          <img class="gambar_buku" src="buku pabp.jpeg" width="40px" height="53px" align="left">
+          <span class="translate-middle badge rounded-pill bg-danger">0</span>
+          <div class="this_week">
+            This Week's assignment
+            <button onclick="Alert('pabp')" id="tugas_button">
+              click
+            </button>
+          </div>
+          <progress value="50" max="100" style="height:20px;width:100px;margin-top:5px;"></progress>
+        </div>
+
+
+        <div class="box_project" id="box2" data-aos="fade-up" data-aos-duration="800" data-aos-offset="25"><b>Al-quran : </b>
+          <br>
+          <img class="gambar_buku" src="alquran.jpeg" width="40px" height="53px" align="left">
+          <span class="translate-middle badge rounded-pill bg-danger">0</span>
+          <div class="this_week">
+            This Week's assignment
+            <button onclick="Alert('alquran')" id="tugas_button">
+              click
+            </button>
+          </div>
+          <progress value="50" max="100" style="height:20px;width:100px;margin-top:5px;"></progress>
+        </div>
+      </div>
+
+      <div class="atur_box">
+        <div class="box_project" id="box3" data-aos="fade-up" data-aos-duration="800" data-aos-offset="25"><b>Pemrograman Dasar : </b><br>
+          <img class="gambar_buku" src="buku pemdas.png" width="40px" height="53px" align="left">
+          <span class="translate-middle badge rounded-pill bg-danger">1</span>
+          <div class="this_week">
+            This Week's assignment
+            <button onclick="Alert('pemdas')" id="tugas_button">
+              click
+            </button>
+          </div>
+          <progress value="50" max="100" style="height:20px;width:100px;margin-top:5px;"></progress>
+        </div>
+
+        <div class="box_project" id="box4" data-aos="fade-up" data-aos-duration="800" data-aos-offset="25"><b>Seni Budaya : </b><br>
+          <img class="gambar_buku" src="buku senbud.jpg" width="40px" height="53px" align="left">
+          <span class="translate-middle badge rounded-pill bg-danger">0</span>
+          <div class="this_week">
+            This Week's assignment
+            <button onclick="Alert('senbud')" id="tugas_button">
+              click
+            </button>
+          </div>
+          <progress value="50" max="100" style="height:20px;width:100px;margin-top:5px;"></progress>
+        </div>
+       </div>
+
+      <div class="atur_box">
+        <div class="box_project" id="box5" data-aos="fade-up" data-aos-duration="800" data-aos-offset="25"><b>Akidah Akhlak : </b><br>
+            <img class="gambar_buku" src="buku akidah.jpg" width="40px" height="53px" align="left">
+            <span class="translate-middle badge rounded-pill bg-danger">0</span>
+            <div class="this_week">
+              This Week's assignment
+              <button onclick="Alert('akidah')" id="tugas_button">
+                click
+              </button>
+            </div>
+            <progress value="50" max="100" style="height:20px;width:100px;margin-top:5px;"></progress>
+          </div>
+
+          <div class="box_project" id="box6" data-aos="fade-up" data-aos-duration="800" data-aos-offset="25"><b>Sejarah : </b><br>
+            <img class="gambar_buku" src="buku sejarah.jpg" width="40px" height="53px" align="left">
+            <span class="translate-middle badge rounded-pill bg-danger">0</span>
+            <div class="this_week">
+              This Week's assignment
+              <button onclick="Alert('sejarah')" id="tugas_button">
+                click
+              </button>
+            </div>
+            <progress value="50" max="100" style="height:20px;width:100px;margin-top:5px;"></progress>
+          </div>
+      </div>
+
+      <div class="atur_box">
+          <div class="box_project" id="box7" data-aos="fade-up" data-aos-duration="800" data-aos-offset="25"><b>B. Sunda : </b><br>
+            <img class="gambar_buku" src="buku sunda.jpg" width="40px" height="53px" align="left">
+            <span class="translate-middle badge rounded-pill bg-danger">0</span>
+            <div class="this_week">
+              This Week's assignment
+              <button onclick="Alert('sunda')" id="tugas_button">
+                click
+              </button>
+            </div>
+            <progress value="50" max="100" style="height:20px;width:100px;margin-top:5px;"></progress>
+          </div>
+
+          <div class="box_project" id="box8" data-aos="fade-up" data-aos-duration="800" data-aos-offset="25"><b>Bahasa  Inggris : </b><br>
+            <img class="gambar_buku" src="buku inggris.jpg" width="40px" height="53px" align="left">
+            <span class="translate-middle badge rounded-pill bg-danger">0</span>
+            <div class="this_week">
+              This Week's assignment
+              <button onclick="Alert('inggris')" id="tugas_button">
+                click
+              </button>
+            </div>
+            <progress value="50" max="100" style="height:20px;width:100px;margin-top:5px;"></progress>
+          </div>
+        </div>
+
+        <div class="atur_box">
+          <div class="box_project" id="box9" data-aos="fade-up" data-aos-duration="800" data-aos-offset="25"><b>kjd : </b><br>
+            <img class="gambar_buku" src="buku kjd.jpg" width="40px" height="53px" align="left">
+            <span class="translate-middle badge rounded-pill bg-danger">0</span>
+            <div class="this_week">
+              This Week's assignment
+              <button onclick="Alert('kjd')" id="tugas_button">
+                click
+              </button>
+            </div>
+            <progress value="50" max="100" style="height:20px;width:100px;margin-top:5px;"></progress>
+          </div>
+
+          <div class="box_project" id="box10" data-aos="fade-up" data-aos-duration="800" data-aos-offset="25"><b>IPAS : </b><br>
+            <img class="gambar_buku" src="buku ipas.jpg" width="40px" height="53px" align="left">
+            <span class="translate-middle badge rounded-pill bg-danger">0</span>
+            <div class="this_week">
+              This Week's assignment
+              <button onclick="Alert('ipas')" id="tugas_button">
+                click
+              </button>
+            </div>
+            <progress value="50" max="100" style="height:20px;width:100px;margin-top:5px;"></progress>
+            </div>
+        </div>
+
+        <div class="atur_box">
+          <div class="box_project" id="box11" data-aos="fade-up" data-aos-duration="800" data-aos-offset="25"><b>Informatika : </b><br>
+            <img class="gambar_buku" src="buku tik.jpg" width="40px" height="53px" align="left">
+            <span class="translate-middle badge rounded-pill bg-danger">0</span>
+            <div class="this_week">
+              This Week's assignment
+              <button onclick="Alert('tik')" id="tugas_button">
+                click
+              </button>
+            </div>
+            <progress value="50" max="100" style="height:20px;width:100px;margin-top:5px;"></progress>
+          </div>
+
+          <div class="box_project" id="box12" data-aos="fade-up" data-aos-duration="800" data-aos-offset="25"><b>Sistem Komputer : </b><br>
+            <img class="gambar_buku" src="buku siskom.jpg" width="40px" height="53px" align="left">
+            <span class="translate-middle badge rounded-pill bg-danger">0</span>
+            <div class="this_week">
+              This Week's assignment
+              <button onclick="Alert('siskom')" id="tugas_button">
+                click
+              </button>
+            </div>
+            <progress value="50" max="100" style="height:20px;width:100px;margin-top:5px;"></progress>
+            </div>
+        </div>
+
+        <div class="atur_box">
+          <div class="box_project" id="box13" data-aos="fade-up" data-aos-duration="800" data-aos-offset="25"><b>pkn : </b><br>
+            <img class="gambar_buku" src="buku pkn.jpg" width="40px" height="53px" align="left">
+            <span class="translate-middle badge rounded-pill bg-danger">0</span>
+            <div class="this_week">
+              This Week's assignment
+              <button onclick="Alert('pkn')" id="tugas_button">
+                click
+              </button>
+            </div>
+            <progress value="50" max="100" style="height:20px;width:100px;margin-top:5px;"></progress>
+          </div>
+
+          <div class="box_project" id="box14" data-aos="fade-up" data-aos-duration="800" data-aos-offset="25"><b>penjaskes : </b><br>
+            <img class="gambar_buku" src="buku penjas.jpg" width="40px" height="53px" align="left">
+            <span class="translate-middle badge rounded-pill bg-danger">0</span>
+            <div class="this_week">
+              This Week's assignment
+              <button onclick="Alert('penjas')" id="tugas_button">
+                click
+              </button>
+            </div>
+            <progress value="50" max="100" style="height:20px;width:100px;margin-top:5px;"></progress>
+            </div>
+        </div>
+
+        <div class="atur_box">
+          <div class="box_project" id="box15" data-aos="fade-up" data-aos-duration="800" data-aos-offset="25"><b>Matematika : </b><br>
+            <img class="gambar_buku" src="buku mtk.jpg" width="40px" height="53px" align="left">
+            <span class="translate-middle badge rounded-pill bg-danger">0</span>
+            <div class="this_week">
+              This Week's assignment
+              <button onclick="Alert('mtk')" id="tugas_button">
+                click
+              </button>
+            </div>
+            <progress value="50" max="100" style="height:20px;width:100px;margin-top:5px;"></progress>
+          </div>
+
+          <div class="box_project" id="box16" data-aos="fade-up" data-aos-duration="800" data-aos-offset="25"><b>B. Indonesia : </b><br>
+            <img class="gambar_buku" src="buku bindo.jpg" width="40px" height="53px" align="left">
+            <span class="translate-middle badge rounded-pill bg-danger">0</span>
+            <div class="this_week">
+              This Week's assignment
+              <button onclick="Alert('indo')" id="tugas_button">
+                click
+              </button>
+            </div>
+            <progress value="50" max="100" style="height:20px;width:100px;margin-top:5px;"></progress>
+          </div>
+        </div>
+    </div>
+    </center>
+<br>
+    <!---copyright--->
+    <!---menfess--->
+    <div class="menfess" id="menfess">
+      <i class="fa-solid fa-quote-left" id="quote"></i>
+      <h4 data-aos="fade-up" data-aos-duration="1000" data-aos-offset="25" id="judul9">Menfess</h4>
+
+      <form action="https://formsubmit.co/nandien4409@gmail.com" method="POST">
+        <center>
+          <input type="text" name="From:" placeholder="From :" required id="input" data-aos="fade-up" data-aos-duration="1000" data-aos-offset="25">
+          <input type="text" name="To:" required id="input" placeholder="To :" data-aos="fade-up" data-aos-duration="1000" data-aos-offset="25">
+          <textarea placeholder="Pesan :" type="text" name="Pesan:" required id="input" data-aos="fade-up" data-aos-duration="1000" data-aos-offset="25"></textarea>
+          <button class="buttonSubmit" type="submit" data-aos="fade-up" data-aos-duration="1500" data-aos-offset="25">
+            <span class="text" id="submit">Submit</span>
+            <img src="patch-check.svg" id="iconv">
+          </button>
+        </center>
+        <input type="hidden" name="_captcha" value="false">
+        <input type="hidden" name="_template" value="table">
+      </form>
+
+      <i class="fa-solid fa-quote-right" id="quoteright"></i>
+      <br>
+      <br>
+      <br>
+      <br>
+      <br>
+    </div>
+    </div>
+  </div>
+  
+  
+
+  <!-- Project -->
+  <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="main.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.2.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+  <script>
+    AOS.init();
+  </script>
+  <script>
+         // Mendefinisikan username dan password yang benar
+        const correctUsername = "admin";
+        const correctPassword = "1234";
+        
+        // Variabel untuk menyimpan input pengguna
+        let isAuthenticated = false;
+        
+        // Looping untuk meminta username dan password hingga benar
+        while (!isAuthenticated) {
+            // Mengambil input username dari pengguna
+            const inputUsername = prompt("Masukkan username:");
+            
+            // Jika username benar, meminta password
+            if (inputUsername === correctUsername) {
+                const inputPassword = prompt("Masukkan password:");
+
+                // Memeriksa apakah password benar
+                if (inputPassword === correctPassword) {
+                    alert("Login berhasil! Selamat datang, " + correctUsername + "!");
+                    isAuthenticated = true; // Menghentikan loop jika login berhasil
+                } else {
+                    alert("Password salah. Coba lagi.");
+                }
+            } else {
+                alert("Username tidak ditemukan. Coba lagi.");
+            }
+        }
+  </script>
 </body>
+
 </html>
