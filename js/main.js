@@ -1,10 +1,10 @@
 // Data statis
 const jadwalPiket = {
-  Senin: ["Alip", "Asri", "Bunga", "Rofi", "Rizka", "Lexa", "Baik", "Aji"],
+  Senin: ["Alip", "Asri", "Bunga", "Rofif", "Rizka", "Lexa", "Baib", "Aji"],
   Selasa: ["Fakhri H", "Yusuf", "Natasya", "Sella", "Faiz", "Arumi", "Ardi", "Sona"],
   Rabu: ["Gani", "Raihan", "Icad", "Kia", "Sri", "Ica", "Ayu"],
   Kamis: ["Citra", "Ghiwen", "Mulyadi", "Alwan", "Rofi", "Lia", "Fahri S"],
-  Jumat: ["Ian", "Kela", "Eldo", "Ninda", "Dara", "Sahet"],
+  Jumat: ["Ian", "Kyla", "Eldo", "Ninda", "Dara", "Sahet"],
 }
 
 const jadwalPelajaran = {
@@ -59,7 +59,7 @@ const jadwalPelajaran = {
     { jam: "08:25-09:05", mata_pelajaran: "PPKn", guru: "Bu Indri Astuti", kode: "17.A" },
     { jam: "09:05-09:45", mata_pelajaran: "PPKn", guru: "Bu Indri Astuti", kode: "17.A" },
     { jam: "09:45-10:00", mata_pelajaran: "Istirahat 1", guru: "", kode: "", istirahat: true },
-    { jam: "10:00-10:40", mata_pelajaran: "Sunda", guru: "Pak Irfan Rizwansyah", kode: "39.A" },
+    { jam: "10:00-10:40", mata_pelajaran: "PPKn", guru: "Bu Indri Astuti", kode: "17.A" },
     { jam: "10:40-11:20", mata_pelajaran: "Sunda", guru: "Pak Irfan Rizwansyah", kode: "39.A" },
     { jam: "11:20-12:00", mata_pelajaran: "Sunda", guru: "Pak Irfan Rizwansyah", kode: "39.A" },
     { jam: "12:00-12:40", mata_pelajaran: "Istirahat 2", guru: "", kode: "", istirahat: true },
